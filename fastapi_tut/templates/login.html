@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+<div class="container">
+	<section>
+		<h1>Welcome!</h1>
+
+		<form action="" method="POST">
+			<fieldset>
+				<legend>Please log in to continue: </legend><br>
+				<label for="email">Email: </label>
+				<input type="text" id="email" name="email"><br><br>
+				<label for="password" title="Your password is: <lowercase-surname> + <first-4-characters-of-email>">Password: </label>
+				<input type="password" id="password" name="password"><br><br>
+				<input type="submit" value="Login"><br><br>
+				<a href="">Forgot password?</a>
+			</fieldset>
+			
+		</form>
+	</section>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+</script>
+{% endblock %}
