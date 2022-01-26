@@ -9,7 +9,7 @@
 
 \* Reset database using: `main.py initial-data`
 
-
+\* Email: admin@admin.com | Password: superadmin
 
 
 
