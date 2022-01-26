@@ -7,11 +7,12 @@
 	<section>
 		<h1>Welcome!</h1>
 
-		<form action="" method="POST">
+		<!-- todo: make action dynamic/ variable -->
+		<form action="http://127.0.0.1:8000/login/access-token" method="POST">
 			<fieldset>
 				<legend>Please log in to continue: </legend><br>
-				<label for="email">Email: </label>
-				<input type="text" id="email" name="email"><br><br>
+				<label for="username">Email: </label>
+				<input type="text" id="username" name="username"><br><br>
 				<label for="password" title="Your password is: <lowercase-surname> + <first-4-characters-of-email>">Password: </label>
 				<input type="password" id="password" name="password"><br><br>
 				<input type="submit" value="Login"><br><br>

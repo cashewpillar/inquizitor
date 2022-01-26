@@ -6,6 +6,12 @@
 
 
 # DOING ==========================================
+# Securing JWT Login with HttpOnly Cookie: 
+# 	https://www.fastapitutorial.com/blog/fastapi-jwt-httponly-cookie/
+# OAuth2 with Password (and hashing), Bearer with JWT tokens
+# 	https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#update-the-dependencies
+
+
 # fastapi docs   : https://fastapi.tiangolo.com/tutorial/body-multiple-params/
 # fastapi tut    : https://www.fastapitutorial.com/blog/fastapi-route/
 # sqlalchemy docs: https://docs.sqlalchemy.org/en/14/orm/session_basics.html#what-does-the-session-do
