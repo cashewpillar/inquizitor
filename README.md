@@ -1,14 +1,20 @@
 ## SETUP
 
 0. Install poetry globally using `pip install poetry`
+
 1. Make a copy of the file `.env.example`, rename it to `.env`, and set environment variables. Or don't change content of file to use default values for development. See `.env.example` file for reference
+
 2. Within cmd (working directory @ root of project folder), activate virtual environment using: `poetry shell`
+
 3. Install project dependencies using: `poetry install`
+
 4. Initialize database using: `main.py initial-data`
+
 5. Run the app using: `uvicorn main:app --reload`
-\* Visit/ Explore `127.0.0.1:8000/login`  
-\* Visit/ Explore `http://127.0.0.1:8000/docs`
- 
+
+  \* Visit/ Explore `127.0.0.1:8000/login` 
+  \* Visit/ Explore `http://127.0.0.1:8000/docs`
+
 \* Email: admin@admin.com | Password: superadmin
 
 \* Reset database using: `main.py initial-data`
