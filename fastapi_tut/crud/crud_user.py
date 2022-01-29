@@ -43,7 +43,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 			return None
 		if not verify_password(password, user.hashed_password):
 			return None
-		return User
+		return user
 
 	def is_superuser(self, user: User) -> bool:
 		return user.is_superuser

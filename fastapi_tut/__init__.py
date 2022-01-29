@@ -11,7 +11,9 @@ def register_commands():
 
 def create_app():
 	"""App for getting training data from exams"""
-	app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+	app = FastAPI(title=settings.PROJECT_NAME, 
+		version=settings.PROJECT_VERSION,)
+		# openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
 	app.include_router(api_router)
 	# might remove staticfiles once vue is implemented

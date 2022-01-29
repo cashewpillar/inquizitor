@@ -6,10 +6,12 @@
 3. Install project dependencies using: `poetry install`
 4. Initialize database using: `main.py initial-data`
 5. Run the app using: `uvicorn main:app --reload`
+\* Visit/ Explore `127.0.0.1:8000/login`  
+\* Visit/ Explore `http://127.0.0.1:8000/docs`
+ 
+\* Email: admin@admin.com | Password: superadmin
 
 \* Reset database using: `main.py initial-data`
-
-\* Email: admin@admin.com | Password: superadmin
 
 
 
