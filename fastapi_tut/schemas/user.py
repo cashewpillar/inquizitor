@@ -4,8 +4,8 @@ from pydantic import BaseModel, EmailStr
 
 # Shared Properties
 class UserBase(BaseModel):
-	full_name: str
-	email: EmailStr
+	full_name: Optional[str]
+	email: Optional[EmailStr]
 	is_superuser: bool = False
 
 # Properties to receive via API on creation

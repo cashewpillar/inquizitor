@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session 
 
 from fastapi_tut import crud, schemas
+from fastapi_tut.utils import fake
 from fastapi_tut.core.config import settings
 from fastapi_tut.core.security import get_password_hash
 from fastapi_tut.db.base import Base
@@ -8,15 +9,11 @@ from fastapi_tut.db.session import engine
 from fastapi_tut.db import base # noqa: F401
 from fastapi_tut.models import User
 
-from faker import Faker
-
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
-
 def init_users(db: Session) -> None:
-	fake = Faker("fil_PH")
 	for i in range(10):
 		user = User(full_name=fake.name(),
 					email=fake.email(),

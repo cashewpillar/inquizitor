@@ -4,16 +4,12 @@ from pydantic import ValidationError
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from fastapi_tut import crud, models, schemas
 from fastapi_tut.core import security
 from fastapi_tut.core.config import settings
 from fastapi_tut.db.session import SessionLocal
-
-# might remove staticfiles once vue is implemented
-templates = Jinja2Templates(directory="fastapi_tut/templates")
 
 reusable_oath2 = OAuth2PasswordBearer(
 	# tokenUrl=f"{settings.API_V1_STR}/login/access-token"

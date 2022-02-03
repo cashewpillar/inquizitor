@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from fastapi_tut import models, schemas, crud
+from fastapi_tut import models, schemas, crud, utils
 from fastapi_tut.api import deps
 from fastapi_tut.core import security
 from fastapi_tut.core.config import settings
@@ -22,7 +22,7 @@ router = APIRouter()
 async def login(request: Request):
 	# if user is logged in, redirect to exam page
 	# [Module 3] if logged in, redirect to instructions page of examination module
-	return deps.templates.TemplateResponse("login.html", {"request": request})
+	return utils.templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login/access-token", response_model=schemas.Token)
 def login_access_token(

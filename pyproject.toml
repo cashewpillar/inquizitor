@@ -19,6 +19,11 @@ Faker = "^11.3.0"
 alembic = "^1.7.5"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.5"
+pytest = "^6.2.5"
+requests = "^2.27.1"
+WebTest = "^3.0.0"
+httpx = "^0.22.0"
+trio = "^0.19.0"
 
 [tool.poetry.dev-dependencies]
 
