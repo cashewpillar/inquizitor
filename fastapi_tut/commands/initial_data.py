@@ -11,6 +11,7 @@ def init() -> None:
 	db = SessionLocal()
 	init_db(db)
 
+
 @click.command()
 def initial_data() -> None:
 	logger.info("Dropping tables")
@@ -20,6 +21,7 @@ def initial_data() -> None:
 	init()
 	logger.info("Initial data created")
 
+	
 @click.command()
 def test():
 	click.echo('hello world!')

@@ -10,16 +10,23 @@
 
 <br>
 
-  \* Visit/ Explore `127.0.0.1:8000/login` 
-  \* Visit/ Explore `http://127.0.0.1:8000/docs`
+\* Authorization credentials: admin@admin.com | Password: superadmin
+
+\* Visit/ Explore `127.0.0.1:8000/login` 
+
+\* Visit/ Explore `http://127.0.0.1:8000/docs`
 
 \* Reset database using: `main.py initial-data`
 
-\* Email: admin@admin.com | Password: superadmin
+\* View sqlite database using [sqlitebrowser](https://sqlitebrowser.org/dl/) , otherwise use pgadmin
 
+​	\- if using sqlite, run the installed sqlitebrowser
 
+​	\- on the main white space upon running the app, drag&drop the `data.db` file (found within app module after running initial-data)  
 
+​	\- under the Tables(n) tab, right-click the table you want to view and select 'Browse'
 
+ 
 
 
 
@@ -30,7 +37,6 @@
 - [data gathering](https://docs.google.com/forms/d/10Sh3mFSDDFLDSU0zRs4IrazD_ZwYSRBrY1eimmVAwJc/edit?fbclid=IwAR3YJFv_XsLop_dh6Td7LHfF1bf--9Qhy898PfDq5_2NUN96UITpSBCoY-Y)
 - [data responses](https://docs.google.com/spreadsheets/d/1GQnv96uQBPZYlaVhxOGUgCY3Ud92jL2Jrgcnp3KmR1E/edit?resourcekey#gid=1853497657)
 - [initial chapters 1-3](https://docs.google.com/document/d/1SogCDHCalx5yzXk1QAynxyxSCE_Q6m_-3kUshWWt8EQ/edit?fbclid=IwAR0JfOrIGcBSTkASUMgGMLQgoHv0P4M9USD2_ZPazmwYFejI2mY5o2sl7Z4#heading=h.vpxlmrhqpcpg)
-
 
 
 #### FASTAPI WEBAPP REPOS

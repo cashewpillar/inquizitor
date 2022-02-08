@@ -33,11 +33,13 @@ def test_check_if_user_is_superuser(db: Session, user: models.User) -> None:
 	data = fake_user(**{"is_superuser": True})
 	user_in = UserCreate(**data)
 	user = crud.user.create(db, obj_in=user_in)
-	assert user.is_superuser is True
+	is_superuser = crud.user.is_superuser(user)
+	assert is_superuser is True
 
 
 def test_check_if_user_is_superuser_normal_user(db: Session, user: models.User) -> None:
-	assert user.is_superuser is False
+	is_superuser = crud.user.is_superuser(user)
+	assert is_superuser is False
 
 
 def test_get_user(db: Session, user: models.User) -> None:

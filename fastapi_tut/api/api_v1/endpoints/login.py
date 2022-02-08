@@ -24,8 +24,9 @@ async def login(request: Request):
 	# [Module 3] if logged in, redirect to instructions page of examination module
 	return utils.templates.TemplateResponse("login.html", {"request": request})
 
+
 @router.post("/login/access-token", response_model=schemas.Token)
-def login_access_token(
+async def login_access_token(
 	db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
 	"""
@@ -61,8 +62,9 @@ def login_access_token(
 	
 	# return RedirectResponse(url="/login/test-token")
 
+
 @router.post("/login/test-token", response_model=schemas.User)
-def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
+async def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
 	"""
 	Test access token
 	"""

@@ -5,12 +5,19 @@
 # 	- how will we select respondents? bulletin board? student list?
 
 
-# DOING ==========================================
+# STUFF TO DO (in order) ==========================================
+# Refresh Tokens
+	# https://stackoverflow.com/questions/32060478/is-a-refresh-token-really-necessary-when-using-jwt-token-authentication
+	# https://developer.okta.com/docs/guides/refresh-tokens/main/#about-refresh-tokens
+	# https://stackoverflow.com/questions/62413698/how-to-use-refresh-token-with-fastapi
+# Admin crud (esp for accessing mouse data)
+# Exams crud
 # Securing JWT Login with HttpOnly Cookie: 
 # 	https://www.fastapitutorial.com/blog/fastapi-jwt-httponly-cookie/
 # OAuth2 with Password (and hashing), Bearer with JWT tokens
 # 	https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#update-the-dependencies
-
+# App Settings/ Configurations for Development, Deployment etc.
+# Migrations - [Reads](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
 
 # fastapi docs   : https://fastapi.tiangolo.com/tutorial/body-multiple-params/
 # fastapi tut    : https://www.fastapitutorial.com/blog/fastapi-route/
