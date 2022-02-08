@@ -1,9 +1,13 @@
+# UNUSED BCS EXTENSIONS && UNKNOWNS
+# deps.get_current_user()
+# create_access_token()
+# fastapi_jwt_auth token expiry
+
 # ASSUMPTIONS ===================================
 # users cannot create accounts, only update password thru forgot password
 # accounts are created by admin via script using data gathered
 # 	- survey sampling > hand out google forms > process google sheets data
 # 	- how will we select respondents? bulletin board? student list?
-
 
 # STUFF TO DO (in order) ==========================================
 # Refresh Tokens
@@ -24,6 +28,10 @@
 # sqlalchemy docs: https://docs.sqlalchemy.org/en/14/orm/session_basics.html#what-does-the-session-do
 # vuejs tut      : https://v3.vuejs.org/guide/introduction.html#composing-with-components
 # quasar docs    : https://quasar.dev/start/umd
+
+# LEGEND:
+# TODO - to do
+# NOTE - remember me
 
 from fastapi_tut import create_app
 from fastapi_tut.commands import cli

@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi_jwt_auth import AuthJWT
+from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from fastapi_tut import commands
 from fastapi_tut.core.config import settings
@@ -9,6 +11,22 @@ def register_commands():
 	"""Register Click commands."""
 	commands.cli.add_command(commands.initial_data) 
 	commands.cli.add_command(commands.test)
+
+
+@AuthJWT.load_config
+def get_config():
+	return settings
+
+
+# TODO: do we test exception handlers?
+def register_exception_handlers(app):
+	@app.exception_handler(AuthJWTException)
+	def authjwt_exception_handler(request: Request, exc: AuthJWTException):
+		return JSONResponse(
+			status_code=exc.status_code,
+			content={"detail": exc.message}
+		)
+
 
 def create_app():
 	"""App for getting training data from exams"""
@@ -23,5 +41,7 @@ def create_app():
 	app.mount("/static", StaticFiles(directory="fastapi_tut/static"), name="static")
 
 	register_commands()
+	register_exception_handlers(app)
 
 	return app
+

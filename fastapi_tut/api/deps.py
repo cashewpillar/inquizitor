@@ -23,6 +23,7 @@ def get_db() -> Generator:
 	finally:
 		db.close()
 
+# TODO: unused
 def get_current_user(
 	db: Session = Depends(get_db), token: str = Depends(reusable_oath2)
 ) -> models.User:

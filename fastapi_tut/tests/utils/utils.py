@@ -16,6 +16,8 @@ async def get_superuser_token_headers(app) -> Dict[str, str]:
 				"/login/access-token", data=login_data)
 	tokens = r.json()
 	a_token = tokens["access_token"]
-	headers = {"Authorization": f"Bearer {a_token}"}
+	r_token = tokens["refresh_token"]
+	headers = {"Authorization": f"Bearer {a_token}",
+				"Refresh": r_token}
 
 	return headers

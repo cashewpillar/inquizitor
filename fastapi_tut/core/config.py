@@ -15,7 +15,8 @@ class Settings(BaseSettings):
 	API_V1_STR: str = "/api/v1"
 	SECRET_KEY: str = secrets.token_urlsafe(32)
 	ALGORITHM: str = "HS256"
-	ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+	ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 # 1 minute
+	REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 1 week
 
 	POSTGRES_USER : str = os.getenv("POSTGRES_USER")
 	POSTGRES_PASSWORD : str = os.getenv("POSTGRES_PASSWORD")
@@ -55,5 +56,7 @@ class Settings(BaseSettings):
 	* **Manage exam via dashboard** (_not implemented_). 
 
 	"""
+
+	authjwt_secret_key: str = SECRET_KEY
 
 settings = Settings()

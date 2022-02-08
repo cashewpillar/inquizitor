@@ -5,6 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
 from fastapi_tut import models, schemas, crud, utils
@@ -25,9 +26,12 @@ async def login(request: Request):
 	return utils.templates.TemplateResponse("login.html", {"request": request})
 
 
+# NOTE: schemas validate & determine the JSON response of each request
 @router.post("/login/access-token", response_model=schemas.Token)
 async def login_access_token(
-	db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()
+	db: Session = Depends(deps.get_db), 
+	form_data: OAuth2PasswordRequestForm = Depends(),
+	Authorize: AuthJWT = Depends()
 ) -> Any:
 	"""
 	OAuth2 compatible token login, get an access token for future requests
@@ -37,35 +41,42 @@ async def login_access_token(
 	)
 	if not user:
 		raise HTTPException(status_code=400, detail="Incorrent email or password")
-	access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-	"""
-	"""
-	return {
-		"access_token": security.create_access_token(
-			user.id, expires_delta=access_token_expires
-		),
-		"token_type": "bearer",
-	}
-	"""
-	token = {
-		"access_token": security.create_access_token(
-			user.id, expires_delta=access_token_expires
-		),
-		"token_type": "bearer",
-	}
-	"""
-	# DOING
-	# https://stackoverflow.com/questions/62119138/how-to-do-a-post-redirect-get-prg-in-fastapi
-	# https://devforum.okta.com/t/fastapi-redirectresponse-lost-authorization-header-when-getting-authorization-code-from-the-authorize-endpoint/12907
-	# https://stackoverflow.com/questions/14707345/oauth2-query-string-vs-fragment
-	# logger.info(f"Bearer {token['access_token']}")
-	
-	# return RedirectResponse(url="/login/test-token")
+
+	# TODO: test time expiry
+	access_token = Authorize.create_access_token(subject=user.id,
+		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+	refresh_token = Authorize.create_refresh_token(subject=user.id,
+		expires_time=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
+
+	return {"access_token": access_token,
+			"refresh_token": refresh_token,
+			"token_type": "bearer"}
 
 
 @router.post("/login/test-token", response_model=schemas.User)
-async def test_token(current_user: models.User = Depends(deps.get_current_user)) -> Any:
+async def test_token(Authorize: AuthJWT = Depends()) -> Any:
 	"""
 	Test access token
 	"""
-	return current_user
+	Authorize.jwt_required()
+
+	current_user = Authorize.get_jwt_subject()
+	return {"user": current_user}
+
+
+@router.post('/refresh', response_model=schemas.Token)
+async def refresh(
+	Authorize: AuthJWT = Depends()
+) -> Any:
+	"""
+	The jwt_refresh_token_required() function insures a valid refresh
+	token is present in the request before running any code below that function.
+	we can use the get_jwt_subject() function to get the subject of the refresh
+	token, and use the create_access_token() function again to make a new access token
+	"""
+	Authorize.jwt_refresh_token_required()
+
+	current_user = Authorize.get_jwt_subject()
+	new_access_token = Authorize.create_access_token(subject=current_user)
+	return {"access_token": new_access_token,
+			"token_type": "bearer"}
