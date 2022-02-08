@@ -5,5 +5,4 @@ __pycache__/
 .env
 data.db
 
-reference - 2021-1-PTCS-84.pdf
-reference - G3-News-Curation-and-Discussion-App.pdf
+*.pdf
