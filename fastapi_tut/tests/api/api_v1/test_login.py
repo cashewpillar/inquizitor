@@ -25,27 +25,25 @@ async def test_get_tokens(client: AsyncClient) -> None:
 	assert tokens["refresh_token"]
 
 
-@pytest.mark.skip(reason="error return value")
 @pytest.mark.anyio
 async def test_use_access_token(
-	client: AsyncClient, superuser_token_headers: Dict[str, str]
+	client: AsyncClient, superuser_access_token_headers: Dict[str, str]
 ) -> None:
 	r = await client.post(
-		"/login/test-token", headers=await superuser_token_headers
+		"/login/test-token", headers=await superuser_access_token_headers
 	)
 	result = r.json()
 	assert r.status_code == 200
-	assert "email" in result
-	assert "emaiasasl" in result
+	assert result["email"] == settings.FIRST_SUPERUSER_EMAIL
+	assert result["is_superuser"] == True
 
 
-@pytest.mark.skip()
 @pytest.mark.anyio
 async def test_use_refresh_token(
-	client: AsyncClient, superuser_token_headers: Dict[str, str]
+	client: AsyncClient, superuser_refresh_token_headers: Dict[str, str],
 ) -> None:
 	r = await client.post(
-		"/login/refresh", headers=await superuser_token_headers
+		"/login/refresh", headers=await superuser_refresh_token_headers
 	)
 	tokens = r.json()
 	assert r.status_code == 200

@@ -20,7 +20,7 @@ router = APIRouter()
 
 # Module 2: Login
 @router.get("/login")
-async def login(request: Request):
+async def login(request: Request):	
 	# if user is logged in, redirect to exam page
 	# [Module 3] if logged in, redirect to instructions page of examination module
 	return utils.templates.TemplateResponse("login.html", {"request": request})
@@ -54,17 +54,20 @@ async def login_access_token(
 
 
 @router.post("/login/test-token", response_model=schemas.User)
-async def test_token(Authorize: AuthJWT = Depends()) -> Any:
+async def test_token(
+	db: Session = Depends(deps.get_db),
+	Authorize: AuthJWT = Depends()
+) -> Any:
 	"""
 	Test access token
 	"""
 	Authorize.jwt_required()
 
-	current_user = Authorize.get_jwt_subject()
-	return {"user": current_user}
+	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
+	return current_user
 
 
-@router.post('/refresh', response_model=schemas.Token)
+@router.post('/login/refresh', response_model=schemas.Token)
 async def refresh(
 	Authorize: AuthJWT = Depends()
 ) -> Any:
@@ -77,6 +80,8 @@ async def refresh(
 	Authorize.jwt_refresh_token_required()
 
 	current_user = Authorize.get_jwt_subject()
-	new_access_token = Authorize.create_access_token(subject=current_user)
+	new_access_token = Authorize.create_access_token(subject=current_user,
+		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+	
 	return {"access_token": new_access_token,
 			"token_type": "bearer"}

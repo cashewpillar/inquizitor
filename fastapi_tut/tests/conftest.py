@@ -9,7 +9,10 @@ from sqlalchemy.orm import Session
 from fastapi_tut import create_app, crud, models
 from fastapi_tut.utils import fake_user
 from fastapi_tut.db.session import TestSession
-from fastapi_tut.tests.utils.utils import get_superuser_token_headers
+from fastapi_tut.tests.utils.utils import (
+	get_superuser_access_token_headers,
+	get_superuser_refresh_token_headers,
+)
 from fastapi_tut.schemas.user import UserCreate
 
 @pytest.fixture(scope="session")
@@ -44,5 +47,10 @@ def user(db: Session) -> models.User:
 
 
 @pytest.fixture
-def superuser_token_headers(app) -> Dict[str, str]:
-	return get_superuser_token_headers(app)
+def superuser_access_token_headers(app) -> Dict[str, str]:
+	return get_superuser_access_token_headers(app)
+
+
+@pytest.fixture
+def superuser_refresh_token_headers(app) -> Dict[str, str]:
+	return get_superuser_refresh_token_headers(app)
