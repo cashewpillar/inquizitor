@@ -11,6 +11,7 @@
 
 # STUFF TO DO (in order) ==========================================
 # Refresh Tokens
+	# https://indominusbyte.github.io/fastapi-jwt-auth/usage/revoking/
 	# https://stackoverflow.com/questions/32060478/is-a-refresh-token-really-necessary-when-using-jwt-token-authentication
 	# https://developer.okta.com/docs/guides/refresh-tokens/main/#about-refresh-tokens
 	# https://stackoverflow.com/questions/62413698/how-to-use-refresh-token-with-fastapi

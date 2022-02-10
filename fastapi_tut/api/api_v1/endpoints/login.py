@@ -8,7 +8,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_jwt_auth import AuthJWT
 from sqlalchemy.orm import Session
 
-from fastapi_tut import models, schemas, crud, utils
+from fastapi_tut import schemas, crud, utils
+from fastapi_tut.models import RevokedToken	
 from fastapi_tut.api import deps
 from fastapi_tut.core import security
 from fastapi_tut.core.config import settings
@@ -72,10 +73,7 @@ async def refresh(
 	Authorize: AuthJWT = Depends()
 ) -> Any:
 	"""
-	The jwt_refresh_token_required() function insures a valid refresh
-	token is present in the request before running any code below that function.
-	we can use the get_jwt_subject() function to get the subject of the refresh
-	token, and use the create_access_token() function again to make a new access token
+	Get an access token using a refresh token
 	"""
 	Authorize.jwt_refresh_token_required()
 
@@ -85,3 +83,47 @@ async def refresh(
 	
 	return {"access_token": new_access_token,
 			"token_type": "bearer"}
+
+
+@router.delete('/login/access-revoke', response_model=schemas.Msg)
+async def revoke_access(
+	db: Session = Depends(deps.get_db),
+	Authorize: AuthJWT = Depends()
+) -> Any:
+	"""
+	Revoke access token of current user
+	"""
+	Authorize.jwt_required()
+
+	jti = Authorize.get_raw_jwt()['jti']
+	db_obj = RevokedToken(jti=jti, is_revoked=True)
+	# TODO add the default token expiry (see core.config)
+	# to remove token from denylist
+	db.add(db_obj)
+	db.commit()
+	db.refresh(db_obj)
+
+	return {'msg': "Access token has been revoked"}
+
+
+
+# DOING
+@router.delete('/login/refresh-revoke', response_model=schemas.Msg)
+async def revoke_refresh(
+	db: Session = Depends(deps.get_db),
+	Authorize: AuthJWT = Depends()
+) -> Any:
+	"""
+	Revoke refresh token of current user
+	"""
+	Authorize.jwt_refresh_token_required()
+
+	jti = Authorize.get_raw_jwt()['jti']
+	db_obj = RevokedToken(jti=jti, is_revoked=True)
+	# TODO add the default token expiry (see core.config)
+	# to remove token from denylist
+	db.add(db_obj)
+	db.commit()
+	db.refresh(db_obj)
+
+	return {'msg': "Refresh token has been revoked"}

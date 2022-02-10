@@ -3,7 +3,7 @@ from faker import Faker
 
 from fastapi.templating import Jinja2Templates
 
-# TODO might remove staticfiles once vue is implemented
+# TODO might remove templates once vue app is developed
 templates = Jinja2Templates(directory="fastapi_tut/templates")
 
 # TODO fil_PH not working/ showing
