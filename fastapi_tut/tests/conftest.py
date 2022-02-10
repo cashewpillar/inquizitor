@@ -1,4 +1,5 @@
 # TODO setup database for tests, also configure app factory for tests
+# TODO BUT NOT URGENTO annotate the parameter 'app' of the client fixture
 
 import pytest
 from httpx import AsyncClient

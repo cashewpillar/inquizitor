@@ -106,8 +106,6 @@ async def revoke_access(
 	return {'msg': "Access token has been revoked"}
 
 
-
-# DOING
 @router.delete('/login/refresh-revoke', response_model=schemas.Msg)
 async def revoke_refresh(
 	db: Session = Depends(deps.get_db),

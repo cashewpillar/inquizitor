@@ -1,8 +1,6 @@
 # havent understood v well, see:
 # https://fastapi.tiangolo.com/advanced/async-tests/
 
-# TODO BUT NOT URGENTO annotate the parameter 'app'
-
 import pytest
 from httpx import AsyncClient
 from typing import Dict
