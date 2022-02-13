@@ -1,6 +1,3 @@
-# UNUSED BCS EXTENSIONS && UNKNOWNS
-# deps.get_current_user()
-# create_access_token()
 
 # ASSUMPTIONS ===================================
 # Users cannot create accounts, only update password thru forgot password
@@ -9,7 +6,16 @@
 # 	- how will we select respondents? bulletin board? student list?
 
 # STUFF TO DO (in order) ==========================================
-# Quiz crud
+# Extensions cleaning
+	# https://tortoise.github.io/
+
+# Quiz crud --> see python resources and other repo source code for reference
+	# CURRENT (SEE DL): https://data-flair.training/blogs/create-quiz-application-python-django/
+	# https://techvidvan.com/tutorials/quiz-web-app-python-django/
+	# https://www.google.com/search?q=python+models+for+quiz+taking&oq=python+models+for+quiz+taking&aqs=chrome..69i57.6841j0j7&sourceid=chrome&ie=UTF-8
+
+	# https://github.com/learningequality/kolibri/blob/release-v0.15.x/kolibri/core/exams/models.py
+	# https://github.com/instructure/canvas-lms/blob/master/app/models/quizzes/quiz.rb
 # Migrations - [Reads](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
 # Admin crud (esp for accessing mouse statistics (?))
 # App Settings/ Configurations for Development, Deployment etc.
