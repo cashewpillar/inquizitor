@@ -1,5 +1,9 @@
 # Ref 1:
 """"""
+# from django.db import models
+# from django.contrib.auth.models import User
+# import random
+
 from django.db import models
 from django.contrib.auth.models import User
 import random
@@ -19,6 +23,7 @@ class Quiz(models.Model):
 class Question(models.Model):
     content = models.CharField(max_length=200)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    # question_type = # fill-in-the-blanks or multiple-choice
     
     def __str__(self):
         return self.content
@@ -31,6 +36,7 @@ class Answer(models.Model):
     content = models.CharField(max_length=200)
     correct = models.BooleanField(default=False)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    # question_type = # fill-in-the-blanks or multiple-choice
     
     def __str__(self):
         return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"

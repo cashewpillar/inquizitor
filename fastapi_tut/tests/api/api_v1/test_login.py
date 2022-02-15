@@ -1,6 +1,8 @@
 # havent understood v well, see:
 # https://fastapi.tiangolo.com/advanced/async-tests/
 
+# havent tested/ studied multiple logins
+
 import pytest
 from httpx import AsyncClient
 from typing import Dict

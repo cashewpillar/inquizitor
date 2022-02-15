@@ -6,8 +6,11 @@
 # 	- how will we select respondents? bulletin board? student list?
 
 # STUFF TO DO (in order) ==========================================
-# Extensions cleaning
-	# https://tortoise.github.io/
+# CONTINUE
+# see existing extensions on model creation
+# model validation substitute: https://pydantic-docs.helpmanual.io/usage/schema/#json-schema-types
+
+	
 
 # Quiz crud --> see python resources and other repo source code for reference
 	# CURRENT (SEE DL): https://data-flair.training/blogs/create-quiz-application-python-django/
@@ -20,6 +23,12 @@
 # Admin crud (esp for accessing mouse statistics (?))
 # App Settings/ Configurations for Development, Deployment etc.
 # Password reset
+# Extensions cleaning
+	# https://python-gino.org/docs/en/1.0/tutorials/tutorial.html
+		# GINO only supports dialect for postgresql
+		# plan is to skip extension for async db and async testing so that 
+		# team can focus on developing on top of existing backend with sqlite as db
+		# kinda like developing a single user app first and then modifying for multiple user usage 
 # Storing tokens in cookies
 	# https://indominusbyte.github.io/fastapi-jwt-auth/usage/jwt-in-cookies/
 	# https://www.fastapitutorial.com/blog/fastapi-jwt-httponly-cookie/
