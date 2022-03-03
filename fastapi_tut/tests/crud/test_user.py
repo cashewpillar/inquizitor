@@ -1,7 +1,7 @@
 import pytest
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 from fastapi_tut import crud, models
 from fastapi_tut.core.security import verify_password

@@ -1,12 +1,12 @@
 from typing import Generic, Any, Dict, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from pydantic import BaseModel
 
-from fastapi_tut.db.base_class import Base
+from fastapi_tut.db.base_class import TableBase
 
-ModelType = TypeVar("ModelType", bound=Base)
+ModelType = TypeVar("ModelType", bound=TableBase)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
@@ -50,7 +50,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 			update_data = obj_in
 		else:
 			update_data = obj_in.dict(exclude_unset=True)
-		# TODO (awaiting creator updates): exclude_unset does not work in SQLModels but does work in Pydantic Models
+		# NOTE (awaiting creator updates): exclude_unset does not work in SQLModels but does work in Pydantic Models
 		update_data = {k: v for k, v in update_data.items() if v is not None}
 		for field in obj_data:
 			if field in update_data: 

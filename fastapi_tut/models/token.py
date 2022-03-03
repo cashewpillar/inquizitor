@@ -1,9 +1,9 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
-from fastapi_tut.db.base_class import Base
+from fastapi_tut.db.base_class import TableBase
 
-class RevokedToken(Base, table=True):
+class RevokedToken(TableBase, table=True):
 	"""ref https://indominusbyte.github.io/fastapi-jwt-auth/usage/revoking/"""
 	jti: str = Field(index=True)
 	

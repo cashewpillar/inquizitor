@@ -5,7 +5,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
-from fastapi_tut.db.base_class import Base
+from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models import MarksOfUser
 
 # Shared Properties
@@ -28,7 +28,7 @@ class UserUpdate(UserBase):
 	password: Optional[str] = None
 
 
-class UserInDBBase(UserBase, Base):
+class UserInDBBase(UserBase, TableBase):
 	class Config:
 		orm_mode = True
 

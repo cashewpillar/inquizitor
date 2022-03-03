@@ -10,7 +10,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_jwt_auth import AuthJWT
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 
 from fastapi_tut import models, crud, utils
 from fastapi_tut.api import deps

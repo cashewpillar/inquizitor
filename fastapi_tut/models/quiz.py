@@ -1,17 +1,35 @@
 # ref: https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/type-annotation-strings/
+from typing import List, Optional
 
-from fastapi_tut.db.base_class import Base
-from sqlmodel import Field, Relationship
-# from django.contrib.auth.models import User
-# import random
+from fastapi_tut.db.base_class import TableBase
+from sqlmodel import Field, Relationship, SQLModel
 
-from fastapi_tut.models import User
-
-class Quiz(Base, table=True):
+# Shared Properties
+class QuizBase(SQLModel):
     name: str = Field(max_length=50)
     desc: str = Field(max_length=500)    
-    number_of_questions: int =Field(default=1)
-    time: int = Field(help_text="Duration of the quiz in seconds", default="1")
+    number_of_questions: int = 1
+    time: int = Field(description="Duration of the quiz in seconds", default=1)
+
+
+# Properties to receive via API on creation
+class QuizCreate(QuizBase):
+    pass
+
+
+class QuizUpdate(QuizBase):
+    name: Optional[str] = None
+    desc: Optional[str] = None    
+    number_of_questions: Optional[int] = None
+    time: Optional[int] = None
+
+
+class QuizInDBBase(QuizBase, TableBase):
+    pass
+
+
+# Additional properties  to return via API
+class Quiz(QuizInDBBase, table=True):
     
     questions: List["Question"] = Relationship(back_populates="quiz")
     scores: List["MarksOfUser"] = Relationship(back_populates="quiz")
@@ -24,7 +42,7 @@ class Quiz(Base, table=True):
         # return self.question_set.all()
 
     
-class QuestionType(Base, table=True):
+class QuestionType(TableBase, table=True):
     name: str = Field(max_length=30)
 
     questions: List["Question"] = Relationship(back_populates="question_type")
@@ -33,7 +51,7 @@ class QuestionType(Base, table=True):
         return self.name
 
 
-class Question(Base, table=True):
+class Question(TableBase, table=True):
     content: str = Field(max_length=200)
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
     question_type_id: int = Field(default=None, foreign_key="questiontype.id")
@@ -50,7 +68,7 @@ class Question(Base, table=True):
         # return self.answer_set.all()
     
     
-class Answer(Base, table=True):
+class Answer(TableBase, table=True):
     content: str = Field(max_length=200)
     correct: bool = Field(default=False)
     question_id: int = Field(default=None, foreign_key="question.id")
@@ -61,7 +79,7 @@ class Answer(Base, table=True):
     #     return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
     
 
-class MarksOfUser(Base, table=True):
+class MarksOfUser(TableBase, table=True):
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
     user_id: int = Field(default=None, foreign_key="user.id")
     score: float = Field()
