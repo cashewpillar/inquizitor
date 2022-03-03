@@ -1,11 +1,12 @@
 from typing import Optional
 
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
 from fastapi_tut.db.base_class import Base
+from fastapi_tut.models import MarksOfUser
 
 # Shared Properties
 class UserBase(SQLModel):
@@ -36,6 +37,8 @@ class UserInDBBase(UserBase, Base):
 class User(UserInDBBase, table=True):
 	email: EmailStr = Field(sa_column=Column(String, unique=True, index=True, nullable=False))
 	hashed_password: str = Field(nullable=False)
+
+	score: Optional[MarksOfUser] = Relationship(back_populates="user")
 
 	def __repr__(self):
 		"""Represent instance as a unique string."""
