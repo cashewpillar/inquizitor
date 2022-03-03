@@ -93,7 +93,7 @@ async def revoke_access(
 	jti = Authorize.get_raw_jwt()['jti']
 	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
 	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist
+	# to remove token from denylist automatically
 	db.add(db_obj)
 	db.commit()
 	db.refresh(db_obj)
@@ -114,7 +114,7 @@ async def revoke_refresh(
 	jti = Authorize.get_raw_jwt()['jti']
 	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
 	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist
+	# to remove token from denylist automatically
 	db.add(db_obj)
 	db.commit()
 	db.refresh(db_obj)

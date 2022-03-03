@@ -11,7 +11,7 @@ from sqlmodel.pool import StaticPool
 from fastapi_tut import create_app, crud, models
 from fastapi_tut.db.init_db import init_db
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.utils import fake_user
+from fastapi_tut.utils import fake_user, fake_quiz, random_question_type
 from fastapi_tut.db.session import SessionLocal, TestSession
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_access_token_headers,
@@ -23,12 +23,12 @@ def db() -> Generator:
 	"""Create database for the tests."""
 	yield TestSession()
 
-
 @pytest.fixture(scope="module")
 def app():
 	"""Create application for the tests"""
 	_app = create_app()
 	yield _app
+
 
 
 @pytest.fixture
@@ -44,7 +44,6 @@ async def client(app, db: Session) -> Generator:
 		yield ac
 	app.dependency_overrides.clear()
 
-
 @pytest.fixture
 @pytest.mark.anyio
 async def production_client(app, db: Session) -> Generator:
@@ -57,6 +56,7 @@ async def production_client(app, db: Session) -> Generator:
 		yield ac
 
 
+
 @pytest.fixture
 def user(db: Session) -> models.User:
 	"""Create user for the tests"""
@@ -65,12 +65,28 @@ def user(db: Session) -> models.User:
 	user = crud.user.create(db, obj_in=user_in)
 	return user
 
-
 @pytest.fixture
 def superuser_access_token_headers(app) -> Dict[str, str]:
 	return get_superuser_access_token_headers(app)
 
-
 @pytest.fixture
 def superuser_refresh_token_headers(app) -> Dict[str, str]:
 	return get_superuser_refresh_token_headers(app)
+
+
+
+@pytest.fixture
+def quiz(db: Session) -> models.Quiz:
+	"""Create quiz for the tests"""
+	data = fake_quiz()
+	quiz_in = models.QuizCreate(**data)
+	quiz = crud.quiz.create(db, obj_in=quiz_in)
+	return quiz
+
+@pytest.fixture
+def question_type(db: Session) -> models.QuestionType:
+	"""Create one of two question types for the tests"""
+	question_type_name = random_question_type()
+	question_type_in = models.QuestionTypeCreate(name=question_type_name)
+	question_type = crud.question_type.create(db, obj_in=question_type_in)
+	return question_type

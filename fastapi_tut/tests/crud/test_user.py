@@ -1,5 +1,3 @@
-import pytest
-
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session
 
@@ -51,7 +49,6 @@ def test_get_user(db: Session, user: models.User) -> None:
 	assert jsonable_encoder(user) == jsonable_encoder(user_2)
 
 
-# @pytest.mark.skip("Integrity Error, see User model and compare with UserCreate")
 def test_update_user(db: Session, user: models.User) -> None:
 	new_password = fake.password()
 	user_in_update = UserUpdate(password=new_password)

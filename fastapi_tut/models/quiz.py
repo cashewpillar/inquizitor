@@ -11,11 +11,9 @@ class QuizBase(SQLModel):
     number_of_questions: int = 1
     time: int = Field(description="Duration of the quiz in seconds", default=1)
 
-
 # Properties to receive via API on creation
 class QuizCreate(QuizBase):
     pass
-
 
 class QuizUpdate(QuizBase):
     name: Optional[str] = None
@@ -23,40 +21,60 @@ class QuizUpdate(QuizBase):
     number_of_questions: Optional[int] = None
     time: Optional[int] = None
 
-
 class QuizInDBBase(QuizBase, TableBase):
     pass
 
-
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
-    
     questions: List["Question"] = Relationship(back_populates="quiz")
     scores: List["MarksOfUser"] = Relationship(back_populates="quiz")
 
     def __str__(self):
         return self.name
 
-    # might be included in crud instead
+    # TODO: might be included in crud instead
     # def get_questions(self):
         # return self.question_set.all()
 
+
     
-class QuestionType(TableBase, table=True):
+class QuestionTypeBase(SQLModel):
     name: str = Field(max_length=30)
 
+class QuestionTypeCreate(QuestionTypeBase):
+    pass
+
+class QuestionTypeUpdate(QuestionTypeBase):
+    name: Optional[str] = None
+
+class QuestionTypeInDBBase(QuestionTypeBase, TableBase):
+    pass
+
+class QuestionType(QuestionTypeInDBBase, table=True):
     questions: List["Question"] = Relationship(back_populates="question_type")
 
     def __str__(self):
         return self.name
 
 
-class Question(TableBase, table=True):
+
+class QuestionBase(SQLModel):
     content: str = Field(max_length=200)
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
     question_type_id: int = Field(default=None, foreign_key="questiontype.id")
-    # question_type = # fill-in-the-blanks or multiple-choice
 
+class QuestionCreate(QuestionBase):
+    pass
+
+class QuestionUpdate(QuestionBase):
+    content: Optional[str] = None
+    quiz_id: Optional[int] = None
+    question_type_id: Optional[int] = None
+
+class QuestionInDBBase(QuestionBase, TableBase):
+    pass
+
+class Question(QuestionInDBBase, table=True):
     quiz: Optional[Quiz] = Relationship(back_populates="questions")
     question_type: Optional[QuestionType] = Relationship(back_populates="questions")
     answers: List["Answer"] = Relationship(back_populates="question")
@@ -66,6 +84,7 @@ class Question(TableBase, table=True):
     
     # def get_answers(self):
         # return self.answer_set.all()
+    
     
     
 class Answer(TableBase, table=True):
