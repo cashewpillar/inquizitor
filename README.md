@@ -26,7 +26,9 @@
 
   - under the Tables(n) tab, right-click the table you want to view and select 'Browse'
 
- 
+ <br>
+
+
 
 
 
@@ -42,14 +44,16 @@
 
 #### PYTHON FUNCTION ANNOTATIONS | TYPE HINTS
 
-\* (used throughout fastapi docs)
+* NOTE: used throughout fastapi docs
 
 - [refresher from fastapi](https://fastapi.tiangolo.com/python-types/) - [stackoverflow](https://stackoverflow.com/questions/14379753/what-does-mean-in-python-function-definitions)  -  [python pep](https://www.python.org/dev/peps/pep-3107/	)
 
+<br>
 
 
 
-## QoL
+
+## QOL
 
 ##### FASTAPI SHEET
 
@@ -64,8 +68,8 @@
 - [space to tabs](https://stackoverflow.com/questions/22529265/sublime-text-3-convert-spaces-to-tabs)
 
 
-##### IDEAS
+##### OTHERS
 
-- superuser page that manages system changes
+- admin page refs
   - [flask-admin docs](https://flask-admin.readthedocs.io/en/latest/) - [getting started](https://flask-admin.readthedocs.io/en/latest/introduction/#getting-started)
   - [django admin sample](https://youtu.be/BJfyATa9nX0?t=184)
