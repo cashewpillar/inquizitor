@@ -51,9 +51,11 @@
 
 
 
-#### PYTHON FUNCTION ANNOTATIONS
+#### PYTHON FUNCTION ANNOTATIONS | TYPE HINTS
 
 \* (used throughout fastapi docs)
+
+- [refresher from fastapi](https://fastapi.tiangolo.com/python-types/)
 
 - [stackoverflow](https://stackoverflow.com/questions/14379753/what-does-mean-in-python-function-definitions)
 
@@ -71,7 +73,7 @@
 
 ##### SUBLIME3 SHEET
 
-- [vertical split](https://generalassemb.ly/blog/sublime-text-3-tips-tricks-shortcuts/)
+- [vertical split](https://forum.sublimetext.com/t/how-to-split-window-vertically/3652/2) USE: alt+shift+8
 - [google search](https://www.google.com/search?q=sublime+text+split+screen+vertically&oq=sublime+text+split+screen+vertically&aqs=chrome..69i57j0l2j0i22i30l7.7151j0j7&sourceid=chrome&ie=UTF-8)
 - [switch editor window](https://stackoverflow.com/questions/38447486/in-sublime-how-to-switch-between-panels-in-a-2-column-view/38447556)
 - [space to tabs](https://stackoverflow.com/questions/22529265/sublime-text-3-convert-spaces-to-tabs)

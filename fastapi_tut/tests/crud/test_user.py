@@ -1,9 +1,11 @@
+import pytest
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from fastapi_tut import crud, models
 from fastapi_tut.core.security import verify_password
-from fastapi_tut.schemas.user import UserCreate, UserUpdate
+from fastapi_tut.models.user import UserCreate, UserUpdate
 from fastapi_tut.utils import fake, fake_user
 
 def test_create_user(db: Session) -> None:
@@ -49,6 +51,7 @@ def test_get_user(db: Session, user: models.User) -> None:
 	assert jsonable_encoder(user) == jsonable_encoder(user_2)
 
 
+# @pytest.mark.skip("Integrity Error, see User model and compare with UserCreate")
 def test_update_user(db: Session, user: models.User) -> None:
 	new_password = fake.password()
 	user_in_update = UserUpdate(password=new_password)

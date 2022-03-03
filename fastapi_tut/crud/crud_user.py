@@ -4,8 +4,7 @@ from typing import Dict, Any, Optional, Union
 
 from fastapi_tut.core.security import get_password_hash, verify_password
 from fastapi_tut.crud.base import CRUDBase
-from fastapi_tut.models.user import User
-from fastapi_tut.schemas.user import UserCreate, UserUpdate
+from fastapi_tut.models.user import User, UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -31,6 +30,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 			update_data = obj_in
 		else:
 			update_data = obj_in.dict(exclude_unset=True)
+
 		if update_data["password"]:
 			hashed_password = get_password_hash(update_data["password"])
 			del update_data["password"]

@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session 
+from sqlalchemy.engine import Engine
+
+from sqlmodel import SQLModel
 
 from fastapi_tut import crud
 from fastapi_tut.core.config import settings
 from fastapi_tut.core.security import get_password_hash
-from fastapi_tut.db.base import Base
-from fastapi_tut.db.session import engine
 from fastapi_tut.db import base # noqa: F401
-from fastapi_tut.models import User
-from fastapi_tut.schemas import UserCreate
+from fastapi_tut.models.user import UserCreate
 from fastapi_tut.utils import fake_user
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
@@ -20,11 +20,13 @@ def init_users(db: Session) -> None:
 		crud.user.create(db, obj_in=user_in)
 
 		
-def init_db(db: Session) -> None:
+def init_db(db: Session, engine: Engine) -> None:
 	# Tables should be created with Alembic migrations
 	# But if you don't want to use migrations, create
 	# the tables un-commenting the next line
-	Base.metadata.create_all(bind=engine)
+	SQLModel.metadata.create_all(bind=engine)
+
+	# Example: init_db(db = SessionLocal(), engine) 
 
 	user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
 	if not user:
@@ -39,5 +41,5 @@ def init_db(db: Session) -> None:
 	init_users(db)
 	
 
-def drop_db() -> None:
-	Base.metadata.drop_all(bind=engine)
+def drop_db(engine: Engine) -> None:
+	SQLModel.metadata.drop_all(bind=engine)

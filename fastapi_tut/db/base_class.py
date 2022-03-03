@@ -1,13 +1,6 @@
-from typing import Any
-from sqlalchemy import Column, Integer
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
+from typing import Optional
 
-@as_declarative()
-class Base:
-	id: Any = Column(Integer, primary_key=True, index=True)
-	__name__: str
+from sqlmodel import Field, SQLModel
 
-	# to generate table name from class name
-	@declared_attr
-	def __tablename__(cls) -> str:
-		return cls.__name__.lower()
+class Base(SQLModel):
+	id: Optional[int] = Field(primary_key=True, index=True)

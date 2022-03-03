@@ -1,11 +1,8 @@
-from typing import Generator
+from sqlmodel import Session, create_engine
+from sqlmodel.pool import StaticPool
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-from fastapi_tut import crud, schemas
 from fastapi_tut.core.config import settings
-from fastapi_tut.db.base import Base
+from fastapi_tut.db.init_db import init_db
 
 if settings.USE_SQLITE:
 	engine = create_engine(
@@ -17,28 +14,20 @@ else:
 
 
 def SessionLocal():
-	SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-	return SessionLocal()
+	with Session(engine) as session:
+		# https://sqlmodel.tiangolo.com/tutorial/fastapi/tests/#fastapi-application
+		# NOTE: above uses 'yield' instead of 'return'
+		# i get errors with yield & currently i dont understand
+		# same goes for below 
+		return session 
 
 	
 def TestSession():
 	engine = create_engine(
 	    "sqlite://", 
-	    connect_args={"check_same_thread": False}
+	    connect_args={"check_same_thread": False},
+	    poolclass=StaticPool
 	)
-	SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-	Base.metadata.create_all(bind=engine)
-	db = SessionLocal()
-
-	user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
-	if not user:
-		user_in = schemas.UserCreate(
-			full_name=settings.FIRST_SUPERUSER_FULLNAME,
-			email=settings.FIRST_SUPERUSER_EMAIL,
-			password=settings.FIRST_SUPERUSER_PASSWORD,
-			is_superuser=True,
-		)
-		user = crud.user.create(db, obj_in=user_in) # noqa: F841
-
-	return db
+	with Session(engine) as session:
+		init_db(session, engine)
+		return session

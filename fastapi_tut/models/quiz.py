@@ -4,6 +4,7 @@
 # from django.contrib.auth.models import User
 # import random
 
+"""
 from django.db import models
 from django.contrib.auth.models import User
 import random
@@ -48,3 +49,5 @@ class Marks_Of_User(models.Model):
     
     def __str__(self):
         return str(self.quiz)
+
+"""

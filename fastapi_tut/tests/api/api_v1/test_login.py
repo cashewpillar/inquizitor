@@ -54,17 +54,17 @@ async def test_use_refresh_token(
 
 @pytest.mark.anyio
 async def test_access_revoke(
-	client: AsyncClient, superuser_access_token_headers: Dict[str, str]
+	production_client: AsyncClient, superuser_access_token_headers: Dict[str, str]
 ) -> None:
 	headers = await superuser_access_token_headers
-	r = await client.delete(
+	r = await production_client.delete(
 		"/login/access-revoke", headers=headers
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Access" in r.json()["msg"]
 
-	r = await client.post(
+	r = await production_client.post(
 		"/login/test-token", headers=headers
 	)
 	result = r.json()
@@ -73,17 +73,17 @@ async def test_access_revoke(
 
 @pytest.mark.anyio
 async def test_refresh_revoke(
-	client: AsyncClient, superuser_refresh_token_headers: Dict[str, str]
+	production_client: AsyncClient, superuser_refresh_token_headers: Dict[str, str]
 ) -> None:
 	headers = await superuser_refresh_token_headers
-	r = await client.delete(
+	r = await production_client.delete(
 		"/login/refresh-revoke", headers=headers
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Refresh" in r.json()["msg"]
 
-	r = await client.post(
+	r = await production_client.post(
 		"/login/refresh", headers=headers
 	)
 	result = r.json()

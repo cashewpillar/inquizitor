@@ -50,8 +50,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 			update_data = obj_in
 		else:
 			update_data = obj_in.dict(exclude_unset=True)
+		# TODO (awaiting creator updates): exclude_unset does not work in SQLModels but does work in Pydantic Models
+		update_data = {k: v for k, v in update_data.items() if v is not None}
 		for field in obj_data:
-			if field in update_data:
+			if field in update_data: 
 				setattr(db_obj, field, update_data[field])
 		db.add(db_obj)
 		db.commit()
