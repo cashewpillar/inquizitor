@@ -8,10 +8,9 @@ from typing import Dict, Generator
 from sqlmodel import Session, create_engine
 from sqlmodel.pool import StaticPool
 
-from fastapi_tut import create_app, crud, models
+from fastapi_tut import create_app, crud, models, utils
 from fastapi_tut.db.init_db import init_db
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.utils import fake_user, fake_quiz, random_question_type
 from fastapi_tut.db.session import SessionLocal, TestSession
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_access_token_headers,
@@ -60,7 +59,7 @@ async def production_client(app, db: Session) -> Generator:
 @pytest.fixture
 def user(db: Session) -> models.User:
 	"""Create user for the tests"""
-	data = fake_user()
+	data = utils.fake_user()
 	user_in = models.UserCreate(**data)
 	user = crud.user.create(db, obj_in=user_in)
 	return user
@@ -78,15 +77,36 @@ def superuser_refresh_token_headers(app) -> Dict[str, str]:
 @pytest.fixture
 def quiz(db: Session) -> models.Quiz:
 	"""Create quiz for the tests"""
-	data = fake_quiz()
+	data = utils.fake_quiz()
 	quiz_in = models.QuizCreate(**data)
 	quiz = crud.quiz.create(db, obj_in=quiz_in)
+
 	return quiz
 
 @pytest.fixture
 def question_type(db: Session) -> models.QuestionType:
 	"""Create one of two question types for the tests"""
-	question_type_name = random_question_type()
+	question_type_name = utils.random_question_type()
 	question_type_in = models.QuestionTypeCreate(name=question_type_name)
 	question_type = crud.question_type.create(db, obj_in=question_type_in)
+
 	return question_type
+
+@pytest.fixture
+def question(db: Session, quiz: models.Quiz, question_type: models.QuestionType) -> models.Question:
+	"""Create question for the tests"""
+	data = utils.fake_question(quiz.id, question_type.id)
+	question_in = models.QuestionCreate(**data)
+	question = crud.question.create(db, obj_in=question_in)
+
+	return question
+
+# NOTE: will update and create a set fixture consisting of 1 question 1 question type 4 answers
+@pytest.fixture
+def answer(db: Session, question: models.Question) -> models.Answer:
+	"""Create answerset for the tests"""
+	data = utils.fake_answer(question.id)
+	answer_in = models.AnswerCreate(**data)
+	answer = crud.answer.create(db, obj_in=answer_in)
+	
+	return answer

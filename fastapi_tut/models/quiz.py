@@ -87,16 +87,28 @@ class Question(QuestionInDBBase, table=True):
     
     
     
-class Answer(TableBase, table=True):
+class AnswerBase(SQLModel):
     content: str = Field(max_length=200)
-    correct: bool = Field(default=False)
+    correct: bool = False
     question_id: int = Field(default=None, foreign_key="question.id")
-    
+
+class AnswerCreate(AnswerBase):
+    pass
+
+class AnswerUpdate(AnswerBase):
+    content: str = None
+    question_id: int = None
+
+class AnswerInDBBase(AnswerBase, TableBase):
+    pass
+
+class Answer(AnswerInDBBase, table=True):
     question: Question = Relationship(back_populates="answers")
 
     # def __str__(self):
     #     return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
     
+
 
 class MarksOfUser(TableBase, table=True):
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
