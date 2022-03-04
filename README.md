@@ -12,7 +12,7 @@
 
 
 
-## [API DOCUMENTATION](http://127.0.0.1:8000/docs)
+## [API DOCUMENTATION (run server before accessing)](http://127.0.0.1:8000/docs)
 
 - Authorization credentials: admin@admin.com | Password: superadmin
 
