@@ -1,12 +1,7 @@
-# TODO: idea is to use quiz data from https://quizapi.io/docs/1.0/endpoints
-# see more: https://quizapi.io/docs/1.0/overview, key required
-# api 2: https://opentdb.com/api_config.php, key not required
-
-from typing import Optional
 from faker import Faker
+from typing import Optional
 import random
 import string
-# import requests
 
 from fastapi.templating import Jinja2Templates
 
@@ -24,16 +19,23 @@ def random_question_type():
 	return ''.join(random.choices(["Identification", "Multiple-Choices"]))
 
 def fake_answer(question_id):
+	"""return fake answer"""
+
 	return {"content": random_str(),
 			"correct": False,
 			"question_id": question_id}
 
 def fake_marks_of_user(quiz_id, user_id):
+	"""return fake score"""
+
 	return {"score": random.randint(0,30),  # NOTE total items of quiz not considered
 			"quiz_id": quiz_id,
 			"user_id": user_id}
 
 def fake_question(quiz_id, question_type_id):
+	"""return fake question"""
+
+	# import requests
 	# question_obj = requests.get("https://opentdb.com/api.php?amount=1").json()['results'][0]
 	# return question_obj['question']
 	return {"content": fake.text(120)[:-1] + "?",

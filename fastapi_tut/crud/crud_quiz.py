@@ -22,13 +22,13 @@ from fastapi_tut.models import (
 )
 
 class CRUDAnswer(CRUDBase[Answer, AnswerCreate, AnswerUpdate]):
+	# went with implicit definition despite https://www.python.org/dev/peps/pep-0020/#id2
 	pass
 
 class CRUDMarksOfUser(CRUDBase[MarksOfUser, MarksOfUserCreate, MarksOfUserUpdate]):
 	pass
 	
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
-	# went with implicit definition despite https://www.python.org/dev/peps/pep-0020/#id2
 	pass
 
 class CRUDQuestionType(CRUDBase[QuestionType, QuestionTypeCreate, QuestionTypeUpdate]):

@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
 
 from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models import MarksOfUser

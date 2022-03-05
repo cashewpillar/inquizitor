@@ -1,4 +1,6 @@
 # TODO: other read methods depending on model, will do during endpoint creation
+# TODO: test getting related objects
+
 import random
 
 from fastapi.encoders import jsonable_encoder

@@ -1,11 +1,13 @@
-import pytest
-from typing import Dict
 from httpx import AsyncClient
+from typing import Dict
+import pytest
+
+from fastapi import FastAPI
 
 from fastapi_tut.core.config import settings
 
 @pytest.mark.anyio
-async def get_superuser_access_token_headers(app) -> Dict[str, str]:
+async def get_superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
 	login_data = {
 		"username": settings.FIRST_SUPERUSER_EMAIL,
 		"password": settings.FIRST_SUPERUSER_PASSWORD,
@@ -22,7 +24,7 @@ async def get_superuser_access_token_headers(app) -> Dict[str, str]:
 
 
 @pytest.mark.anyio
-async def get_superuser_refresh_token_headers(app) -> Dict[str, str]:
+async def get_superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
 	login_data = {
 		"username": settings.FIRST_SUPERUSER_EMAIL,
 		"password": settings.FIRST_SUPERUSER_PASSWORD,

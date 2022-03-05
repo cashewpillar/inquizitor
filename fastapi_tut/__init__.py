@@ -46,7 +46,7 @@ def create_app():
 
 	app.include_router(api_router)
 
-	# might remove staticfiles once vue app is developed
+	# NOTE might remove staticfiles once vue app is developed
 	app.mount("/static", StaticFiles(directory="fastapi_tut/static"), name="static")
 
 	register_commands()

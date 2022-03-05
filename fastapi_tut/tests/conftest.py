@@ -1,19 +1,17 @@
 # TODO setup database for tests, also configure app factory for tests
-# TODO BUT NOT URGENTO annotate the parameter 'app' of the client fixture
-
 from httpx import AsyncClient
 from typing import Dict, Generator
 
 import pytest
 import random
 
+from fastapi import FastAPI
 from sqlmodel import Session, create_engine
 from sqlmodel.pool import StaticPool
 
 from fastapi_tut import create_app, crud, models, utils
-from fastapi_tut.db.init_db import init_db
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.session import SessionLocal, TestSession
+from fastapi_tut.db.session import TestSession
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_access_token_headers,
 	get_superuser_refresh_token_headers,
@@ -34,7 +32,7 @@ def app():
 
 @pytest.fixture
 @pytest.mark.anyio
-async def client(app, db: Session) -> Generator:
+async def client(app: FastAPI, db: Session) -> Generator:
 	"""Client for making asynchronous requests (?)"""
 	# See https://fastapi.tiangolo.com/advanced/async-tests/
 	def get_session_override():
@@ -47,7 +45,7 @@ async def client(app, db: Session) -> Generator:
 
 @pytest.fixture
 @pytest.mark.anyio
-async def production_client(app, db: Session) -> Generator:
+async def production_client(app: FastAPI, db: Session) -> Generator:
 	""" Client for making asynchronous requests (?)
 		using the production database
 
@@ -67,11 +65,11 @@ def user(db: Session) -> models.User:
 	return user
 
 @pytest.fixture
-def superuser_access_token_headers(app) -> Dict[str, str]:
+def superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
 	return get_superuser_access_token_headers(app)
 
 @pytest.fixture
-def superuser_refresh_token_headers(app) -> Dict[str, str]:
+def superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
 	return get_superuser_refresh_token_headers(app)
 
 
