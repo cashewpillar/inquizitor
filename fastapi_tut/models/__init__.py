@@ -11,8 +11,10 @@ from .quiz import (
 	QuestionUpdate,
 	Answer, 
 	AnswerCreate, 
-	AnswerUpdate, 
+	AnswerUpdate,
 	MarksOfUser,
+	MarksOfUserCreate, 
+	MarksOfUserUpdate, 
 )
 from .token import Token, TokenPayload, RevokedToken
 from .user import User, UserCreate, UserUpdate
@@ -24,6 +26,6 @@ class ThisBase(SQLModel):
 class ThisCreate(ThisBase):
 class ThisUpdate(ThisBase):
 class ThisInDBBase(ThisBase, TableBase):
-class This(ThisInDBBase, TableBase):
+class This(ThisInDBBase, TableBase, table=True):
 
 """

@@ -107,14 +107,25 @@ class Answer(AnswerInDBBase, table=True):
 
     # def __str__(self):
     #     return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
-    
 
 
-class MarksOfUser(TableBase, table=True):
+
+class MarksOfUserBase(SQLModel):
+    score: float = None
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
     user_id: int = Field(default=None, foreign_key="user.id")
-    score: float = Field()
-    
+
+class MarksOfUserCreate(MarksOfUserBase):
+    pass
+
+class MarksOfUserUpdate(MarksOfUserBase):
+    quiz_id: int = None
+    user_id: int = None
+
+class MarksOfUserInDBBase(MarksOfUserBase, TableBase):
+    pass
+
+class MarksOfUser(MarksOfUserInDBBase, TableBase, table=True):
     # NOTE: accounts for only 1 quiz (written with data gathering app purposes only in mind)
     user: "User" = Relationship(back_populates="score")
     quiz: Quiz = Relationship(back_populates="")

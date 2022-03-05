@@ -28,6 +28,11 @@ def fake_answer(question_id):
 			"correct": False,
 			"question_id": question_id}
 
+def fake_marks_of_user(quiz_id, user_id):
+	return {"score": random.randint(0,30),  # NOTE total items of quiz not considered
+			"quiz_id": quiz_id,
+			"user_id": user_id}
+
 def fake_question(quiz_id, question_type_id):
 	# question_obj = requests.get("https://opentdb.com/api.php?amount=1").json()['results'][0]
 	# return question_obj['question']

@@ -1,9 +1,11 @@
 # TODO setup database for tests, also configure app factory for tests
 # TODO BUT NOT URGENTO annotate the parameter 'app' of the client fixture
 
-import pytest
 from httpx import AsyncClient
 from typing import Dict, Generator
+
+import pytest
+import random
 
 from sqlmodel import Session, create_engine
 from sqlmodel.pool import StaticPool
@@ -104,9 +106,18 @@ def question(db: Session, quiz: models.Quiz, question_type: models.QuestionType)
 # NOTE: will update and create a set fixture consisting of 1 question 1 question type 4 answers
 @pytest.fixture
 def answer(db: Session, question: models.Question) -> models.Answer:
-	"""Create answerset for the tests"""
+	"""Create answer for the tests"""
 	data = utils.fake_answer(question.id)
 	answer_in = models.AnswerCreate(**data)
 	answer = crud.answer.create(db, obj_in=answer_in)
 	
 	return answer
+
+@pytest.fixture
+def marks_of_user(db: Session, quiz: models.Quiz, user: models.User) -> models.MarksOfUser:
+	"""Create marks of user for the tests"""
+	data = utils.fake_marks_of_user(quiz.id, user.id)
+	marks_of_user_in = models.MarksOfUserCreate(**data)
+	marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+
+	return marks_of_user
