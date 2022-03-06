@@ -22,7 +22,7 @@ def fake_answer(question_id):
 	"""return fake answer"""
 
 	return {"content": random_str(),
-			"correct": False,
+			"is_correct": False,
 			"question_id": question_id}
 
 def fake_marks_of_user(quiz_id, user_id):

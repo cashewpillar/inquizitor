@@ -1,3 +1,4 @@
+from typing import List
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session
 
@@ -42,6 +43,10 @@ def test_get_user(db: Session, user: models.User) -> None:
 	assert user_2
 	assert user.email == user_2.email
 	assert jsonable_encoder(user) == jsonable_encoder(user_2)
+
+# DOING rename the model marks of user first
+# def test_get_user_relations(db: Session, user: models.User, marks_of_users: List[models.MarksOfUser]) -> None:
+	# assert user.marks == marks_of_users 
 
 def test_update_user(db: Session, user: models.User) -> None:
 	new_password = fake.password()

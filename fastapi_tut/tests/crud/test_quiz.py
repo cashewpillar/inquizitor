@@ -1,6 +1,3 @@
-# TODO: other read methods depending on model, will do during endpoint creation
-# TODO: test getting related objects
-
 import logging
 import random
 import pprint
@@ -24,6 +21,7 @@ logging.basicConfig(
 	format="%(asctime)s -  %(levelname)s -  %(message)s"
 )
 logger = logging.getLogger(__name__)
+# logging.disable(logging.INFO)
 
 class TestQuiz:
 	def test_create_quiz(self, db: Session) -> None:
@@ -41,23 +39,17 @@ class TestQuiz:
 		assert quiz.name == quiz_2.name
 		assert jsonable_encoder(quiz) == jsonable_encoder(quiz_2)
 
-	# TODO see questions @ loggging
-	def test_get_quiz_questions(self, db: Session, quiz: models.Quiz, questions: List[models.Question]) -> None:
-		# https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/define-relationships-attributes/
-		# https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/create-and-update-relationships/
-
+	def test_get_quiz_relations(
+		self, 
+		db: Session, 
+		quiz: models.Quiz, 
+		questions: List[models.Question],
+		marks_of_users: List[models.MarksOfUser]
+	) -> None:
 		quiz = crud.quiz.get(db, id=quiz.id)
 
-		logger.info(f"Questions in quiz object:\n{pprint.pformat(quiz.questions)}\n")
-		logger.info(f"Questions in fixture:\n{pprint.pformat(questions)}")
-
 		assert quiz.questions == questions
-		for question in quiz.questions:
-			assert question.quiz 
-
-	# TODO
-	def test_get_quiz_marks(self):
-		pass
+		assert quiz.marks_of_users == marks_of_users
 
 	def test_update_quiz(self, db: Session, quiz: models.Quiz) -> None:
 		data = fake_quiz()
@@ -110,6 +102,18 @@ class TestQuestion:
 		assert question.content == db_obj.content
 		assert jsonable_encoder(question) == jsonable_encoder(db_obj)
 
+	def test_get_question_relations(
+		self, 
+		db: Session, 
+		answers: List[models.Answer],
+		quiz: models.Quiz,
+		question: models.Question,
+		question_type: models.QuestionType
+	) -> None:
+		assert question.quiz == quiz
+		assert question.question_type == question_type
+		assert question.answers == answers
+
 	def test_update_question(self, db: Session, question: models.Question, question_type: models.QuestionType, quiz: models.Quiz) -> None:
 		data = fake_question(quiz.id, question_type.id)
 		question_in_update = models.QuestionUpdate(**data)
@@ -127,7 +131,7 @@ class TestAnswer:
 		answer_in = models.AnswerCreate(**data)
 		answer = crud.answer.create(db, obj_in=answer_in)
 		assert answer.content == answer_in.content
-		assert answer.correct == answer_in.correct
+		assert answer.is_correct == answer_in.is_correct
 		assert answer.question_id == answer_in.question_id
 
 	def test_get_answer(self, db: Session, answer: models.Answer) -> None:
@@ -136,13 +140,20 @@ class TestAnswer:
 		assert answer.content == db_obj.content
 		assert jsonable_encoder(answer) == jsonable_encoder(db_obj)
 
+	def test_get_answer_relations(self, db: Session, answer: models.Answer, question: models.Question) -> None:
+		assert answer.question == question
+
+	def test_check_if_answer_is_correct(self, db: Session, answer: models.Answer) -> None:
+		"""fixture answer is correct by default"""
+		assert answer.is_correct is True
+
 	def test_update_answer(self, db: Session, answer: models.Answer, question: models.Question) -> None:
 		data = fake_answer(question.id)
 		answer_in_update = models.AnswerUpdate(**data)
 		crud.answer.update(db, db_obj=answer, obj_in=answer_in_update)
 		answer_updated = crud.answer.get(db, id=answer.id)
 		assert answer_updated
-		assert answer.correct == answer_updated.correct
+		assert answer.is_correct == answer_updated.is_correct
 		assert answer.question_id == answer_updated.question_id
 
 
@@ -157,19 +168,32 @@ class TestMarksOfUser:
 		assert marks_of_user.quiz_id == marks_of_user_in.quiz_id
 		assert marks_of_user.user_id == marks_of_user_in.user_id
 
-	def test_get_marks_of_user(self, db: Session, marks_of_user: models.MarksOfUser) -> None:
+	def test_get_marks_of_user(self, db: Session, marks_of_users: models.MarksOfUser) -> None:
+		marks_of_user = marks_of_users[0]
 		db_obj = crud.marks_of_user.get(db, id=marks_of_user.id)
 		assert db_obj
 		assert marks_of_user.score == db_obj.score
 		assert jsonable_encoder(marks_of_user) == jsonable_encoder(db_obj)
 
-	def test_update_marks_of_user(
+	def test_get_marks_of_user_relations(
 		self, 
 		db: Session, 
-		marks_of_user: models.MarksOfUser, 
+		marks_of_users: models.MarksOfUser,
 		quiz: models.Quiz,
 		user: models.User
 	) -> None:
+		marks_of_user = marks_of_users[0]
+		assert marks_of_user.user == user
+		assert marks_of_user.quiz == quiz
+
+	def test_update_marks_of_user(
+		self, 
+		db: Session, 
+		marks_of_users: models.MarksOfUser, 
+		quiz: models.Quiz,
+		user: models.User
+	) -> None:
+		marks_of_user = marks_of_users[0]
 		data = fake_marks_of_user(quiz.id, user.id)
 		marks_of_user_in_update = models.MarksOfUserUpdate(**data)
 		crud.marks_of_user.update(db, db_obj=marks_of_user, obj_in=marks_of_user_in_update)

@@ -93,15 +93,6 @@ def question_type(db: Session) -> models.QuestionType:
 	return question_type
 
 @pytest.fixture
-def question(db: Session, quiz: models.Quiz, question_type: models.QuestionType) -> models.Question:
-	"""Create question for the tests"""
-	data = utils.fake_question(quiz.id, question_type.id)
-	question_in = models.QuestionCreate(**data)
-	question = crud.question.create(db, obj_in=question_in)
-
-	return question
-
-@pytest.fixture
 def questions(db: Session, quiz: models.Quiz, question_type: models.QuestionType) -> List[models.Question]:
 	"""Create question set belonging to the quiz for the tests"""
 	questions = []
@@ -112,32 +103,43 @@ def questions(db: Session, quiz: models.Quiz, question_type: models.QuestionType
 		question.quiz = quiz
 		questions.append(question)
 
+		rand_index = random.randrange(0,4)
+		for i in range(4):
+			data = utils.fake_answer(question.id)
+			if i == rand_index:
+				data["is_correct"] = True
+			answer_in = models.AnswerCreate(**data)
+			answer = crud.answer.create(db, obj_in=answer_in)
+			question.answers.append(answer)
+
 	return questions
 
-# NOTE: will update and create a set fixture consisting of 1 question 1 question type 4 answers
 @pytest.fixture
-def answer(db: Session, question: models.Question) -> models.Answer:
-	"""Create answer for the tests"""
-	data = utils.fake_answer(question.id)
-	answer_in = models.AnswerCreate(**data)
-	answer = crud.answer.create(db, obj_in=answer_in)
-	
-	return answer
+def question(db: Session, questions: List[models.Question]) -> models.Question:
+	"""Get a question for the tests"""
+	return questions[0]
 
 @pytest.fixture
-def marks_of_user(db: Session, quiz: models.Quiz, user: models.User) -> models.MarksOfUser:
-	"""Create marks of user for the tests"""
-	data = utils.fake_marks_of_user(quiz.id, user.id)
-	marks_of_user_in = models.MarksOfUserCreate(**data)
-	marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+def answers(db: Session, questions: List[models.Question]) -> List[models.Answer]:
+	"""Get answer set for a question for the tests"""
+	return questions[0].answers
 
-	return marks_of_user
+@pytest.fixture
+def answer(db: Session, answers: List[models.Answer]) -> models.Answer:
+	"""Get an answer for the tests"""
+	for answer in answers:
+		if answer.is_correct is True:
+			return answer
+	return answers[0]
 
-# @pytest.fixture
-# def marks_of_users(db: Session, quiz: models.Quiz, user: models.User) -> models.MarksOfUser:
-# 	"""Create marks of users for the tests"""
-# 	data = utils.fake_marks_of_user(quiz.id, user.id)
-# 	marks_of_user_in = models.MarksOfUserCreate(**data)
-# 	marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+@pytest.fixture
+def marks_of_users(db: Session, quiz: models.Quiz, user: models.User) -> List[models.MarksOfUser]:
+	"""Create marks of users for the tests"""
+	marks_of_users = []
+	for i in range(quiz.number_of_questions):
+		data = utils.fake_marks_of_user(quiz.id, user.id)
+		marks_of_user_in = models.MarksOfUserCreate(**data)
+		marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+		marks_of_users.append(marks_of_user)
 
-# 	return marks_of_user
+	return marks_of_users

@@ -27,7 +27,7 @@ class QuizInDBBase(QuizBase, TableBase):
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
     questions: List["Question"] = Relationship(back_populates="quiz")
-    scores: List["MarksOfUser"] = Relationship(back_populates="quiz")
+    marks_of_users: List["MarksOfUser"] = Relationship(back_populates="quiz")
 
     def __repr__(self):
         return f"<Quiz({self.name!r})>"
@@ -47,6 +47,7 @@ class QuestionTypeInDBBase(QuestionTypeBase, TableBase):
     pass
 
 class QuestionType(QuestionTypeInDBBase, table=True):
+    # NOTE skipped crud for getting questions belonging to a question-type
     questions: List["Question"] = Relationship(back_populates="question_type")
 
     def __repr__(self):
@@ -82,7 +83,7 @@ class Question(QuestionInDBBase, table=True):
     
 class AnswerBase(SQLModel):
     content: str = Field(max_length=200)
-    correct: bool = False
+    is_correct: bool = False
     question_id: int = Field(default=None, foreign_key="question.id")
 
 class AnswerCreate(AnswerBase):
@@ -99,7 +100,7 @@ class Answer(AnswerInDBBase, table=True):
     question: Question = Relationship(back_populates="answers")
 
     def __repr__(self):
-        # TODO return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
+        # TODO return f"question: {self.question.content}, answer: {self.content}, is_correct: {self.is_correct}"
         return f"<Answer({self.content!r})>"
 
 
@@ -121,8 +122,8 @@ class MarksOfUserInDBBase(MarksOfUserBase, TableBase):
 
 class MarksOfUser(MarksOfUserInDBBase, TableBase, table=True):
     # NOTE: accounts for only 1 quiz (written with data gathering app purposes only in mind)
-    user: "User" = Relationship(back_populates="score")
-    quiz: Quiz = Relationship(back_populates="")
+    user: "User" = Relationship(back_populates="marks")
+    quiz: Quiz = Relationship(back_populates="marks_of_users")
 
     def __repr__(self):
         # NOTE reference uses `return str(self.quiz)`
