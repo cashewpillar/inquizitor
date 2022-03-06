@@ -31,3 +31,13 @@ sqlmodel = "^0.0.6"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+#log_cli = "True"
+#log_cli_level = "INFO"
+log_cli_format = "%(asctime)s %(levelname)s %(message)s"
+log_file = "logs/pytest-logs.txt"
+log_file_level = "INFO"
+log_file_format = "%(asctime)s %(levelname)s %(message)s"
+log_level = "INFO"
+

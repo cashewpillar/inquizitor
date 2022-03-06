@@ -1,6 +1,6 @@
-from sqlmodel import Session
+from typing import Dict, Any, Optional, Union, List
 
-from typing import Dict, Any, Optional, Union
+from sqlmodel import Session
 
 from fastapi_tut.crud.base import CRUDBase
 from fastapi_tut.models import (
@@ -21,8 +21,8 @@ from fastapi_tut.models import (
 	MarksOfUserUpdate,
 )
 
+# went with implicit definition for all crud classes despite https://www.python.org/dev/peps/pep-0020/#id2
 class CRUDAnswer(CRUDBase[Answer, AnswerCreate, AnswerUpdate]):
-	# went with implicit definition despite https://www.python.org/dev/peps/pep-0020/#id2
 	pass
 
 class CRUDMarksOfUser(CRUDBase[MarksOfUser, MarksOfUserCreate, MarksOfUserUpdate]):
@@ -36,7 +36,6 @@ class CRUDQuestionType(CRUDBase[QuestionType, QuestionTypeCreate, QuestionTypeUp
 
 class CRUDQuestion(CRUDBase[Question, QuestionCreate, QuestionUpdate]):
 	pass
-
 
 answer = CRUDAnswer(Answer)
 marks_of_user = CRUDMarksOfUser(MarksOfUser)

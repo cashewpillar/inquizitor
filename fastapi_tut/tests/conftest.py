@@ -1,6 +1,6 @@
 # TODO setup database for tests, also configure app factory for tests
 from httpx import AsyncClient
-from typing import Dict, Generator
+from typing import Dict, Generator, List
 
 import pytest
 import random
@@ -101,6 +101,19 @@ def question(db: Session, quiz: models.Quiz, question_type: models.QuestionType)
 
 	return question
 
+@pytest.fixture
+def questions(db: Session, quiz: models.Quiz, question_type: models.QuestionType) -> List[models.Question]:
+	"""Create question set belonging to the quiz for the tests"""
+	questions = []
+	for i in range(quiz.number_of_questions):
+		data = utils.fake_question(quiz.id, question_type.id)
+		question_in = models.QuestionCreate(**data)
+		question = crud.question.create(db, obj_in=question_in)
+		question.quiz = quiz
+		questions.append(question)
+
+	return questions
+
 # NOTE: will update and create a set fixture consisting of 1 question 1 question type 4 answers
 @pytest.fixture
 def answer(db: Session, question: models.Question) -> models.Answer:
@@ -119,3 +132,12 @@ def marks_of_user(db: Session, quiz: models.Quiz, user: models.User) -> models.M
 	marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
 
 	return marks_of_user
+
+# @pytest.fixture
+# def marks_of_users(db: Session, quiz: models.Quiz, user: models.User) -> models.MarksOfUser:
+# 	"""Create marks of users for the tests"""
+# 	data = utils.fake_marks_of_user(quiz.id, user.id)
+# 	marks_of_user_in = models.MarksOfUserCreate(**data)
+# 	marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+
+# 	return marks_of_user

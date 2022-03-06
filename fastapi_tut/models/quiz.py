@@ -29,12 +29,8 @@ class Quiz(QuizInDBBase, table=True):
     questions: List["Question"] = Relationship(back_populates="quiz")
     scores: List["MarksOfUser"] = Relationship(back_populates="quiz")
 
-    def __str__(self):
-        return self.name
-
-    # TODO: might be included in crud instead
-    # def get_questions(self):
-        # return self.question_set.all()
+    def __repr__(self):
+        return f"<Quiz({self.name!r})>"
 
 
     
@@ -53,8 +49,8 @@ class QuestionTypeInDBBase(QuestionTypeBase, TableBase):
 class QuestionType(QuestionTypeInDBBase, table=True):
     questions: List["Question"] = Relationship(back_populates="question_type")
 
-    def __str__(self):
-        return self.name
+    def __repr__(self):
+        return f"<QuestionType({self.name!r})>"
 
 
 
@@ -79,11 +75,8 @@ class Question(QuestionInDBBase, table=True):
     question_type: Optional[QuestionType] = Relationship(back_populates="questions")
     answers: List["Answer"] = Relationship(back_populates="question")
     
-    def __str__(self):
-        return self.content
-    
-    # def get_answers(self):
-        # return self.answer_set.all()
+    def __repr__(self):
+        return f"<Question({self.content!r})>"
     
     
     
@@ -105,8 +98,9 @@ class AnswerInDBBase(AnswerBase, TableBase):
 class Answer(AnswerInDBBase, table=True):
     question: Question = Relationship(back_populates="answers")
 
-    # def __str__(self):
-    #     return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
+    def __repr__(self):
+        # TODO return f"question: {self.question.content}, answer: {self.content}, correct: {self.correct}"
+        return f"<Answer({self.content!r})>"
 
 
 
@@ -130,5 +124,6 @@ class MarksOfUser(MarksOfUserInDBBase, TableBase, table=True):
     user: "User" = Relationship(back_populates="score")
     quiz: Quiz = Relationship(back_populates="")
 
-    # def __str__(self):
-    #     return str(self.quiz)
+    def __repr__(self):
+        # NOTE reference uses `return str(self.quiz)`
+        return f"<MarksOfUser({self.score!r})>"

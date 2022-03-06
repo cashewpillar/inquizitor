@@ -1,7 +1,10 @@
 # TODO: other read methods depending on model, will do during endpoint creation
 # TODO: test getting related objects
 
+import logging
 import random
+import pprint
+from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session
@@ -15,6 +18,12 @@ from fastapi_tut.utils import (
 	fake_quiz, 
 	random_str
 )
+
+logging.basicConfig(
+	level=logging.DEBUG,
+	format="%(asctime)s -  %(levelname)s -  %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 class TestQuiz:
 	def test_create_quiz(self, db: Session) -> None:
@@ -31,6 +40,24 @@ class TestQuiz:
 		assert quiz_2
 		assert quiz.name == quiz_2.name
 		assert jsonable_encoder(quiz) == jsonable_encoder(quiz_2)
+
+	# TODO see questions @ loggging
+	def test_get_quiz_questions(self, db: Session, quiz: models.Quiz, questions: List[models.Question]) -> None:
+		# https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/define-relationships-attributes/
+		# https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/create-and-update-relationships/
+
+		quiz = crud.quiz.get(db, id=quiz.id)
+
+		logger.info(f"Questions in quiz object:\n{pprint.pformat(quiz.questions)}\n")
+		logger.info(f"Questions in fixture:\n{pprint.pformat(questions)}")
+
+		assert quiz.questions == questions
+		for question in quiz.questions:
+			assert question.quiz 
+
+	# TODO
+	def test_get_quiz_marks(self):
+		pass
 
 	def test_update_quiz(self, db: Session, quiz: models.Quiz) -> None:
 		data = fake_quiz()

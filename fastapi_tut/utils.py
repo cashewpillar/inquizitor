@@ -32,12 +32,15 @@ def fake_marks_of_user(quiz_id, user_id):
 			"quiz_id": quiz_id,
 			"user_id": user_id}
 
-def fake_question(quiz_id, question_type_id):
+def fake_question(quiz_id, question_type_id, use_api=False):
 	"""return fake question"""
 
-	# import requests
-	# question_obj = requests.get("https://opentdb.com/api.php?amount=1").json()['results'][0]
-	# return question_obj['question']
+	if use_api:
+		import requests
+		question_obj = requests.get("https://opentdb.com/api.php?amount=1").json()['results'][0]
+		
+		return question_obj['question']
+
 	return {"content": fake.text(120)[:-1] + "?",
 			"quiz_id": quiz_id,
 			"question_type_id": question_type_id}
