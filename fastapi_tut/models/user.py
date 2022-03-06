@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Optional
 
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
@@ -37,7 +37,7 @@ class User(UserInDBBase, table=True):
 	email: EmailStr = Field(sa_column=Column(String, unique=True, index=True, nullable=False))
 	hashed_password: str = Field(nullable=False)
 
-	marks: Optional[List[MarksOfUser]] = Relationship(back_populates="user")
+	score: Optional[MarksOfUser] = Relationship(back_populates="user")
 
 	def __repr__(self):
 		"""Represent instance as a unique string."""

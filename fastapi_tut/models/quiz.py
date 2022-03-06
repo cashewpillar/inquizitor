@@ -30,6 +30,7 @@ class Quiz(QuizInDBBase, table=True):
     marks_of_users: List["MarksOfUser"] = Relationship(back_populates="quiz")
 
     def __repr__(self):
+        """Represent instance as a unique string."""
         return f"<Quiz({self.name!r})>"
 
 
