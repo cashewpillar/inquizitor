@@ -16,16 +16,16 @@ from fastapi_tut.models import (
 	Answer, 
 	AnswerCreate, 
 	AnswerUpdate,
-	MarksOfUser, 
-	MarksOfUserCreate, 
-	MarksOfUserUpdate,
+	MarksOfStudent, 
+	MarksOfStudentCreate, 
+	MarksOfStudentUpdate,
 )
 
 # went with implicit definition for all crud classes despite https://www.python.org/dev/peps/pep-0020/#id2
 class CRUDAnswer(CRUDBase[Answer, AnswerCreate, AnswerUpdate]):
 	pass
 
-class CRUDMarksOfUser(CRUDBase[MarksOfUser, MarksOfUserCreate, MarksOfUserUpdate]):
+class CRUDMarksOfStudent(CRUDBase[MarksOfStudent, MarksOfStudentCreate, MarksOfStudentUpdate]):
 	pass
 	
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
@@ -38,7 +38,7 @@ class CRUDQuestion(CRUDBase[Question, QuestionCreate, QuestionUpdate]):
 	pass
 
 answer = CRUDAnswer(Answer)
-marks_of_user = CRUDMarksOfUser(MarksOfUser)
+marks_of_student = CRUDMarksOfStudent(MarksOfStudent)
 question_type = CRUDQuestionType(QuestionType)
 question = CRUDQuestion(Question)
 quiz = CRUDQuiz(Quiz)

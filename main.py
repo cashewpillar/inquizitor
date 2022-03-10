@@ -8,6 +8,8 @@ Accounts are created by admin via script using data gathered
 
 STUFF TO DO (in order) ==========================================
 CONTINUE
+User student teacher crud
+
 Quiz crud - add models for student and teacher + factories
 	REFERENCES
 		https://quizapi.io/docs/1.0/endpoints

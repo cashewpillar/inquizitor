@@ -4,7 +4,14 @@ from typing import Dict, Any, Optional, Union
 
 from fastapi_tut.core.security import get_password_hash, verify_password
 from fastapi_tut.crud.base import CRUDBase
-from fastapi_tut.models.user import User, UserCreate, UserUpdate
+from fastapi_tut.models.user import (
+	Role,
+	RoleCreate,
+	RoleUpdate, 
+	User, 
+	UserCreate, 
+	UserUpdate
+)
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -49,4 +56,9 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 	def is_superuser(self, user: User) -> bool:
 		return user.is_superuser
 
+
+class CRUDRole(CRUDBase[Role, RoleCreate, RoleUpdate]):
+	pass
+
 user = CRUDUser(User)
+role = CRUDRole(Role)

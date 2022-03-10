@@ -25,7 +25,7 @@ def fake_answer(question_id):
 			"is_correct": False,
 			"question_id": question_id}
 
-def fake_marks_of_user(quiz_id, user_id):
+def fake_marks_of_student(quiz_id, user_id):
 	"""return fake score"""
 
 	return {"score": random.randint(0,30),  # NOTE total items of quiz not considered
@@ -45,7 +45,7 @@ def fake_question(quiz_id, question_type_id, use_api=False):
 			"quiz_id": quiz_id,
 			"question_type_id": question_type_id}
 
-def fake_quiz():
+def fake_quiz(teacher_id):
 	"""return fake values for name, desc, number_of_questions, and time."""
 
 	return {
@@ -53,9 +53,11 @@ def fake_quiz():
 		"name": random_str(),
 		"desc": fake.text(),
 		"number_of_questions": random.randrange(10, 100, 10),
-		"time": random.randrange(30*60, 60*60, 5*60)
+		"time": random.randrange(30*60, 60*60, 5*60),
+		"teacher_id": teacher_id
 	}
 
+# TODO: remove, currently uses faker through factory
 def fake_user(password: Optional[str]=None, **attrs):
 	"""return fake values for full-name, email, and password."""
 

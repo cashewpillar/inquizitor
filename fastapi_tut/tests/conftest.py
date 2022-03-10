@@ -11,7 +11,8 @@ from sqlmodel.pool import StaticPool
 
 from fastapi_tut import create_app, crud, models, utils
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.session import TestSession
+from fastapi_tut.db.init_db import init_db
+from fastapi_tut.db.session import TestSession, test_engine
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_access_token_headers,
 	get_superuser_refresh_token_headers,
@@ -23,9 +24,10 @@ def db() -> Generator:
 	yield TestSession()
 
 @pytest.fixture(scope="module")
-def app():
+def app(db: Session):
 	"""Create application for the tests"""
 	_app = create_app()
+	init_db(db, test_engine)
 	yield _app
 
 
@@ -77,7 +79,7 @@ def superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
 @pytest.fixture
 def quiz(db: Session) -> models.Quiz:
 	"""Create quiz for the tests"""
-	data = utils.fake_quiz()
+	data = utils.fake_quiz(user.id)
 	quiz_in = models.QuizCreate(**data)
 	quiz = crud.quiz.create(db, obj_in=quiz_in)
 
@@ -133,13 +135,13 @@ def answer(db: Session, answers: List[models.Answer]) -> models.Answer:
 	return answers[0]
 
 @pytest.fixture
-def marks_of_users(db: Session, quiz: models.Quiz, user: models.User) -> List[models.MarksOfUser]:
+def marks_of_students(db: Session, quiz: models.Quiz, user: models.User) -> List[models.MarksOfStudent]:
 	"""Create marks of users for the tests"""
-	marks_of_users = []
+	marks_of_students = []
 	for i in range(quiz.number_of_questions):
-		data = utils.fake_marks_of_user(quiz.id, user.id)
-		marks_of_user_in = models.MarksOfUserCreate(**data)
-		marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
-		marks_of_users.append(marks_of_user)
+		data = utils.fake_marks_of_student(quiz.id, user.id)
+		marks_of_student_in = models.MarksOfStudentCreate(**data)
+		marks_of_student = crud.marks_of_student.create(db, obj_in=marks_of_student_in)
+		marks_of_students.append(marks_of_student)
 
-	return marks_of_users
+	return marks_of_students
