@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # NOTE: schemas validate & determine the JSON response of each request
-@router.post("/access-token", response_model=models.Token)
+# @router.post("/token", response_model=models.Token)
+@router.post("/token")
 async def login_access_token(
 	db: Session = Depends(deps.get_db), 
 	form_data: OAuth2PasswordRequestForm = Depends(),
@@ -32,22 +33,32 @@ async def login_access_token(
 	"""
 	OAuth2 compatible token login, get an access token for future requests
 	"""
-	user = crud.user.authenticate(
-		db, email=form_data.username, password=form_data.password
-	)
-	if not user:
-		raise HTTPException(status_code=400, detail="Incorrent email or password")
+	# user = crud.user.authenticate(
+	# 	db, email=form_data.username, password=form_data.password
+	# )
+	# if not user:
+	# 	raise HTTPException(status_code=400, detail="Incorrent email or password")
+	if form_data.username != 'admin@admin.com':
+		raise HTTPException(status_code=401, detail="Not authorized.")
+	
+	user_id = 1
 
 	# TODO: test time expiry
-	access_token = Authorize.create_access_token(subject=user.id,
+	access_token = Authorize.create_access_token(subject=user_id, fresh= True,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-	refresh_token = Authorize.create_refresh_token(subject=user.id,
+	refresh_token = Authorize.create_refresh_token(subject=user_id,
 		expires_time=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
 
-	return {"access_token": access_token,
-			"refresh_token": refresh_token,
-			"token_type": "bearer"}
+	Authorize.set_access_cookies(access_token)
+	Authorize.set_refresh_cookies(refresh_token)
 
+	return {'msg':'Successfully logged in.'}
+
+@router.post('/logout')
+async def logout(Authorize: AuthJWT = Depends()):
+	Authorize.unset_jwt_cookies()
+
+	return {'msg':'Successfully logged out.'}
 
 @router.post("/test-token", response_model=models.User)
 async def test_token(

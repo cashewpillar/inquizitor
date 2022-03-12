@@ -18,6 +18,11 @@ class Settings(BaseSettings):
 	ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 # 1 minute
 	REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 1 week
 
+	# Configure application to store and get JWT from cookies
+	AUTHJWT_TOKEN_LOCATION: set = {"cookies"}
+    # Disable CSRF Protection for this example. default is True
+	AUTHJWT_COOKIE_CSRF_PROTECT: bool = False
+
 	POSTGRES_USER : str = os.getenv("POSTGRES_USER")
 	POSTGRES_PASSWORD : str = os.getenv("POSTGRES_PASSWORD")
 	POSTGRES_SERVER : str = os.getenv("POSTGRES_SERVER", "localhost")
