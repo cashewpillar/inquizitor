@@ -63,7 +63,7 @@ class Settings(BaseSettings):
 	"""
 
 	authjwt_secret_key: str = SECRET_KEY
-	authjwt_denylist_enabled: bool = True
-	authjwt_denylist_token_checks: set = {"access", "refresh"}
+	# authjwt_denylist_enabled: bool = True
+	# authjwt_denylist_token_checks: set = {"access", "refresh"}
 
 settings = Settings()

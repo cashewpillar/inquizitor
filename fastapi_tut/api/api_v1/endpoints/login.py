@@ -74,7 +74,8 @@ async def test_token(
 	return current_user
 
 
-@router.post('/refresh', response_model=models.Token)
+# @router.post('/refresh', response_model=models.Token)
+@router.post('/refresh')
 async def refresh(
 	Authorize: AuthJWT = Depends()
 ) -> Any:
@@ -83,13 +84,14 @@ async def refresh(
 	"""
 	Authorize.jwt_refresh_token_required()
 
-	current_user = Authorize.get_jwt_subject()
-	new_access_token = Authorize.create_access_token(subject=current_user,
+	# current_user = Authorize.get_jwt_subject()
+	current_user = 1
+	new_access_token = Authorize.create_access_token(subject=current_user, fresh=False,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 	
-	return {"access_token": new_access_token,
-			"token_type": "bearer"}
+	Authorize.set_access_cookies(new_access_token)
 
+	return {'msg':'Successfully refreshed the access token.'}
 
 @router.delete('/access-revoke', response_model=models.Msg)
 async def revoke_access(
