@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # NOTE: schemas validate & determine the JSON response of each request
-@router.post("/login/access-token", response_model=models.Token)
+@router.post("/access-token", response_model=models.Token)
 async def login_access_token(
 	db: Session = Depends(deps.get_db), 
 	form_data: OAuth2PasswordRequestForm = Depends(),
@@ -49,7 +49,7 @@ async def login_access_token(
 			"token_type": "bearer"}
 
 
-@router.post("/login/test-token", response_model=models.User)
+@router.post("/test-token", response_model=models.User)
 async def test_token(
 	db: Session = Depends(deps.get_db),
 	Authorize: AuthJWT = Depends()
@@ -63,7 +63,7 @@ async def test_token(
 	return current_user
 
 
-@router.post('/login/refresh', response_model=models.Token)
+@router.post('/refresh', response_model=models.Token)
 async def refresh(
 	Authorize: AuthJWT = Depends()
 ) -> Any:
@@ -80,7 +80,7 @@ async def refresh(
 			"token_type": "bearer"}
 
 
-@router.delete('/login/access-revoke', response_model=models.Msg)
+@router.delete('/access-revoke', response_model=models.Msg)
 async def revoke_access(
 	db: Session = Depends(deps.get_db),
 	Authorize: AuthJWT = Depends()
@@ -101,7 +101,7 @@ async def revoke_access(
 	return {'msg': "Access token has been revoked"}
 
 
-@router.delete('/login/refresh-revoke', response_model=models.Msg)
+@router.delete('/refresh-revoke', response_model=models.Msg)
 async def revoke_refresh(
 	db: Session = Depends(deps.get_db),
 	Authorize: AuthJWT = Depends()
