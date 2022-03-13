@@ -27,6 +27,8 @@ def SessionLocal():
 
 	
 
-def TestSession():
-	with Session(test_engine) as session:
-		return session
+# def TestSession():
+# 	with Session(test_engine) as session:
+# 		yield session
+
+TestSession = Session(test_engine)

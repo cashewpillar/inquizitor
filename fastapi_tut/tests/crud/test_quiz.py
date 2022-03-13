@@ -24,7 +24,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 # logging.disable(logging.INFO)
 
-@pytest.mark.skip(reason="switching from fixtures to factories & adding student + teacher")
+@pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestQuiz:
 	def test_create_quiz(self, db: Session, user: models.User) -> None:
 		data = fake_quiz()
@@ -66,7 +66,7 @@ class TestQuiz:
 		assert quiz.time == quiz_2.time
 
 
-@pytest.mark.skip(reason="switching from fixtures to factories & adding student + teacher")
+@pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestQuestionType:
 	def test_create_question_type(self, db: Session) -> None:
 		name = random_str()
@@ -91,7 +91,7 @@ class TestQuestionType:
 		assert question_type.name == question_type_2.name
 
 
-@pytest.mark.skip(reason="switching from fixtures to factories & adding student + teacher")
+@pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestQuestion:
 	def test_create_question(self, db: Session, quiz: models.Quiz, question_type: models.QuestionType) -> None:
 		data = fake_question(quiz.id, question_type.id)
@@ -130,7 +130,7 @@ class TestQuestion:
 		assert question.question_type_id == question_updated.question_type_id
 
 
-@pytest.mark.skip(reason="switching from fixtures to factories & adding student + teacher")
+@pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestAnswer:
 	def test_create_answer(self, db: Session, question: models.Question) -> None:
 		data = fake_answer(question.id)
@@ -163,7 +163,7 @@ class TestAnswer:
 		assert answer.question_id == answer_updated.question_id
 
 
-@pytest.mark.skip(reason="switching from fixtures to factories & adding student + teacher")
+@pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestMarksOfStudent:
 	def test_create_marks_of_student(self, db: Session, user: models.User, quiz: models.Quiz) -> None:
 		data = {"score": random.randint(0,30),  # NOTE total items of quiz not considered

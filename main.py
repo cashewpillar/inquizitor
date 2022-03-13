@@ -20,6 +20,8 @@ Quiz crud - add models for student and teacher + factories
 		https://github.com/learningequality/kolibri/blob/release-v0.15.x/kolibri/core/exams/models.py
 		https://github.com/instructure/canvas-lms/blob/master/app/models/quizzes/quiz.rb
 
+sessions, see sqlmodel for ref
+
 USER TESTS - checking if superuser & stuff
 SQLMODEL CRUD REFERENCES SEE NAV: https://sqlmodel.tiangolo.com/tutorial/where/ 
 
