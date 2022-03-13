@@ -42,9 +42,9 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 		if not user:
 			return None
 		
-		# temporary comment
-		# if not verify_password(password, user.hashed_password):
-		# 	return None
+		if not verify_password(password, user.hashed_password):
+			return None
+			
 		return user
 
 		

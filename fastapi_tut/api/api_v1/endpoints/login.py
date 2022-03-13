@@ -33,20 +33,20 @@ async def login_access_token(
 	"""
 	OAuth2 compatible token login, get an access token for future requests
 	"""
-	# user = crud.user.authenticate(
-	# 	db, email=form_data.username, password=form_data.password
-	# )
-	# if not user:
-	# 	raise HTTPException(status_code=400, detail="Incorrent email or password")
+	user = crud.user.authenticate(
+		db, email=form_data.username, password=form_data.password
+	)
+	if not user:
+		raise HTTPException(status_code=400, detail="Incorrent email or password")
 	if form_data.username != 'admin@admin.com':
 		raise HTTPException(status_code=401, detail="Not authorized.")
 	
-	user_id = 1
+	# user_id = 1
 
 	# TODO: test time expiry
-	access_token = Authorize.create_access_token(subject=user_id, fresh= True,
+	access_token = Authorize.create_access_token(subject=user.id, fresh= True,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-	refresh_token = Authorize.create_refresh_token(subject=user_id,
+	refresh_token = Authorize.create_refresh_token(subject=user.id,
 		expires_time=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
 
 	Authorize.set_access_cookies(access_token)
@@ -84,8 +84,8 @@ async def refresh(
 	"""
 	Authorize.jwt_refresh_token_required()
 
-	# current_user = Authorize.get_jwt_subject()
-	current_user = 1
+	current_user = Authorize.get_jwt_subject()
+	
 	new_access_token = Authorize.create_access_token(subject=current_user, fresh=False,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 	
