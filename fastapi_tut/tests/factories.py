@@ -42,7 +42,6 @@ class BaseFactory(SQLAlchemyModelFactory):
     # custom override to get dict values based on model
     # might also override stub_batch depending on test cases
     @classmethod
-    # def stub(cls, schema: Union[CreateSchemaType, UpdateSchemaType] = None,**kwargs):
     def stub(cls, schema_type: Union["create", "update"] = None,**kwargs):
         if schema_type == "create":
             cls._meta.model = cls.create_schema
@@ -52,7 +51,6 @@ class BaseFactory(SQLAlchemyModelFactory):
         x = cls.build(**kwargs)
         cls._meta.model = cls.model
         return jsonable_encoder(x)
-
 
 class RoleFactory(BaseFactory):
     """RoleFactory"""

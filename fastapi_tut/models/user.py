@@ -1,3 +1,5 @@
+# ref: https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/type-annotation-strings/
+
 from typing import Any, List, Optional
 
 from pydantic import EmailStr
@@ -8,8 +10,7 @@ from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models import MarksOfStudent, Quiz
 
 # DOING: crud & test of marks & quiz
-# WENT with individual models instead of using roles bcs of role specific attributes 
-# WILL GO with role models bcs i want to store users all in db
+# WENT with roles bcs i dont know anymore
 # class Student(User, table=True):
 # 	marks: Optional[List[MarksOfStudent]] = Relationship(back_populates="student")
 

@@ -61,7 +61,7 @@ class TestRole:
 		role = RoleFactory()
 		data = RoleFactory.stub(schema_type="update")
 		role_in_update = models.RoleUpdate(**data)
-		# NOTE i have to call a method on the role object 
+		# NOTE i have to call a function on the role object 
 		# or get an attribute before the object can be used as a Role instance
 		# in the update call below 
 		# https://github.com/FactoryBoy/factory_boy/issues/913
