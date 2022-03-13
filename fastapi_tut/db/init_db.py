@@ -26,10 +26,10 @@ def init_users(db: Session) -> None:
 	teacher_role = crud.role.get(db, id="Teacher")
 	roles = [student_role, teacher_role]
 	for i in range(10):
-		user_in = UserCreate(**fake_user(password="secret"))
+		user_in = UserCreate(**fake_user(
+			password="secret", 
+			role_id=random.choice(roles).id))
 		user = crud.user.create(db, obj_in=user_in)
-		user.role = random.choice(roles)
-
 		
 def init_db(db: Session, engine: Engine) -> None:
 	# Tables should be created with Alembic migrations

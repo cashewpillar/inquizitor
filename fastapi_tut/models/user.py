@@ -27,7 +27,7 @@ class UserBase(SQLModel):
 	full_name: Optional[str] = Field(index=True)
 	email: Optional[EmailStr]
 	is_superuser: bool = Field(default=False)
-	role_id: int = Field(default=None, foreign_key="role.id")
+	role_id: str = Field(default=None, foreign_key="role.id")
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
@@ -39,7 +39,7 @@ class UserUpdate(UserBase):
 	email: Optional[EmailStr] = None
 	is_superuser: bool = False
 	password: Optional[str] = None
-	role_id: int = None
+	role_id: str = None
 
 class UserInDBBase(UserBase, TableBase):
 	class Config:

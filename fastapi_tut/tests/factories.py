@@ -60,7 +60,7 @@ class RoleFactory(BaseFactory):
     class Meta:
         model = models.Role
 
-    id: Any = factory.Faker('word')
+    id: str = factory.Faker('word')
 
     model: ModelType = models.Role
     create_schema: CreateSchemaType = models.RoleCreate
@@ -76,7 +76,9 @@ class UserFactory(BaseFactory):
     email: str = factory.Faker('email')
     password: str = factory.Faker('password')
     is_superuser: bool = False
-    role_id: Any = None
+    role: models.Role = None 
+
+    role_id: str = factory.LazyAttribute(lambda a: a.role.id if a.role is not None else None)
     hashed_password: str = factory.LazyAttribute(lambda a: get_password_hash(a.password))
 
     model: ModelType = models.User

@@ -11,7 +11,7 @@ from sqlmodel.pool import StaticPool
 
 from fastapi_tut import create_app, crud, models, utils
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.init_db import init_db
+from fastapi_tut.db.init_db import init_db, drop_db
 from fastapi_tut.db.session import TestSession, test_engine
 from fastapi_tut.tests import common
 from fastapi_tut.tests.factories import BaseFactory
@@ -31,6 +31,7 @@ def db() -> Generator:
 
 	# https://factoryboy.readthedocs.io/en/v2.6.1/orms.html#managing-sessions
 	common.Session.configure(bind=test_engine)
+	init_db(common.Session(), test_engine)
 
 	yield common.Session()
 
@@ -43,7 +44,6 @@ def db() -> Generator:
 def app(db: Session):
 	"""Create application for the tests"""
 	_app = create_app()
-	init_db(db, test_engine)
 	yield _app
 
 

@@ -21,8 +21,6 @@ logging.basicConfig(
 	level=logging.DEBUG,
 	format="%(asctime)s -  %(levelname)s -  %(message)s"
 )
-logger = logging.getLogger(__name__)
-# logging.disable(logging.INFO)
 
 @pytest.mark.skip(reason="switching from fixtures to factories & adding roles")
 class TestQuiz:

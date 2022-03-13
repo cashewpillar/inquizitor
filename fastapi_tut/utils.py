@@ -58,14 +58,15 @@ def fake_quiz(teacher_id):
 	}
 
 # TODO: remove, currently uses faker through factory
-def fake_user(password: Optional[str]=None, **attrs):
+def fake_user(password: Optional[str]=None, role=None, **attrs):
 	"""return fake values for full-name, email, and password."""
 
 	password = fake.password() if password is None else password
 	return {
 		**{"full_name": fake.name(),
 		"email": fake.email(),
-		"password": password},
+		"password": password,
+		"role": None},
 
 		**attrs
 	}
