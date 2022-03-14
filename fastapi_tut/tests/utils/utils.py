@@ -15,9 +15,8 @@ async def get_superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
 	
 	async with AsyncClient(app=app, base_url="http://test") as ac:
 		r = await ac.post(
-				"/login/access-token", data=login_data)
-	tokens = r.json()
-	a_token = tokens["access_token"]
+				"/login/token", data=login_data)
+	a_token = r.cookies["access_token_cookie"]
 	headers = {"Authorization": f"Bearer {a_token}"}
 
 	return headers	
@@ -32,10 +31,10 @@ async def get_superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
 	
 	async with AsyncClient(app=app, base_url="http://test") as ac:
 		r = await ac.post(
-				"/login/access-token", data=login_data)
+				"/login/token", data=login_data)
 	tokens = r.json()
-	r_token = tokens["refresh_token"]
-	headers = {"grant_type": "refresh_token", 
+	r_token = r.cookies["refresh_token_cookie"]
+	headers = {"grant_type": "refresh_token_cookie", 
 	"Authorization":f"Bearer {r_token}"}
 
 	return headers

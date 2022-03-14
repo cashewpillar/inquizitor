@@ -38,7 +38,7 @@ async def login_access_token(
 	)
 	if not user:
 		raise HTTPException(status_code=400, detail="Incorrent email or password")
-	if form_data.username != 'admin@admin.com':
+	if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
 		raise HTTPException(status_code=401, detail="Not authorized.")
 	
 	# user_id = 1
