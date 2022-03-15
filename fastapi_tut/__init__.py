@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
@@ -36,6 +37,18 @@ def register_fastapi_jwt_auth(app):
 		entry = db.query(RevokedToken).filter(RevokedToken.jti == jti).first()
 		return entry and entry.is_revoked == True
 
+def register_cors(app):
+	# origins = [
+    # "http://localhost:8080",
+	# ]
+
+	app.add_middleware(
+		CORSMiddleware,
+		allow_origins=['*'],
+		allow_credentials=True,
+		allow_methods=["*"],
+		allow_headers=["*"],
+	)
 
 def create_app():
 	"""App for getting training data from exams"""
@@ -51,6 +64,7 @@ def create_app():
 
 	register_commands()
 	register_fastapi_jwt_auth(app)
+	register_cors(app)
 
 	return app
 
