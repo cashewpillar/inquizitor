@@ -1,5 +1,3 @@
-# ref: https://sqlmodel.tiangolo.com/tutorial/relationship-attributes/type-annotation-strings/
-
 from typing import Any, List, Optional
 
 from pydantic import EmailStr
@@ -10,7 +8,8 @@ from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models import MarksOfStudent, Quiz
 
 # DOING: crud & test of marks & quiz
-# WENT with roles bcs i dont know anymore
+# WENT with individual models instead of using roles bcs of role specific attributes 
+# WILL GO with role models
 # class Student(User, table=True):
 # 	marks: Optional[List[MarksOfStudent]] = Relationship(back_populates="student")
 
@@ -28,7 +27,7 @@ class UserBase(SQLModel):
 	full_name: Optional[str] = Field(index=True)
 	email: Optional[EmailStr]
 	is_superuser: bool = Field(default=False)
-	role_id: str = Field(default=None, foreign_key="role.id")
+	role_id: int = Field(default=None, foreign_key="role.id")
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
@@ -40,7 +39,7 @@ class UserUpdate(UserBase):
 	email: Optional[EmailStr] = None
 	is_superuser: bool = False
 	password: Optional[str] = None
-	role_id: str = None
+	role_id: int = None
 
 class UserInDBBase(UserBase, TableBase):
 	class Config:
