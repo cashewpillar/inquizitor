@@ -29,70 +29,63 @@ async def test_get_tokens(client: AsyncClient) -> None:
 	assert r.cookies["refresh_token_cookie"]
 
 
-@pytest.mark.skip("Doing: access token missing")
+# READ: https://stackoverflow.com/questions/61302281/if-the-jwt-token-for-auth-is-saved-in-the-http-only-cookie-how-do-you-read-it-f 
 @pytest.mark.anyio
 async def test_use_access_token(
-	client: AsyncClient, superuser_access_token_headers: Dict[str, str]
+	client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
 	r = await client.post(
-		"/login/test-token", headers=await superuser_access_token_headers
+		"/login/test-token", cookies=await superuser_cookies
 	)
-	logging.info(f"{pformat(r.headers)}")
 	result = r.json()
 	assert r.status_code == 200
 	assert result["email"] == settings.FIRST_SUPERUSER_EMAIL
 	assert result["is_superuser"] == True
 
-
-@pytest.mark.skip()
 @pytest.mark.anyio
 async def test_use_refresh_token(
-	client: AsyncClient, superuser_refresh_token_headers: Dict[str, str],
+	client: AsyncClient, superuser_cookies: Dict[str, str],
 ) -> None:
 	r = await client.post(
-		"/login/refresh", headers=await superuser_refresh_token_headers
+		"/login/refresh", cookies=await superuser_cookies
 	)
-	tokens = r.json()
+	result = r.json()
 	assert r.status_code == 200
-	assert "access_token" in tokens
-	assert tokens["access_token"]
+	assert "access_token_cookie" in r.cookies
+	assert r.cookies["access_token_cookie"]
 
-
-@pytest.mark.skip()
 @pytest.mark.anyio
 async def test_access_revoke(
-	production_client: AsyncClient, superuser_access_token_headers: Dict[str, str]
+	production_client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
-	headers = await superuser_access_token_headers
+	cookies = await superuser_cookies
 	r = await production_client.delete(
-		"/login/access-revoke", headers=headers
+		"/login/access-revoke", cookies=cookies
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Access" in r.json()["msg"]
 
 	r = await production_client.post(
-		"/login/test-token", headers=headers
+		"/login/test-token", cookies=cookies
 	)
 	result = r.json()
 	assert r.status_code == 401
 
-
-@pytest.mark.skip()
 @pytest.mark.anyio
 async def test_refresh_revoke(
-	production_client: AsyncClient, superuser_refresh_token_headers: Dict[str, str]
+	production_client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
-	headers = await superuser_refresh_token_headers
+	cookies = await superuser_cookies
 	r = await production_client.delete(
-		"/login/refresh-revoke", headers=headers
+		"/login/refresh-revoke", cookies=cookies
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Refresh" in r.json()["msg"]
 
 	r = await production_client.post(
-		"/login/refresh", headers=headers
+		"/login/refresh", cookies=cookies
 	)
 	result = r.json()
 	assert r.status_code == 401

@@ -1,13 +1,18 @@
-from httpx import AsyncClient
-from typing import Dict
+import logging
 import pytest
+from httpx import AsyncClient
+from pprint import pformat
+from typing import Dict
 
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
 
 from fastapi_tut.core.config import settings
 
+logging.basicConfig(level=logging.INFO)
+
 @pytest.mark.anyio
-async def get_superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
+async def get_superuser_cookies(app: FastAPI) -> Dict[str, str]:
 	login_data = {
 		"username": settings.FIRST_SUPERUSER_EMAIL,
 		"password": settings.FIRST_SUPERUSER_PASSWORD,
@@ -16,25 +21,4 @@ async def get_superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
 	async with AsyncClient(app=app, base_url="http://test") as ac:
 		r = await ac.post(
 				"/login/token", data=login_data)
-	a_token = r.cookies["access_token_cookie"]
-	headers = {"Authorization": f"Bearer {a_token}"}
-
-	return headers	
-
-
-@pytest.mark.anyio
-async def get_superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
-	login_data = {
-		"username": settings.FIRST_SUPERUSER_EMAIL,
-		"password": settings.FIRST_SUPERUSER_PASSWORD,
-	}
-	
-	async with AsyncClient(app=app, base_url="http://test") as ac:
-		r = await ac.post(
-				"/login/token", data=login_data)
-	tokens = r.json()
-	r_token = r.cookies["refresh_token_cookie"]
-	headers = {"grant_type": "refresh_token_cookie", 
-	"Authorization":f"Bearer {r_token}"}
-
-	return headers
+	return r.cookies

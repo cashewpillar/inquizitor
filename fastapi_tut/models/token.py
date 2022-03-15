@@ -11,12 +11,10 @@ class RevokedToken(TableBase, table=True):
 	# with the value true if revoked and false if not revoked
 	is_revoked: bool = Field(default=False)
 
-
 class Token(SQLModel):
 	access_token: str
 	refresh_token: Optional[str] = None
 	token_type: str
-
 
 class TokenPayload(SQLModel):
 	sub: Optional[int] = None

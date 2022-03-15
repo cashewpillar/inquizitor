@@ -1,4 +1,3 @@
-# TODO setup database for tests, also configure app factory for tests
 from httpx import AsyncClient
 from typing import Dict, Generator, List
 
@@ -10,17 +9,31 @@ from sqlmodel import Session, create_engine
 from sqlmodel.pool import StaticPool
 
 from fastapi_tut import create_app, crud, models, utils
+from fastapi_tut.tests import common
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.session import TestSession
-from fastapi_tut.tests.utils.utils import (
-	get_superuser_access_token_headers,
-	get_superuser_refresh_token_headers,
-)
+from fastapi_tut.db.session import test_engine
+from fastapi_tut.db.init_db import init_db
+from fastapi_tut.tests.utils.utils import get_superuser_cookies
 
 @pytest.fixture(scope="session")
 def db() -> Generator:
 	"""Create database for the tests."""
-	yield TestSession()
+	# TODO, refer to flask-repo for session management
+	# yield TestSession
+
+	# TestSession.close()
+	# yield BaseFactory().Meta().sqlalchemy_session
+
+	# https://factoryboy.readthedocs.io/en/v2.6.1/orms.html#managing-sessions
+	common.Session.configure(bind=test_engine)
+	init_db(common.Session(), test_engine)
+
+	yield common.Session()
+
+	# Rollback the session => no changes to the database
+	common.Session.rollback()
+	# Remove it, so that the next test gets a new Session()
+	common.Session.remove()
 
 @pytest.fixture(scope="module")
 def app():
@@ -65,12 +78,8 @@ def user(db: Session) -> models.User:
 	return user
 
 @pytest.fixture
-def superuser_access_token_headers(app: FastAPI) -> Dict[str, str]:
-	return get_superuser_access_token_headers(app)
-
-@pytest.fixture
-def superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
-	return get_superuser_refresh_token_headers(app)
+def superuser_cookies(app: FastAPI) -> Dict[str, str]:
+	return get_superuser_cookies(app)
 
 
 
