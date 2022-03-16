@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
+from sqlmodel import Session
 
 from fastapi_tut import commands
 from fastapi_tut.models import RevokedToken
@@ -16,7 +17,7 @@ def register_commands():
 	commands.cli.add_command(commands.test)
 
 
-def register_fastapi_jwt_auth(app):
+def register_fastapi_jwt_auth(app: FastAPI, db: Session):
 	# TODO: do we test exception handlers?
 	@AuthJWT.load_config
 	def get_config():
@@ -31,13 +32,16 @@ def register_fastapi_jwt_auth(app):
 
 	@AuthJWT.token_in_denylist_loader
 	def check_if_token_in_denylist(decrypted_token):
-		db = SessionLocal()
+		# NOTE: reference used Redis instead of an SQL DB
+		# config below might produce errors in production
+		# NOTE: tokens in denylist (in db) has no expiry,
+		# will add in the future if time permits
 		jti = decrypted_token['jti']
 		entry = db.query(RevokedToken).filter(RevokedToken.jti == jti).first()
 		return entry and entry.is_revoked == True
 
 
-def create_app():
+def create_app(db: Session = SessionLocal()):
 	"""App for getting training data from exams"""
 	app = FastAPI(title=settings.PROJECT_NAME, 
 		version=settings.PROJECT_VERSION,
@@ -50,7 +54,7 @@ def create_app():
 	app.mount("/static", StaticFiles(directory="fastapi_tut/static"), name="static")
 
 	register_commands()
-	register_fastapi_jwt_auth(app)
+	register_fastapi_jwt_auth(app, db)
 
 	return app
 

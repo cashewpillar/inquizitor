@@ -40,9 +40,9 @@ def db() -> Generator:
 	common.Session.remove()
 
 @pytest.fixture(scope="module")
-def app():
+def app(db: Session):
 	"""Create application for the tests"""
-	_app = create_app()
+	_app = create_app(db)
 	yield _app
 
 
