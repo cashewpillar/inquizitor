@@ -56,17 +56,17 @@ async def test_use_refresh_token(
 
 @pytest.mark.anyio
 async def test_access_revoke(
-	production_client: AsyncClient, superuser_cookies: Dict[str, str]
+	client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
 	cookies = await superuser_cookies
-	r = await production_client.delete(
+	r = await client.delete(
 		"/login/access-revoke", cookies=cookies
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Access" in r.json()["msg"]
 
-	r = await production_client.post(
+	r = await client.post(
 		"/login/test-token", cookies=cookies
 	)
 	result = r.json()
@@ -74,17 +74,17 @@ async def test_access_revoke(
 
 @pytest.mark.anyio
 async def test_refresh_revoke(
-	production_client: AsyncClient, superuser_cookies: Dict[str, str]
+	client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
 	cookies = await superuser_cookies
-	r = await production_client.delete(
+	r = await client.delete(
 		"/login/refresh-revoke", cookies=cookies
 	)
 	assert r.status_code == 200
 	assert "msg" in r.json()
 	assert "Refresh" in r.json()["msg"]
 
-	r = await production_client.post(
+	r = await client.post(
 		"/login/refresh", cookies=cookies
 	)
 	result = r.json()

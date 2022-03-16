@@ -11,9 +11,12 @@ from sqlmodel.pool import StaticPool
 from fastapi_tut import create_app, crud, models, utils
 from fastapi_tut.tests import common
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.session import test_engine
-from fastapi_tut.db.init_db import init_db
-from fastapi_tut.tests.utils.utils import get_superuser_cookies
+from fastapi_tut.db.init_db import init_db, drop_db
+from fastapi_tut.db.session import TestSession, test_engine
+from fastapi_tut.tests import common
+from fastapi_tut.tests.utils.utils import (
+	get_superuser_cookies,
+)
 
 @pytest.fixture(scope="session")
 def db() -> Generator:
@@ -36,9 +39,9 @@ def db() -> Generator:
 	common.Session.remove()
 
 @pytest.fixture(scope="module")
-def app():
+def app(db: Session):
 	"""Create application for the tests"""
-	_app = create_app()
+	_app = create_app(db)
 	yield _app
 
 
