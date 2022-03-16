@@ -1,5 +1,5 @@
-from .crud_user import user, role
-from .crud_quiz import answer, question_type, question, quiz, marks_of_student
+from .crud_user import user 
+from .crud_quiz import answer, question_type, question, quiz, marks_of_user
 
 # For a new basic set of CRUD operations you could do
 

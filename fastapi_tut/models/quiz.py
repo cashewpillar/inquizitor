@@ -10,7 +10,6 @@ class QuizBase(SQLModel):
     desc: str = Field(max_length=500)    
     number_of_questions: int = 1
     time: int = Field(description="Duration of the quiz in seconds", default=1)
-    teacher_id: int = Field(default=None, foreign_key="user.id")
 
 # Properties to receive via API on creation
 class QuizCreate(QuizBase):
@@ -21,7 +20,6 @@ class QuizUpdate(QuizBase):
     desc: Optional[str] = None    
     number_of_questions: Optional[int] = None
     time: Optional[int] = None
-    teacher_id: Optional[int] = None
 
 class QuizInDBBase(QuizBase, TableBase):
     pass
@@ -29,8 +27,7 @@ class QuizInDBBase(QuizBase, TableBase):
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
     questions: List["Question"] = Relationship(back_populates="quiz")
-    marks_of_students: List["MarksOfStudent"] = Relationship(back_populates="quiz")
-    teacher: "User" = Relationship(back_populates="quizzes")
+    marks_of_users: List["MarksOfUser"] = Relationship(back_populates="quiz")
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -109,26 +106,26 @@ class Answer(AnswerInDBBase, table=True):
 
 
 
-class MarksOfStudentBase(SQLModel):
+class MarksOfUserBase(SQLModel):
     score: float = None
     quiz_id: int = Field(default=None, foreign_key="quiz.id")
-    student_id: int = Field(default=None, foreign_key="user.id")
+    user_id: int = Field(default=None, foreign_key="user.id")
 
-class MarksOfStudentCreate(MarksOfStudentBase):
+class MarksOfUserCreate(MarksOfUserBase):
     pass
 
-class MarksOfStudentUpdate(MarksOfStudentBase):
+class MarksOfUserUpdate(MarksOfUserBase):
     quiz_id: int = None
-    student_id: int = None
+    user_id: int = None
 
-class MarksOfStudentInDBBase(MarksOfStudentBase, TableBase):
+class MarksOfUserInDBBase(MarksOfUserBase, TableBase):
     pass
 
-class MarksOfStudent(MarksOfStudentInDBBase, TableBase, table=True):
+class MarksOfUser(MarksOfUserInDBBase, TableBase, table=True):
     # NOTE: accounts for only 1 quiz (written with data gathering app purposes only in mind)
-    student: "User" = Relationship(back_populates="marks")
-    quiz: Quiz = Relationship(back_populates="marks_of_students")
+    user: "User" = Relationship(back_populates="marks")
+    quiz: Quiz = Relationship(back_populates="marks_of_users")
 
     def __repr__(self):
         # NOTE reference uses `return str(self.quiz)`
-        return f"<MarksOfStudent({self.score!r})>"
+        return f"<MarksOfUser({self.score!r})>"

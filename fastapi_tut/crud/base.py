@@ -1,4 +1,3 @@
-import logging
 from typing import Generic, Any, Dict, List, Optional, Type, TypeVar, Union
 
 from fastapi.encoders import jsonable_encoder
@@ -6,8 +5,6 @@ from sqlmodel import Session
 from pydantic import BaseModel
 
 from fastapi_tut.db.base_class import TableBase
-
-logging.basicConfig(level=logging.INFO)
 
 ModelType = TypeVar("ModelType", bound=TableBase)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -68,3 +65,5 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 		db.delete(obj)
 		db.commit()
 		return obj
+
+

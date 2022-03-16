@@ -11,10 +11,7 @@ from sqlmodel.pool import StaticPool
 
 from fastapi_tut import create_app, crud, models, utils
 from fastapi_tut.api.deps import get_db
-from fastapi_tut.db.init_db import init_db, drop_db
-from fastapi_tut.db.session import TestSession, test_engine
-from fastapi_tut.tests import common
-from fastapi_tut.tests.factories import BaseFactory
+from fastapi_tut.db.session import TestSession
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_access_token_headers,
 	get_superuser_refresh_token_headers,
@@ -23,25 +20,10 @@ from fastapi_tut.tests.utils.utils import (
 @pytest.fixture(scope="session")
 def db() -> Generator:
 	"""Create database for the tests."""
-	# TODO, refer to flask-repo for session management
-	# yield TestSession
-
-	# TestSession.close()
-	# yield BaseFactory().Meta().sqlalchemy_session
-
-	# https://factoryboy.readthedocs.io/en/v2.6.1/orms.html#managing-sessions
-	common.Session.configure(bind=test_engine)
-	init_db(common.Session(), test_engine)
-
-	yield common.Session()
-
-	# Rollback the session => no changes to the database
-	common.Session.rollback()
-	# Remove it, so that the next test gets a new Session()
-	common.Session.remove()
+	yield TestSession()
 
 @pytest.fixture(scope="module")
-def app(db: Session):
+def app():
 	"""Create application for the tests"""
 	_app = create_app()
 	yield _app
@@ -95,7 +77,7 @@ def superuser_refresh_token_headers(app: FastAPI) -> Dict[str, str]:
 @pytest.fixture
 def quiz(db: Session) -> models.Quiz:
 	"""Create quiz for the tests"""
-	data = utils.fake_quiz(user.id)
+	data = utils.fake_quiz()
 	quiz_in = models.QuizCreate(**data)
 	quiz = crud.quiz.create(db, obj_in=quiz_in)
 
@@ -151,13 +133,13 @@ def answer(db: Session, answers: List[models.Answer]) -> models.Answer:
 	return answers[0]
 
 @pytest.fixture
-def marks_of_students(db: Session, quiz: models.Quiz, user: models.User) -> List[models.MarksOfStudent]:
+def marks_of_users(db: Session, quiz: models.Quiz, user: models.User) -> List[models.MarksOfUser]:
 	"""Create marks of users for the tests"""
-	marks_of_students = []
+	marks_of_users = []
 	for i in range(quiz.number_of_questions):
-		data = utils.fake_marks_of_student(quiz.id, user.id)
-		marks_of_student_in = models.MarksOfStudentCreate(**data)
-		marks_of_student = crud.marks_of_student.create(db, obj_in=marks_of_student_in)
-		marks_of_students.append(marks_of_student)
+		data = utils.fake_marks_of_user(quiz.id, user.id)
+		marks_of_user_in = models.MarksOfUserCreate(**data)
+		marks_of_user = crud.marks_of_user.create(db, obj_in=marks_of_user_in)
+		marks_of_users.append(marks_of_user)
 
-	return marks_of_students
+	return marks_of_users

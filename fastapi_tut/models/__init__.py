@@ -12,12 +12,12 @@ from .quiz import (
 	Answer, 
 	AnswerCreate, 
 	AnswerUpdate,
-	MarksOfStudent,
-	MarksOfStudentCreate, 
-	MarksOfStudentUpdate, 
+	MarksOfUser,
+	MarksOfUserCreate, 
+	MarksOfUserUpdate, 
 )
 from .token import Token, TokenPayload, RevokedToken
-from .user import Role, RoleCreate, RoleUpdate, User, UserCreate, UserUpdate
+from .user import User, UserCreate, UserUpdate
 
 
 """ BOILERPLATE
