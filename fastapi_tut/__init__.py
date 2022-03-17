@@ -43,7 +43,7 @@ def register_fastapi_jwt_auth(app: FastAPI, db: Session):
 
 def register_cors(app: FastAPI):
 	origins = [
-    "http://localhost",
+    "http://localhost:8080",
 	]
 
 	app.add_middleware(
