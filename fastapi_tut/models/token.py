@@ -6,7 +6,6 @@ from fastapi_tut.db.base_class import TableBase
 class RevokedToken(TableBase, table=True):
 	"""ref https://indominusbyte.github.io/fastapi-jwt-auth/usage/revoking/"""
 	jti: str = Field(index=True)
-	
 	# This could be made more complex, for example storing the token in Redis
 	# with the value true if revoked and false if not revoked
 	is_revoked: bool = Field(default=False)

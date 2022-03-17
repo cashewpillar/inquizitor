@@ -1,3 +1,5 @@
+from email.policy import default
+from enum import unique
 from typing import Optional
 
 from pydantic import EmailStr
@@ -34,8 +36,14 @@ class UserInDBBase(UserBase, TableBase):
 
 # Additional properties  to return via API
 class User(UserInDBBase, table=True):
-	email: EmailStr = Field(sa_column=Column(String, unique=True, index=True, nullable=False))
-	hashed_password: str = Field(nullable=False)
+	id : Optional[int] = Field(default=None, primary_key=True)
+	username : str = Field(sa_column=Column(unique=True, nullable=False))
+	email: EmailStr = Field(sa_column=Column(String, unique=True, nullable=False))
+	password: str = Field(nullable=False)
+	last_name : str = Field(nullable=False)
+	first_name : str = Field(nullable=False)
+	is_student : bool = Field(nullable=False)
+	is_teacher : bool = Field(nullable=False)
 
 	marks: Optional[MarksOfUser] = Relationship(back_populates="user")
 
