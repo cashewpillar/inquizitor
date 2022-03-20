@@ -1,9 +1,5 @@
-from os import F_OK
+from sqlmodel import Field
 
-
-class QuizAnswers(TableBase):
-    choice_id : int = fk
-    student_id : int = fk
 
 class AnswerBase(SQLModel):
     content: str = Field(max_length=200)
@@ -20,8 +16,10 @@ class AnswerUpdate(AnswerBase):
 class AnswerInDBBase(AnswerBase, TableBase):
     pass
 
-class Answer(AnswerInDBBase, table=True):
-    question: Question = Relationship(back_populates="answers")
+class QuizAnswer(AnswerInDBBase, table=True):
+    id : Optional[int] = Field(default=None, primary_key=True)
+    choice_id : int = Field(foreign_key='quizchoice.id')
+    student_id : int = Field(foreign_key='user.id')
 
     def __repr__(self):
         # TODO return f"question: {self.question.content}, answer: {self.content}, is_correct: {self.is_correct}"

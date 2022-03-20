@@ -1,9 +1,7 @@
+from sqlmodel import Field, Relationship, SQLModel
+from typing import Optional
 
-class QuizQuestions(TableBase):
-    content : str = Field(max_length=256)
-    points : int
-    order : int 
-    quiz_id : int = fk
+#     quiz_id : int = fk
 
 
 class QuestionBase(SQLModel):
@@ -22,10 +20,24 @@ class QuestionUpdate(QuestionBase):
 class QuestionInDBBase(QuestionBase, TableBase):
     pass
 
-class Question(QuestionInDBBase, table=True):
-    quiz: Optional[Quiz] = Relationship(back_populates="questions")
-    question_type: Optional[QuestionType] = Relationship(back_populates="questions")
-    answers: List["Answer"] = Relationship(back_populates="question")
+# class QuizQuestions(TableBase):
+#     content : str = Field(max_length=256)
+#     points : int
+#     order : int 
+
+class QuizQuestion(QuestionInDBBase, table=True):
+    id : Optional[int] = Field(default=None, primary_key=True)
+    content : str = Field(max_length=256)
+    points : int
+    order : int
+    quiz_id : int = Field(foreign_key="quiz.id")
+    
+    choices: List["QuizChoice"] = Relationship(back_populates="question")
+    attempts: List["QuizAttempts"] = Relationship(back_populates="question")
+    
+    # quiz: Optional[Quiz] = Relationship(back_populates="questions")
+    # question_type: Optional[QuestionType] = Relationship(back_populates="questions")
+    # answers: List["Answer"] = Relationship(back_populates="question")
     
     def __repr__(self):
         return f"<Question({self.content!r})>"

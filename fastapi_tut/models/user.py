@@ -1,12 +1,14 @@
 from email.policy import default
 from enum import unique
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
 
 from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.models.quiz.link import QuizParticipants
+
 from fastapi_tut.models import MarksOfUser
 
 # Shared Properties
@@ -45,7 +47,15 @@ class User(UserInDBBase, table=True):
 	is_student : bool = Field(nullable=False)
 	is_teacher : bool = Field(nullable=False)
 
-	marks: Optional[MarksOfUser] = Relationship(back_populates="user")
+	# for teacher
+	teacher_quizzes : List["Quiz"] = Relationship(back_populates='user')
+
+	# for student
+	attempts : List["QuizAttempts"] = Relationship(back_populates='user')
+	answers : List["QuizAnswers"] = Relationship(back_populates='user')
+	student_quizzes: List["Quiz"] = Relationship(back_populates='users', link_model=QuizParticipants)
+
+	# marks: Optional[MarksOfUser] = Relationship(back_populates="user")
 
 	def __repr__(self):
 		"""Represent instance as a unique string."""
