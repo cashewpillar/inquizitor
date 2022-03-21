@@ -7,6 +7,7 @@ from datetime import datetime
 
 from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models.quiz.link import QuizParticipants
+from ..user import User
 
 from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
@@ -38,9 +39,12 @@ class Quiz(QuizInDBBase, table=True):
     created_at : datetime
     due_date : datetime
     quiz_code : str = Field(sa_column=Column(String, unique=True))
+    
     teacher_id : int = Field(foreign_key='user.id')
+    teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
     
     participants: List["User"] = Relationship(back_populates='student_quizzes', link_model=QuizParticipants)
+    
     
     attempts : List["QuizAttempts"] = Relationship(back_populates="quiz")
     questions: List["QuizQuestion"] = Relationship(back_populates="quiz")

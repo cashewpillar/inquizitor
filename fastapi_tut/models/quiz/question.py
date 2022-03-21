@@ -1,6 +1,7 @@
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional, List
 from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.models.quiz.quiz import Quiz
 #     quiz_id : int = fk
 
 
@@ -30,12 +31,14 @@ class QuizQuestion(QuestionInDBBase, table=True):
     # content : str = Field(max_length=256)
     points : int
     order : int
-    # quiz_id : int = Field(foreign_key="quiz.id")
+
     
     choices: List["QuizChoice"] = Relationship(back_populates="question")
     attempts: List["QuizAttempts"] = Relationship(back_populates="question")
     
-    # quiz: Optional[Quiz] = Relationship(back_populates="questions")
+    quiz_id : int = Field(foreign_key="quiz.id")
+    quiz: Optional[Quiz] = Relationship(back_populates="questions")
+    
     # question_type: Optional[QuestionType] = Relationship(back_populates="questions")
     # answers: List["Answer"] = Relationship(back_populates="question")
     

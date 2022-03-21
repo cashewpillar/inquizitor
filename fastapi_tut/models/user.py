@@ -52,12 +52,12 @@ class User(UserInDBBase, table=True):
 	is_teacher : bool = Field(nullable=False)
 
 	# for teacher
-	teacher_quizzes : List["Quiz"] = Relationship(back_populates='user')
+	teacher_quizzes : List["Quiz"] = Relationship(back_populates='teacher')
 
 	# for student
-	attempts : List["QuizAttempts"] = Relationship(back_populates='user')
-	answers : List["QuizAnswers"] = Relationship(back_populates='user')
-	student_quizzes: List["Quiz"] = Relationship(back_populates='users', link_model=QuizParticipants)
+	attempts : List["QuizAttempts"] = Relationship(back_populates='student')
+	answers : List["QuizAnswer"] = Relationship(back_populates='student')
+	student_quizzes: List["Quiz"] = Relationship(back_populates='students', link_model=QuizParticipants)
 
 	# marks: Optional[MarksOfUser] = Relationship(back_populates="user")
 
