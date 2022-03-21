@@ -9,7 +9,7 @@ from sqlalchemy import Column, String
 from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models.quiz.link import QuizParticipants
 
-from fastapi_tut.models import MarksOfUser
+# from fastapi_tut.models import MarksOfUser
 
 # Shared Properties
 class UserBase(SQLModel):

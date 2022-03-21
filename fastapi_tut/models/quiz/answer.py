@@ -1,10 +1,11 @@
-from sqlmodel import Field
-
+from typing import Optional
+from sqlmodel import Field, SQLModel
+from fastapi_tut.db.base_class import TableBase
 
 class AnswerBase(SQLModel):
     content: str = Field(max_length=200)
     is_correct: bool = False
-    question_id: int = Field(default=None, foreign_key="question.id")
+    # question_id: int = Field(default=None, foreign_key="question.id")
 
 class AnswerCreate(AnswerBase):
     pass
@@ -18,8 +19,8 @@ class AnswerInDBBase(AnswerBase, TableBase):
 
 class QuizAnswer(AnswerInDBBase, table=True):
     id : Optional[int] = Field(default=None, primary_key=True)
-    choice_id : int = Field(foreign_key='quizchoice.id')
     student_id : int = Field(foreign_key='user.id')
+    choice_id : int = Field(foreign_key='quizchoice.id')
 
     def __repr__(self):
         # TODO return f"question: {self.question.content}, answer: {self.content}, is_correct: {self.is_correct}"

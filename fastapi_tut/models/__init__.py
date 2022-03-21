@@ -1,21 +1,39 @@
 from .msg import Msg
-from .quiz import (
-	Quiz, 
-	QuizCreate, 
-	QuizUpdate,
-	QuestionType, 
-	QuestionTypeCreate, 
-	QuestionTypeUpdate,
-	Question, 
-	QuestionCreate, 
-	QuestionUpdate,
-	Answer, 
-	AnswerCreate, 
-	AnswerUpdate,
-	MarksOfUser,
-	MarksOfUserCreate, 
-	MarksOfUserUpdate, 
-)
+# from .quiz import (
+# 	Quiz, 
+# 	QuizCreate, 
+# 	QuizUpdate,
+# 	QuestionType, 
+# 	QuestionTypeCreate, 
+# 	QuestionTypeUpdate,
+# 	Question, 
+# 	QuestionCreate, 
+# 	QuestionUpdate,
+# 	Answer, 
+# 	AnswerCreate, 
+# 	AnswerUpdate,
+# 	MarksOfUser,
+# 	MarksOfUserCreate, 
+# 	MarksOfUserUpdate, 
+# )
+
+
+from . import quiz
+# from .quiz import (
+# 	Quiz,
+# 	QuizCreate,
+# 	QuizUpdate,
+# 	QuizQuestion,
+# 	QuestionCreate, 
+# 	QuestionUpdate,
+# 	QuizChoice,
+# 	QuizAnswer,
+# 	AnswerCreate, 
+# 	AnswerUpdate,
+# 	QuizAttempts,
+# 	QuizParticipants
+# )
+
 from .token import Token, TokenPayload, RevokedToken
 from .user import User, UserCreate, UserUpdate
 
