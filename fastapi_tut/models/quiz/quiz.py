@@ -9,7 +9,7 @@ from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models.quiz.link import QuizParticipants
 
 from sqlmodel import Field, Relationship, SQLModel
-from sqlalchemy import Column
+from sqlalchemy import Column, String
 
 # Shared Properties
 class QuizBase(SQLModel):
@@ -37,7 +37,7 @@ class Quiz(QuizInDBBase, table=True):
     name : str
     created_at : datetime
     due_date : datetime
-    quiz_code : str = Field(sa_column=Column(unique=True))
+    quiz_code : str = Field(sa_column=Column(String, unique=True))
     teacher_id : int = Field(foreign_key='user.id')
     
     participants: List["User"] = Relationship(back_populates='student_quizzes', link_model=QuizParticipants)

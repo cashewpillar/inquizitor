@@ -14,11 +14,10 @@ class AnswerUpdate(AnswerBase):
     content: str = None
     question_id: int = None
 
-class AnswerInDBBase(AnswerBase, TableBase):
+class AnswerInDBBase(AnswerBase, TableBase, table=True):
     pass
 
 class QuizAnswer(AnswerInDBBase, table=True):
-    id : Optional[int] = Field(default=None, primary_key=True)
     student_id : int = Field(foreign_key='user.id')
     choice_id : int = Field(foreign_key='quizchoice.id')
 

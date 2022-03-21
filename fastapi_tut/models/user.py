@@ -20,8 +20,12 @@ class UserBase(SQLModel):
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
+	username : str
 	email: EmailStr
 	password: str
+	last_name : str
+	first_name : str
+	is_teacher : bool
 
 
 class UserUpdate(UserBase):
@@ -39,7 +43,7 @@ class UserInDBBase(UserBase, TableBase):
 # Additional properties  to return via API
 class User(UserInDBBase, table=True):
 	id : Optional[int] = Field(default=None, primary_key=True)
-	username : str = Field(sa_column=Column(unique=True, nullable=False))
+	username : str = Field(sa_column=Column(String, unique=True, nullable=False))
 	email: EmailStr = Field(sa_column=Column(String, unique=True, nullable=False))
 	password: str = Field(nullable=False)
 	last_name : str = Field(nullable=False)
