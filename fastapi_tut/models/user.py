@@ -13,27 +13,32 @@ from fastapi_tut.models.quiz.link import QuizStudentLink
 
 # Shared Properties
 class UserBase(SQLModel):
-	full_name: Optional[str] = Field(index=True)
+	username : str
 	email: Optional[EmailStr]
-	is_superuser: bool = Field(default=False)
+	full_name: Optional[str] = Field(index=True)
+	is_superuser: bool = False
+	last_name : str
+	first_name : str
+	is_teacher : bool = False
+	is_student : bool = False
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
-	username : str
 	email: EmailStr
 	password: str
-	last_name : str
-	first_name : str
-	is_teacher : bool
-	is_student : bool
 
 
 class UserUpdate(UserBase):
-	full_name: Optional[str] = None
+	username : Optional[str] = None
 	email: Optional[EmailStr] = None
+	full_name: Optional[str] = None
 	is_superuser: bool = False
+	last_name : Optional[str] = None
+	first_name : Optional[str] = None
 	password: Optional[str] = None
+	is_teacher : Optional[bool] = None
+	is_student : Optional[bool] = None
 
 
 class UserInDBBase(UserBase, TableBase):
@@ -43,14 +48,9 @@ class UserInDBBase(UserBase, TableBase):
 
 # Additional properties  to return via API
 class User(UserInDBBase, table=True):
-	id : Optional[int] = Field(default=None, primary_key=True)
 	username : str = Field(sa_column=Column(String, unique=True, nullable=False))
 	email: EmailStr = Field(sa_column=Column(String, unique=True, nullable=False))
-	password: str = Field(nullable=False)
-	last_name : str = Field(nullable=False)
-	first_name : str = Field(nullable=False)
-	is_student : bool = Field(nullable=False)
-	is_teacher : bool = Field(nullable=False)
+	hashed_password: str = Field(nullable=False)
 
 	# for teacher
 	teacher_quizzes : List["Quiz"] = Relationship(back_populates='teacher')

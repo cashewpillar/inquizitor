@@ -36,8 +36,9 @@ def init_db(db: Session, engine: Engine) -> None:
 			password=settings.FIRST_SUPERUSER_PASSWORD,
 			last_name=settings.FIRST_SUPERUSER_FULLNAME,
 			first_name=settings.FIRST_SUPERUSER_FULLNAME,
+			is_superuser=True,
 			is_teacher=True,
-			is_student=False
+			is_student=False,
 		)
 		user = crud.user.create(db, obj_in=user_in) # noqa: F841
 	
