@@ -29,5 +29,5 @@ from .attempt import (
 )
 
 from .link import (
-    QuizParticipants
+    QuizStudentLink
 )

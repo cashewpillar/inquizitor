@@ -59,12 +59,18 @@ def fake_quiz():
 def fake_user(password: Optional[str]=None, **attrs):
 	"""return fake values for full-name, email, and password."""
 
+	is_teacher = bool(random.randint(0,1))
+
 	password = fake.password() if password is None else password
 	return {
-		**{"full_name": fake.name(),
+		**{
+		"username": fake.simple_profile()['username'],
+		"last_name": fake.name(),
+		"first_name": fake.name(),
 		"email": fake.email(),
 		"password": password},
-
+		"is_teacher": is_teacher,
+		"is_student": (not is_teacher),
 		**attrs
 	}
 

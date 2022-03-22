@@ -19,7 +19,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 				password=get_password_hash(obj_in.password),
 				last_name=obj_in.last_name,
 				first_name=obj_in.first_name,
-				is_teacher=obj_in.is_teacher
+				is_teacher=obj_in.is_teacher,
+				is_student=obj_in.is_student
 				)
 		return super().create(db, obj_in=db_obj)
 

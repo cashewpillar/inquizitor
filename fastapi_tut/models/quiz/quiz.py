@@ -6,7 +6,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from fastapi_tut.db.base_class import TableBase
-from fastapi_tut.models.quiz.link import QuizParticipants
+from fastapi_tut.models.quiz.link import QuizStudentLink
 from ..user import User
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -43,7 +43,7 @@ class Quiz(QuizInDBBase, table=True):
     teacher_id : int = Field(foreign_key='user.id')
     teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
     
-    participants: List["User"] = Relationship(back_populates='student_quizzes', link_model=QuizParticipants)
+    students: List[QuizStudentLink] = Relationship(back_populates='quiz')
     
     
     attempts : List["QuizAttempts"] = Relationship(back_populates="quiz")

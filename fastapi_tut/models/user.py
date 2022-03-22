@@ -7,7 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
 
 from fastapi_tut.db.base_class import TableBase
-from fastapi_tut.models.quiz.link import QuizParticipants
+from fastapi_tut.models.quiz.link import QuizStudentLink
 
 # from fastapi_tut.models import MarksOfUser
 
@@ -26,6 +26,7 @@ class UserCreate(UserBase):
 	last_name : str
 	first_name : str
 	is_teacher : bool
+	is_student : bool
 
 
 class UserUpdate(UserBase):
@@ -57,7 +58,8 @@ class User(UserInDBBase, table=True):
 	# for student
 	attempts : List["QuizAttempts"] = Relationship(back_populates='student')
 	answers : List["QuizAnswer"] = Relationship(back_populates='student')
-	student_quizzes: List["Quiz"] = Relationship(back_populates='students', link_model=QuizParticipants)
+	
+	student_quizzes: List[QuizStudentLink] = Relationship(back_populates='student')
 
 	# marks: Optional[MarksOfUser] = Relationship(back_populates="user")
 
