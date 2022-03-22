@@ -1,5 +1,4 @@
 from fastapi import Depends, FastAPI, Request
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
@@ -62,9 +61,6 @@ def create_app(db: Session = SessionLocal()):
 		# openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
 	app.include_router(api_router)
-
-	# NOTE might remove staticfiles once vue app is developed
-	app.mount("/static", StaticFiles(directory="fastapi_tut/static"), name="static")
 
 	register_commands()
 	register_cors(app)

@@ -1,4 +1,6 @@
 '''
+SCRATCH PAD
+
 # ======================================================
 # API ENDPOINTS FOR ADMINISTERING ONLINE EXAMS (PROTOTYPE), WITH BUILT-IN CHEATING DETECTION
 # ======================================================

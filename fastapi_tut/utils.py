@@ -3,13 +3,9 @@ from typing import Optional
 import random
 import string
 
-from fastapi.templating import Jinja2Templates
-
 from fastapi_tut import models
 
 # TODO might remove templates once vue app is developed
-templates = Jinja2Templates(directory="fastapi_tut/templates")
-
 fake = Faker()
 
 def random_str():
