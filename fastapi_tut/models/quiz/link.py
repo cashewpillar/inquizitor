@@ -1,11 +1,24 @@
+from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 
-class QuizStudentLink(SQLModel, table=True):
+from fastapi_tut.db.base_class import TableBase
+
+class QuizStudentLinkBase(SQLModel):
     quiz_id : int = Field(foreign_key='quiz.id', default=None, primary_key=True)
     student_id : int = Field(foreign_key='user.id', default=None, primary_key=True)
 
-    quiz : 'Quiz' = Relationship(back_populates='students')
+class QuizStudentLinkCreate(QuizStudentLinkBase):
+    pass
 
+class QuizStudentLinkUpdate(QuizStudentLinkBase):
+    quiz_id : Optional[int] = None
+    student_id : Optional[int] = None
+
+class QuizStudentLinkInDBBase(QuizStudentLinkBase, TableBase):
+    pass
+
+class QuizStudentLink(QuizStudentLinkInDBBase, table=True):
+    quiz : 'Quiz' = Relationship(back_populates='students')
     student : 'User' = Relationship(back_populates='student_quizzes')
 
 
