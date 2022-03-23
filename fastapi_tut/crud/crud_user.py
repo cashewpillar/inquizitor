@@ -14,10 +14,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
 	def create(self, db: Session, *, obj_in: UserCreate) -> User:
 		db_obj = User(
-				full_name=obj_in.full_name,
+				username=obj_in.username,
 				email=obj_in.email,
 				hashed_password=get_password_hash(obj_in.password),
-				is_superuser=obj_in.is_superuser
+				last_name=obj_in.last_name,
+				first_name=obj_in.first_name,
+				is_superuser=obj_in.is_superuser,
+				is_teacher=obj_in.is_teacher,
+				is_student=obj_in.is_student
 				)
 		return super().create(db, obj_in=db_obj)
 

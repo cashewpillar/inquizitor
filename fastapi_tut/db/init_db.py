@@ -27,17 +27,21 @@ def init_db(db: Session, engine: Engine) -> None:
 	SQLModel.metadata.create_all(bind=engine)
 
 	# Example: init_db(db = SessionLocal(), engine) 
-
+	
 	user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
 	if not user:
 		user_in = UserCreate(
-			full_name=settings.FIRST_SUPERUSER_FULLNAME,
+			username="admin",
 			email=settings.FIRST_SUPERUSER_EMAIL,
 			password=settings.FIRST_SUPERUSER_PASSWORD,
+			last_name=settings.FIRST_SUPERUSER_FULLNAME,
+			first_name=settings.FIRST_SUPERUSER_FULLNAME,
 			is_superuser=True,
+			is_teacher=True,
+			is_student=False,
 		)
 		user = crud.user.create(db, obj_in=user_in) # noqa: F841
-
+	
 	init_users(db)
 	
 
