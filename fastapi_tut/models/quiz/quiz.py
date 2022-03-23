@@ -42,7 +42,7 @@ class QuizInDBBase(QuizBase, TableBase):
 class Quiz(QuizInDBBase, table=True):
     teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
     students: List[QuizStudentLink] = Relationship(back_populates='quiz')
-    attempts : List["QuizAttempts"] = Relationship(back_populates="quiz")
+    attempts : List["QuizAttempt"] = Relationship(back_populates="quiz")
     questions: List["QuizQuestion"] = Relationship(back_populates="quiz")
 
     def __repr__(self):

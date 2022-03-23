@@ -4,9 +4,9 @@ from .quiz import (
 	QuizAnswerCreate, 
 	QuizAnswerUpdate,
 
-	QuizAttempts, 
-	QuizAttemptsCreate, 
-	QuizAttemptsUpdate,
+	QuizAttempt, 
+	QuizAttemptCreate, 
+	QuizAttemptUpdate,
 
 	QuizChoice, 
 	QuizChoiceCreate, 

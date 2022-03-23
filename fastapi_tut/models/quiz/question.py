@@ -23,7 +23,7 @@ class QuizQuestionInDBBase(QuizQuestionBase, TableBase):
 
 class QuizQuestion(QuizQuestionInDBBase, table=True):
     choices: List["QuizChoice"] = Relationship(back_populates="question")
-    attempts: List["QuizAttempts"] = Relationship(back_populates="question")
+    attempts: List["QuizAttempt"] = Relationship(back_populates="question")
     quiz: Optional[Quiz] = Relationship(back_populates="questions")
     
     
