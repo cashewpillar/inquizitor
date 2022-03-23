@@ -9,8 +9,6 @@ from sqlalchemy import Column, String
 from fastapi_tut.db.base_class import TableBase
 from fastapi_tut.models.quiz.link import QuizStudentLink
 
-# from fastapi_tut.models import MarksOfUser
-
 # Shared Properties
 class UserBase(SQLModel):
 	username : str
@@ -60,8 +58,6 @@ class User(UserInDBBase, table=True):
 	answers : List["QuizAnswer"] = Relationship(back_populates='student')
 	
 	student_quizzes: List[QuizStudentLink] = Relationship(back_populates='student')
-
-	# marks: Optional[MarksOfUser] = Relationship(back_populates="user")
 
 	def __repr__(self):
 		"""Represent instance as a unique string."""
