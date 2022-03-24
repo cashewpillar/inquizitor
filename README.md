@@ -11,6 +11,13 @@
 <br>
 
 
+## DOING
+
+#### crud-quiz
+- api/api_v1/endpoints/quiz/quiz.py
+  - adding path operations: read
+<br>
+
 
 ## [API DOCUMENTATION (run app before accessing)](http://127.0.0.1:8000/docs)
 
