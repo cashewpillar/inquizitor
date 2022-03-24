@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 		SQLALCHEMY_DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 	EMAIL_TEST_USER: EmailStr = "test@example.com" # type: ignore
+	FIRST_SUPERUSER_USERNAME : str = "admin"
 	FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.com"
 	FIRST_SUPERUSER_FULLNAME: str = "admin"
 	FIRST_SUPERUSER_PASSWORD: str = "superadmin"

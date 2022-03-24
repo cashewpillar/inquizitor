@@ -34,12 +34,12 @@ async def login_access_token(
 	OAuth2 compatible token login, get an access token for future requests
 	"""
 	user = crud.user.authenticate(
-		db, email=form_data.username, password=form_data.password
+		db, username=form_data.username, password=form_data.password
 	)
 	if not user:
-		raise HTTPException(status_code=400, detail="Incorrent email or password")
-	if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
-		raise HTTPException(status_code=401, detail="Not authorized.")
+		raise HTTPException(status_code=400, detail="Incorrent user or password")
+	# if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
+	# 	raise HTTPException(status_code=401, detail="Not authorized.")
 	
 	# user_id = 1
 
@@ -51,6 +51,8 @@ async def login_access_token(
 
 	Authorize.set_access_cookies(access_token)
 	Authorize.set_refresh_cookies(refresh_token)
+
+	# print(dir(Authorize))
 
 	return {'msg':'Successfully logged in.'}
 
@@ -68,7 +70,10 @@ async def test_token(
 	"""
 	Test access token
 	"""
+	print("here")
 	Authorize.jwt_required()
+	print("here ulit")
+	# print(Authorize.get_raw_jwt())
 
 	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
 	return current_user
