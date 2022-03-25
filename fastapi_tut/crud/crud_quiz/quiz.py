@@ -8,18 +8,36 @@ from fastapi_tut.crud.base import CRUDBase
 from fastapi_tut.models import Quiz, QuizCreate, QuizUpdate
 
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
-	# Read methods:
-	# 1. Search by name (teacher)
-	def get_multi_by_name(self, db:Session, *, name: str) -> List[Quiz]:
+	def get_multi_by_name(
+		self, db:Session, *, name: str, skip: int = 0, limit: int = 100
+	) -> List[Quiz]:
 		"""Search quiz by name attribute only. (not unique)"""
-		return db.query(Quiz).filter(Quiz.name == name).all()
+		return (
+			db.query(Quiz)
+			.filter(Quiz.name == name)
+			.offset(skip)
+			.limit(limit)
+			.all()
+		)
 
-	def get_multi_by_participant(self, db:Session, *, student: models.User) -> List[Quiz]:
+	# NOTE might need query with offset and limit here
+	def get_multi_by_participant(
+		self, db:Session, *, student: models.User
+		# self, db:Session, *, student: models.User, skip: int = 0, limit: int = 100
+	) -> List[Quiz]:
 		"""Search quizzes participated by the student."""
 		return [jsonable_encoder(quiz) for quiz in student.student_quizzes]
 
-	def get_multi_by_creator(self, db:Session, *, teacher_id: int) -> List[Quiz]:
+	def get_multi_by_creator(
+		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100
+	) -> List[Quiz]:
 		"""Search quizzes participated by the student."""
-		return db.query(Quiz).filter(Quiz.teacher_id == teacher_id).all()
+		return (
+			db.query(Quiz)
+			.filter(Quiz.teacher_id == teacher_id)
+			.offset(skip)
+			.limit(limit)
+			.all()
+		)
 
 quiz = CRUDQuiz(Quiz)

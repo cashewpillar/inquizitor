@@ -38,11 +38,9 @@ async def login_access_token(
 	)
 	if not user:
 		raise HTTPException(status_code=400, detail="Incorrent email or password")
-	if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
-		raise HTTPException(status_code=401, detail="Not authorized.")
+	# if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
+	# 	raise HTTPException(status_code=401, detail="Not authorized.")
 	
-	# user_id = 1
-
 	# TODO: test time expiry
 	access_token = Authorize.create_access_token(subject=user.id, fresh= True,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))

@@ -2,6 +2,7 @@ import logging
 import pytest
 from httpx import AsyncClient
 from pprint import pformat
+from sqlmodel import Session
 from typing import Dict
 
 from fastapi_tut import crud
@@ -11,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 @pytest.mark.anyio
 class TestGetQuiz:
-	async def test_read_quiz_superuser(
+	async def test_read_quizzes_superuser(
 		self, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
 		quiz = QuizFactory()
@@ -19,7 +20,6 @@ class TestGetQuiz:
 			"/quiz/", cookies=await superuser_cookies
 		)
 		result = r.json()
-		logging.info(f"{pformat(result)}")
 		assert r.status_code == 200
 		# NOTE tests use asyncio and trio (each function is called twice)
 		# so i used the index -1 to get the latest added quiz
@@ -27,5 +27,27 @@ class TestGetQuiz:
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
 		# assert result[-1]["created_at"] == quiz.created_at
 		# assert result[-1]["due_date"] == quiz.due_date
+		assert result[-1]["quiz_code"] == quiz.quiz_code
+		assert result[-1]["teacher_id"] == quiz.teacher_id
+
+	async def test_read_quizzes_teacher(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		teacher_cookies = await teacher_cookies
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		r = await client.get(
+			"/quiz/", cookies=teacher_cookies
+		)
+		logging.info(f"{pformat(r.json())}")
+		result = r.json()
+		assert r.status_code == 200
+		assert result[-1]["name"] == quiz.name
+		assert result[-1]["number_of_questions"] == quiz.number_of_questions
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
