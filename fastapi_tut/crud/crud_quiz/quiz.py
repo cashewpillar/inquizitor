@@ -14,8 +14,12 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		"""Search quiz by name attribute only. (not unique)"""
 		return db.query(Quiz).filter(Quiz.name == name).all()
 
-	def get_multi_by_participant(self, db:Session, *, participant: models.User) -> List[Quiz]:
+	def get_multi_by_participant(self, db:Session, *, student: models.User) -> List[Quiz]:
 		"""Search quizzes participated by the student."""
-		return [jsonable_encoder(quiz) for quiz in participant.student_quizzes]
+		return [jsonable_encoder(quiz) for quiz in student.student_quizzes]
+
+	def get_multi_by_creator(self, db:Session, *, teacher_id: int) -> List[Quiz]:
+		"""Search quizzes participated by the student."""
+		return db.query(Quiz).filter(Quiz.teacher_id == teacher_id).all()
 
 quiz = CRUDQuiz(Quiz)

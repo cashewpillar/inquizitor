@@ -16,7 +16,21 @@
 #### crud-quiz
 - api/api_v1/endpoints/quiz/quiz.py
   - adding path operations: read
-<br>
+    <br>
+
+## TO DO
+
+#### tests
+
+- test initial/ first users: **admin** (update this), **student**, **teacher** 
+
+- test read-quiz for student and teacher
+
+- 
+
+  <br>
+
+
 
 
 ## [API DOCUMENTATION (run app before accessing)](http://127.0.0.1:8000/docs)

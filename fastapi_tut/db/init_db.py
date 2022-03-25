@@ -28,21 +28,47 @@ def init_db(db: Session, engine: Engine) -> None:
 
 	# Example: init_db(db = SessionLocal(), engine) 
 	
-	user = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
-	if not user:
+	superuser = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
+	if not superuser:
 		user_in = UserCreate(
 			username="admin",
 			email=settings.FIRST_SUPERUSER_EMAIL,
 			password=settings.FIRST_SUPERUSER_PASSWORD,
-			last_name=settings.FIRST_SUPERUSER_FULLNAME,
-			first_name=settings.FIRST_SUPERUSER_FULLNAME,
+			last_name=settings.FIRST_SUPERUSER_LASTNAME,
+			first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
 			is_superuser=True,
 			is_teacher=True,
 			is_student=False,
 		)
-		user = crud.user.create(db, obj_in=user_in) # noqa: F841
-	
-	init_users(db)
+		superuser = crud.user.create(db, obj_in=user_in) # noqa: F841	
+
+	student = crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL)
+	if not student:
+		user_in = UserCreate(
+			username="student",
+			email=settings.FIRST_STUDENT_EMAIL,
+			password=settings.FIRST_STUDENT_PASSWORD,
+			last_name=settings.FIRST_STUDENT_LASTNAME,
+			first_name=settings.FIRST_STUDENT_FIRSTNAME,
+			is_superuser=False,
+			is_teacher=False,
+			is_student=True,
+		)
+		student = crud.user.create(db, obj_in=user_in) # noqa: F841
+
+	teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
+	if not teacher:
+		user_in = UserCreate(
+			username="teacher",
+			email=settings.FIRST_TEACHER_EMAIL,
+			password=settings.FIRST_TEACHER_PASSWORD,
+			last_name=settings.FIRST_TEACHER_LASTNAME,
+			first_name=settings.FIRST_TEACHER_FIRSTNAME,
+			is_superuser=False,
+			is_teacher=True,
+			is_student=False,
+		)
+		teacher = crud.user.create(db, obj_in=user_in) # noqa: F841
 	
 
 def drop_db(engine: Engine) -> None:

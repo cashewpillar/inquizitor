@@ -24,20 +24,19 @@ async def read_quizzes(
 	
 	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
 
-	# if crud.user.is_superuser(current_user):
-	# 	quizzes = crud.quiz.get_multi(db, skip=skip, limit=limit)
-	# 	pass
-	# elif crud.user.is_student(current_user):
-	quizzes = crud.quiz.get_multi_by_participant(
-		# db=db, participant=current_user, skip=skip, limit=limit
-		db=db, participant=current_user
-	)
-	# 	pass
-	# elif crud.user.is_teacher(current_user):
-	# 	quizzes = crud.quiz.get_multi_by_creator(
-	# 		db=db, participant_id=current_user.id, skip=skip, limit=limit
-	# 	)
-	# 	pass
+	if crud.user.is_superuser(current_user):
+		quizzes = crud.quiz.get_multi(db, skip=skip, limit=limit)
+		pass
+	elif crud.user.is_student(current_user):
+		quizzes = crud.quiz.get_multi_by_participant(
+			# db=db, participant=current_user, skip=skip, limit=limit
+			db=db, student=current_user
+		)
+	elif crud.user.is_teacher(current_user):
+		quizzes = crud.quiz.get_multi_by_creator(
+			# db=db, participant=current_user.id, skip=skip, limit=limit
+			db=db, teacher_id=current_user.id
+		)
 	return quizzes
 
 
