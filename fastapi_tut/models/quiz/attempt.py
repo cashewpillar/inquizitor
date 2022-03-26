@@ -9,7 +9,8 @@ from ..user import User
 
 class QuizAttemptBase(SQLModel):
     is_done : Optional[bool] = False
-    recent_question_id : int = Field(foreign_key="quizquestion.id")
+    recent_question_id : Optional[int] = Field(default=None, foreign_key="quizquestion.id")
+    # recent_question_id : int = Field(foreign_key="quizquestion.id")
     student_id : int = Field(foreign_key="user.id")
     quiz_id : int = Field(foreign_key="quiz.id")
 

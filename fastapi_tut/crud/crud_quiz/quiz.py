@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi.encoders import jsonable_encoder
 
-from fastapi_tut import models
+from fastapi_tut import crud, models
 from fastapi_tut.crud.base import CRUDBase
 from fastapi_tut.models import Quiz, QuizCreate, QuizUpdate
 
@@ -26,7 +26,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		# self, db:Session, *, student: models.User, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
 		"""Search quizzes participated by the student."""
-		return [jsonable_encoder(quiz) for quiz in student.student_quizzes]
+		return [jsonable_encoder(crud.quiz.get(db, id=link.quiz_id)) for link in student.student_quizzes]
 
 	def get_multi_by_creator(
 		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100
