@@ -9,35 +9,42 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
-# DOING
 @router.get("/", response_model=List[models.Quiz])
 async def read_quizzes(
 	db: Session = Depends(deps.get_db),
 	skip: int = 0,
 	limit: int = 100,
-	Authorize: AuthJWT = Depends()
+	current_user: models.User = Depends(deps.get_current_user)
 ) -> Any:
 	"""
 	Retrieve quizzes.
 	"""
-	Authorize.jwt_required()
-	
-	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
-
 	if crud.user.is_superuser(current_user):
 		quizzes = crud.quiz.get_multi(db, skip=skip, limit=limit)
-		pass
 	elif crud.user.is_student(current_user):
 		quizzes = crud.quiz.get_multi_by_participant(
+			# NOTE change to line below when needed
 			# db=db, participant=current_user, skip=skip, limit=limit
 			db=db, student=current_user
 		)
 	elif crud.user.is_teacher(current_user):
 		quizzes = crud.quiz.get_multi_by_creator(
-			# db=db, participant=current_user.id, skip=skip, limit=limit
-			db=db, teacher_id=current_user.id
+			db=db, teacher_id=current_user.id, skip=skip, limit=limit
 		)
+
 	return quizzes
 
+# DOING
+@router.get("/{id}", response_model=models.Quiz)
+async def read_quiz(
+	*,
+	db: Session = Depends(deps.get_db),
+	id: int,
+	current_user: models.User = Depends(deps.get_current_user)
+) -> Any:
+	"""
+	Retrieve quiz by id.
+	"""
+	quiz = crud.quiz.get(db, id=id)
 
-
+	return quiz
