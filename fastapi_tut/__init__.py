@@ -36,9 +36,10 @@ def register_fastapi_jwt_auth(app: FastAPI, db: Session):
 		# config below might produce errors in production
 		# NOTE: tokens in denylist (in db) has no expiry,
 		# will add in the future if time permits
+		
 		jti = decrypted_token['jti']
 		entry = db.query(RevokedToken).filter(RevokedToken.jti == jti).first()
-		return entry and entry.is_revoked == True
+		return entry
 
 def register_cors(app: FastAPI):
 	origins = [

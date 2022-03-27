@@ -16,6 +16,7 @@ from fastapi_tut import models, crud, utils
 from fastapi_tut.api import deps
 from fastapi_tut.core import security
 from fastapi_tut.core.config import settings
+from fastapi_tut import crud
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,7 +58,17 @@ async def login_access_token(
 	return {'msg':'Successfully logged in.'}
 
 @router.post('/logout')
-async def logout(Authorize: AuthJWT = Depends()):
+async def logout(
+	Authorize: AuthJWT = Depends(),
+	db: Session = Depends(deps.get_db)
+	):
+
+	Authorize.jwt_required()
+	crud.token.revoke_access(Authorize, db)
+	
+	Authorize.jwt_refresh_token_required()
+	crud.token.revoke_refresh(Authorize, db)
+
 	Authorize.unset_jwt_cookies()
 
 	return {'msg':'Successfully logged out.'}
@@ -70,10 +81,8 @@ async def test_token(
 	"""
 	Test access token
 	"""
-	print("here")
+	
 	Authorize.jwt_required()
-	print("here ulit")
-	# print(Authorize.get_raw_jwt())
 
 	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
 	return current_user
@@ -100,21 +109,15 @@ async def refresh(
 
 @router.delete('/access-revoke', response_model=models.Msg)
 async def revoke_access(
-	db: Session = Depends(deps.get_db),
-	Authorize: AuthJWT = Depends()
+	Authorize: AuthJWT = Depends(),
+	db: Session = Depends(deps.get_db)
 ) -> Any:
 	"""
 	Revoke access token of current user
 	"""
 	Authorize.jwt_required()
-
-	jti = Authorize.get_raw_jwt()['jti']
-	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
-	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist automatically
-	db.add(db_obj)
-	db.commit()
-	db.refresh(db_obj)
+	
+	crud.token.revoke_access(Authorize, db)
 
 	return {'msg': "Access token has been revoked"}
 
@@ -129,12 +132,6 @@ async def revoke_refresh(
 	"""
 	Authorize.jwt_refresh_token_required()
 
-	jti = Authorize.get_raw_jwt()['jti']
-	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
-	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist automatically
-	db.add(db_obj)
-	db.commit()
-	db.refresh(db_obj)
+	crud.token.revoke_refresh(Authorize, db)
 
 	return {'msg': "Refresh token has been revoked"}
