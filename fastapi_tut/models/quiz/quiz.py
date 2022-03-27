@@ -33,6 +33,7 @@ class QuizUpdate(QuizBase):
     number_of_questions: Optional[int] = None
     due_date : Optional[datetime] = None
     quiz_code : Optional[str] = None
+    teacher_id : Optional[int] = None
     # time: Optional[int] = None
 
 class QuizInDBBase(QuizBase, TableBase):

@@ -44,9 +44,10 @@ def test_get_user(db: Session, user: models.User) -> None:
 	assert user.email == user_2.email
 	assert jsonable_encoder(user) == jsonable_encoder(user_2)
 
-# DOING rename the model marks of user first
+# TODO rename the model marks of user first, relationship attributes here
 # def test_get_user_relations(db: Session, user: models.User, marks_of_users: List[models.MarksOfUser]) -> None:
-	# assert user.marks == marks_of_users 
+# 	pass
+
 
 def test_update_user(db: Session, user: models.User) -> None:
 	new_password = fake.password()

@@ -15,7 +15,7 @@
 
 #### crud-quiz
 - api/api_v1/endpoints/quiz/quiz.py
-  - adding path operations: read
+  - adding path operations: update
     <br>
 
 ## TO DO
@@ -24,9 +24,7 @@
 
 - test initial/ first users: **admin** (update this), **student**, **teacher** 
 
-- test read-quiz for student and teacher
-
-- 
+- remove production_client fixture
 
   <br>
 

@@ -6,6 +6,8 @@ from pprint import pformat
 from sqlmodel import Session
 from typing import Dict
 
+from fastapi.encoders import jsonable_encoder
+
 from fastapi_tut import crud
 from fastapi_tut.models import QuizStudentLinkCreate
 from fastapi_tut.tests.factories import QuizFactory
@@ -69,14 +71,12 @@ class TestReadQuiz:
 		)
 		result = r.json()
 		student = crud.user.get(db, id=result['id'])
-		# DOING
 		quiz = QuizFactory()
 		student_link_in = QuizStudentLinkCreate(student_id=student.id, quiz_id=quiz.id)
 		crud.quiz_student_link.create(db, obj_in=student_link_in)
 		r = await client.get(
 			"/quizzes/", cookies=student_cookies
 		)
-		logging.info(f"{pformat(r.json())}")
 		result = r.json()
 		assert r.status_code == 200
 		assert result[-1]["name"] == quiz.name
@@ -148,3 +148,30 @@ class TestDeleteQuiz:
 		)
 		result = r.json()
 		assert r.status_code == 400
+
+@pytest.mark.anyio
+class TestUpdateQuiz:
+	async def test_update_teacher(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		teacher_cookies = await teacher_cookies
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		quiz_in = QuizFactory.stub(schema_type="update")
+		# DOING ==========================================================================================
+		repr(quiz)
+		r = await client.put(
+			f"/quizzes/{quiz.id}", cookies=teacher_cookies, json=quiz_in
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz_in["name"]
+		assert result["desc"] == quiz_in["desc"]
+		assert result["due_date"] == quiz_in["due_date"]
+		assert result["number_of_questions"] == quiz_in["number_of_questions"]
+		assert result["quiz_code"] == quiz_in["quiz_code"]

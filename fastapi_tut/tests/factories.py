@@ -1,12 +1,5 @@
 """
 Factories to help in tests.
-
-DOING
-https://factoryboy.readthedocs.io/en/stable/introduction.html
-https://factoryboy.readthedocs.io/en/stable/orms.html?highlight=sqlalchemy_session#sqlalchemy
-https://factoryboy.readthedocs.io/en/stable/recipes.html
-https://github.com/tiangolo/sqlmodel/issues/82
-https://factoryboy.readthedocs.io/en/stable/index.html#reproducible-random-values
 """
 
 import datetime as dt
@@ -14,6 +7,8 @@ import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 from typing import List, Optional, Union
+
+from fastapi.encoders import jsonable_encoder
 
 from fastapi_tut import models
 from fastapi_tut.crud.base import CreateSchemaType, ModelType, UpdateSchemaType
