@@ -163,8 +163,6 @@ class TestUpdateQuiz:
 		teacher = crud.user.get(db, id=result['id'])
 		quiz = QuizFactory(teacher=teacher)
 		quiz_in = QuizFactory.stub(schema_type="update")
-		# DOING ==========================================================================================
-		repr(quiz)
 		r = await client.put(
 			f"/quizzes/{quiz.id}", cookies=teacher_cookies, json=quiz_in
 		)
