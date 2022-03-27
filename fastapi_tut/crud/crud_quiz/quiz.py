@@ -28,7 +28,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		"""Search quizzes participated by the student."""
 		return [jsonable_encoder(crud.quiz.get(db, id=link.quiz_id)) for link in student.student_quizzes]
 
-	def get_multi_by_creator(
+	def get_multi_by_author(
 		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
 		"""Search quizzes participated by the student."""

@@ -28,13 +28,12 @@ async def read_quizzes(
 			db=db, student=current_user
 		)
 	elif crud.user.is_teacher(current_user):
-		quizzes = crud.quiz.get_multi_by_creator(
+		quizzes = crud.quiz.get_multi_by_author(
 			db=db, teacher_id=current_user.id, skip=skip, limit=limit
 		)
 
 	return quizzes
 
-# NOTE no permission control
 @router.get("/{id}", response_model=models.Quiz)
 async def read_quiz(
 	*,
@@ -50,6 +49,23 @@ async def read_quiz(
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
+	return quiz
 
-
+@router.delete("/{id}", response_model=models.Quiz)
+async def delete_quiz(
+	*,
+	db: Session = Depends(deps.get_db),
+	id: int,
+	current_user: models.User = Depends(deps.get_current_user)
+) -> Any:
+	"""
+	Retrieve quiz by id.
+	"""
+	quiz = crud.quiz.get(db, id=id)
+	if not quiz:
+		raise HTTPException(status_code=404, detail="Quiz not found")
+	if not crud.user.is_superuser(current_user) and \
+		not (crud.user.is_teacher(current_user) and quiz.teacher_id == current_user.id):
+		raise HTTPException(status_code=400, detail="Not enough permissions")
+	quiz = crud.quiz.remove(db, id=id)
 	return quiz

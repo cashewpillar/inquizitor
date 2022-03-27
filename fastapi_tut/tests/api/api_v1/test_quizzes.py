@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 DT_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 @pytest.mark.anyio
-class TestGetQuiz:
+class TestReadQuiz:
 	async def test_read_quizzes_superuser(
 		self, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
@@ -108,3 +108,43 @@ class TestGetQuiz:
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id
+
+@pytest.mark.anyio
+class TestDeleteQuiz:
+	async def test_delete_teacher(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		teacher_cookies = await teacher_cookies
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		r = await client.delete(
+			f"/quizzes/{quiz.id}", cookies=teacher_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+		quiz = crud.quiz.get(db, id=quiz.id)
+		assert quiz is None
+
+	async def test_delete_teacher_not_author(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		teacher_cookies = await teacher_cookies
+		quiz = QuizFactory()
+		r = await client.delete(
+			f"/quizzes/{quiz.id}", cookies=teacher_cookies
+		)
+		result = r.json()
+		assert r.status_code == 400
