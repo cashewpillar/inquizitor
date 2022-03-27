@@ -1,31 +1,28 @@
-11:51:41 INFO [{'created_at': '2022-03-27T03:51:41.036328',
-  'desc': 'Least long accept thousand. Above article unit perhaps them company '
-          'century. Study information serve record step.\n'
-          'Teach owner dog language home attention. Who safe similar leave '
-          'ever fish born.',
-  'due_date': '2022-03-27T08:51:41.036328',
+12:46:17 INFO [{'created_at': '2022-03-27T04:46:17.611247',
+  'desc': 'Manager yet position four player. Catch join very alone deal meet. '
+          'Financial natural time response there radio cost. Add process '
+          'matter any popular woman you structure.',
+  'due_date': '2022-03-27T09:46:17.611247',
   'id': 5,
-  'name': 'per',
-  'number_of_questions': 30,
-  'quiz_code': '9ZD2DN0W3H',
+  'name': 'report',
+  'number_of_questions': 100,
+  'quiz_code': 'YWO8MLS7FE',
   'teacher_id': 6}]
-11:51:41 INFO [{'created_at': '2022-03-27T03:51:41.036328',
-  'desc': 'Least long accept thousand. Above article unit perhaps them company '
-          'century. Study information serve record step.\n'
-          'Teach owner dog language home attention. Who safe similar leave '
-          'ever fish born.',
-  'due_date': '2022-03-27T08:51:41.036328',
+12:46:18 INFO [{'created_at': '2022-03-27T04:46:17.611247',
+  'desc': 'Manager yet position four player. Catch join very alone deal meet. '
+          'Financial natural time response there radio cost. Add process '
+          'matter any popular woman you structure.',
+  'due_date': '2022-03-27T09:46:17.611247',
   'id': 5,
-  'name': 'per',
-  'number_of_questions': 30,
-  'quiz_code': '9ZD2DN0W3H',
+  'name': 'report',
+  'number_of_questions': 100,
+  'quiz_code': 'YWO8MLS7FE',
   'teacher_id': 6},
- {'created_at': '2022-03-27T03:51:41.525328',
-  'desc': 'Remember in avoid Mr. Him wonder modern common. Sea positive '
-          'mission. Bar whose artist finally left.',
-  'due_date': '2022-03-27T08:51:41.525328',
+ {'created_at': '2022-03-27T04:46:18.102248',
+  'desc': 'Rather near east next.',
+  'due_date': '2022-03-27T09:46:18.102248',
   'id': 6,
-  'name': 'no',
-  'number_of_questions': 30,
-  'quiz_code': 'MKKDJGDHH3',
+  'name': 'road',
+  'number_of_questions': 80,
+  'quiz_code': 'DNA0KZTF16',
   'teacher_id': 7}]

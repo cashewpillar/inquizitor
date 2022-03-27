@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 import pytest
 from httpx import AsyncClient
@@ -10,6 +11,8 @@ from fastapi_tut.models import QuizStudentLinkCreate
 from fastapi_tut.tests.factories import QuizFactory
 
 logging.basicConfig(level=logging.INFO)
+
+DT_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 @pytest.mark.anyio
 class TestGetQuiz:
@@ -26,8 +29,10 @@ class TestGetQuiz:
 		# so i used the index -1 to get the latest added quiz
 		assert result[-1]["name"] == quiz.name
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
-		# assert result[-1]["created_at"] == quiz.created_at
-		# assert result[-1]["due_date"] == quiz.due_date
+		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
@@ -49,6 +54,8 @@ class TestGetQuiz:
 		assert r.status_code == 200
 		assert result[-1]["name"] == quiz.name
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
+		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
@@ -74,20 +81,30 @@ class TestGetQuiz:
 		assert r.status_code == 200
 		assert result[-1]["name"] == quiz.name
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
+		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
-	async def test_read_(
-		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	async def test_read_teacher(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
-		quiz = QuizFactory()
+		teacher_cookies = await teacher_cookies
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
 		r = await client.get(
-			f"/quizzes/{quiz.id}", cookies=await student_cookies
+			f"/quizzes/{quiz.id}", cookies=teacher_cookies
 		)
 		result = r.json()
 		assert r.status_code == 200
 		assert result["name"] == quiz.name
 		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id

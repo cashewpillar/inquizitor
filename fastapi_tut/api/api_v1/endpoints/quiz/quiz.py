@@ -1,7 +1,7 @@
 from sqlmodel import Session
 from typing import Any, List
 
-from fastapi import APIRouter, Depends 
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi_jwt_auth import AuthJWT
 
 from fastapi_tut import crud, models
@@ -34,7 +34,7 @@ async def read_quizzes(
 
 	return quizzes
 
-# DOING
+# NOTE no permission control
 @router.get("/{id}", response_model=models.Quiz)
 async def read_quiz(
 	*,
@@ -46,5 +46,11 @@ async def read_quiz(
 	Retrieve quiz by id.
 	"""
 	quiz = crud.quiz.get(db, id=id)
+	if not quiz:
+		raise HTTPException(status_code=404, detail="Quiz not found")
+	# if crud.user.is_student(current_user):
+	if crud.user.is_teacher(current_user) and (quiz.teacher_id != current_user.id):
+		raise HTTPException(status_code=400, detail="Not enough permissions")
+
 
 	return quiz
