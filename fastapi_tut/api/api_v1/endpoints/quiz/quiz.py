@@ -48,8 +48,7 @@ async def read_quiz(
 	quiz = crud.quiz.get(db, id=id)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
-	# if crud.user.is_student(current_user):
-	if crud.user.is_teacher(current_user) and (quiz.teacher_id != current_user.id):
+	if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 
 
