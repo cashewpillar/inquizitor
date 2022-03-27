@@ -7,7 +7,6 @@ class QuizQuestionBase(SQLModel):
     content: str = Field(max_length=200)
     points : int
     order : int
-    quiz_id : int = Field(foreign_key="quiz.id")
 
 class QuizQuestionCreate(QuizQuestionBase):
     pass
@@ -26,8 +25,12 @@ class QuizQuestion(QuizQuestionInDBBase, table=True):
     attempts: List["QuizAttempt"] = Relationship(back_populates="question")
     quiz: Optional[Quiz] = Relationship(back_populates="questions")
     
+    quiz_id : int = Field(foreign_key="quiz.id")
+    
     
     def __repr__(self):
         return f"<Question({self.content!r})>"
     
-    
+class QuizQuestionRead(QuizQuestionBase):
+    id: int
+    quiz_id: int

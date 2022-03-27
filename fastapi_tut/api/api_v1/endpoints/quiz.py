@@ -8,6 +8,8 @@ from fastapi_jwt_auth import AuthJWT
 
 from fastapi_tut import crud
 from fastapi_tut.models.quiz.quiz import Quiz, QuizCreate, QuizRead
+from fastapi_tut.models.quiz.question import QuizQuestion, QuizQuestionCreate, QuizQuestionRead
+from fastapi_tut.models.quiz.choice import QuizChoice, QuizChoiceCreate, QuizChoiceRead
 from fastapi_tut.api import deps
 
 router = APIRouter()
@@ -56,3 +58,29 @@ async def create_quiz(
 
 
 #Create questions
+@router.post("/create/{quiz_id}/questions", response_model=QuizQuestionRead)
+async def create_questions(
+    quiz_id: int,
+    question: QuizQuestionCreate, 
+    db: Session = Depends(deps.get_db)
+):
+    question_obj = QuizQuestion(**question.dict(), quiz_id=quiz_id)
+    # question_obj = QuizQuestion.from_orm(question)
+    db.add(question_obj)
+    db.commit()
+    db.refresh(question_obj)
+    return question_obj
+
+#Create choices
+@router.post("/create/{quiz_id}/questions/{question_id}", response_model=QuizChoiceRead)
+async def create_choices(
+    quiz_id: int,
+    question_id: int,
+    choice: QuizChoiceCreate,
+    db: Session = Depends(deps.get_db)
+):
+    choice_obj = QuizChoice(**choice.dict(), question_id=question_id)
+    db.add(choice_obj)
+    db.commit()
+    db.refresh(choice_obj)
+    return choice_obj
