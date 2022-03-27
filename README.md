@@ -13,10 +13,12 @@
 
 ## DOING
 
-#### crud-quiz
-- api/api_v1/endpoints/quiz/quiz.py
-  - adding path operations: update
-    <br>
+- - crud-quiz
+    - api/api_v1/endpoints/quiz/quiz.py
+      - stats
+      - ![image-20220327170830952](C:\Users\halloween\AppData\Roaming\Typora\typora-user-images\image-20220327170830952.png)
+      - **per quiz & per student**
+      - <br>
 
 ## TO DO
 
