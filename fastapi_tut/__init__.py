@@ -57,8 +57,7 @@ def register_cors(app: FastAPI):
 def create_app(db: Session = SessionLocal()):
 	"""App for getting training data from exams"""
 	app = FastAPI(title=settings.PROJECT_NAME, 
-		version=settings.PROJECT_VERSION,
-		description=settings.DESCRIPTION)
+		version=settings.PROJECT_VERSION)
 		# openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
 	app.include_router(api_router)

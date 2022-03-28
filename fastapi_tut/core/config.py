@@ -41,28 +41,6 @@ class Settings(BaseSettings):
 	FIRST_SUPERUSER_PASSWORD: str = "superadmin"
 	USERS_OPEN_REGISTRATION: bool = False
 
-	DESCRIPTION = """
-	FASTAPI_TUT helps you learn API STUFF AND FASTAPI. xD GG nc NC 🚀  
-
-	## Users 
-
-	You will be able to: 
-
-	* **Log In**. 
-
-	* **Take an exam** (_not implemented_).
-
-	* **Reset Password** (_not implemented_). 
-
-
-	## Admin
-
-	You will be able to:
-
-	* **Manage exam via dashboard** (_not implemented_). 
-
-	"""
-
 	authjwt_secret_key: str = SECRET_KEY
 	authjwt_denylist_enabled: bool = True
 	authjwt_denylist_token_checks: set = {"access", "refresh"}
