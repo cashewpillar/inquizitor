@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 @pytest.mark.anyio
 async def get_superuser_cookies(app: FastAPI) -> Dict[str, str]:
 	login_data = {
-		"username": settings.FIRST_SUPERUSER_EMAIL,
+		"username": settings.FIRST_SUPERUSER_USERNAME,
 		"password": settings.FIRST_SUPERUSER_PASSWORD,
 	}
 	
