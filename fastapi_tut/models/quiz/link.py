@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 
 class QuizStudentLinkBase(SQLModel):
     quiz_id : int = Field(foreign_key='quiz.id', default=None, primary_key=True)
@@ -14,7 +14,7 @@ class QuizStudentLinkUpdate(QuizStudentLinkBase):
     quiz_id : Optional[int] = None
     student_id : Optional[int] = None
 
-class QuizStudentLinkInDBBase(QuizStudentLinkBase, TableBase):
+class QuizStudentLinkInDBBase(QuizStudentLinkBase, PKModel):
     pass
 
 class QuizStudentLink(QuizStudentLinkInDBBase, table=True):

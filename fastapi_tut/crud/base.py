@@ -4,9 +4,9 @@ from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session
 from pydantic import BaseModel
 
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 
-ModelType = TypeVar("ModelType", bound=TableBase)
+ModelType = TypeVar("ModelType", bound=PKModel)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 

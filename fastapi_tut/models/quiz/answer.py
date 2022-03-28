@@ -1,6 +1,6 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 from .choice import QuizChoice
 from ..user import User
 
@@ -19,7 +19,7 @@ class QuizAnswerUpdate(QuizAnswerBase):
     student_id: Optional[int] = None
     choice_id: Optional[int] = None
 
-class QuizAnswerInDBBase(QuizAnswerBase, TableBase):
+class QuizAnswerInDBBase(QuizAnswerBase, PKModel):
     pass
 
 class QuizAnswer(QuizAnswerInDBBase, table=True):

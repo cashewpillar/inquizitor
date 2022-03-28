@@ -33,7 +33,7 @@ from .user import User, UserCreate, UserUpdate
 class ThisBase(SQLModel):
 class ThisCreate(ThisBase):
 class ThisUpdate(ThisBase):
-class ThisInDBBase(ThisBase, TableBase):
+class ThisInDBBase(ThisBase, PKModel):
 class This(ThisInDBBase, table=True):
 
 """

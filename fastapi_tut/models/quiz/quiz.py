@@ -5,7 +5,7 @@ from tkinter.tix import COLUMN
 from typing import List, Optional
 from datetime import datetime
 
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 from fastapi_tut.models.quiz.link import QuizStudentLink
 from ..user import User
 
@@ -35,7 +35,7 @@ class QuizUpdate(QuizBase):
     quiz_code : Optional[str] = None
     # time: Optional[int] = None
 
-class QuizInDBBase(QuizBase, TableBase):
+class QuizInDBBase(QuizBase, PKModel):
     pass
 
 # Additional properties  to return via API
