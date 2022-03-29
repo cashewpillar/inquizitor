@@ -36,21 +36,25 @@ async def read_quizzes(
 
 	return quizzes
 
-@router.get("/{id}", response_model=models.Quiz)
+@router.get("/{index}", response_model=models.Quiz)
 async def read_quiz(
 	*,
 	db: Session = Depends(deps.get_db),
-	id: int,
+	index: Union[int, str],
 	current_user: models.User = Depends(deps.get_current_user)
 ) -> Any:
 	"""
-	Retrieve quiz by id.
+	Retrieve quiz by id or quiz_code.
 	"""
-	quiz = crud.quiz.get(db, id=id)
+	if isinstance(index, str):
+		quiz = crud.quiz.get_by_code(db, code=index)
+	else:
+		quiz = crud.quiz.get(db, id=index)
+
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
-	if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
-		raise HTTPException(status_code=400, detail="Not enough permissions")
+	# if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
+	# 	raise HTTPException(status_code=400, detail="Not enough permissions")
 	return quiz
 
 @router.put("/{id}", response_model=models.Quiz)

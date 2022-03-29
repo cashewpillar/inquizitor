@@ -109,6 +109,75 @@ class TestReadQuiz:
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id
 
+	async def test_read_teacher_code(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		teacher_cookies = await teacher_cookies
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		r = await client.get(
+			f"/quizzes/{quiz.quiz_code}", cookies=teacher_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+	async def test_read_student(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		student_cookies = await student_cookies
+		r = await client.post(
+			"/login/test-token", cookies=student_cookies
+		)
+		result = r.json()
+		quiz = QuizFactory()
+		r = await client.get(
+			f"/quizzes/{quiz.id}", cookies=student_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+	async def test_read_student_code(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		student_cookies = await student_cookies
+		r = await client.post(
+			"/login/test-token", cookies=student_cookies
+		)
+		result = r.json()
+		student = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory()
+		r = await client.get(
+			f"/quizzes/{quiz.quiz_code}", cookies=student_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+
 @pytest.mark.anyio
 class TestDeleteQuiz:
 	async def test_delete_teacher(
