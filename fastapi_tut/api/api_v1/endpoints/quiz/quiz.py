@@ -1,7 +1,7 @@
 import logging
 from pprint import pformat
 from sqlmodel import Session
-from typing import Any, List
+from typing import Any, List, Union
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_jwt_auth import AuthJWT
