@@ -95,3 +95,26 @@ class QuizFactory(BaseFactory):
     update_schema: UpdateSchemaType = models.QuizUpdate
 
 
+class QuestionFactory(BaseFactory):
+    """Question factory."""
+
+    class Meta:
+        model = models.QuizQuestion
+
+    content: str = factory.LazyAttribute(lambda a: fake.sentence().replace('.', '?')) 
+    points: int = factory.Faker('random_int', min=1, max=5)
+    order: int = factory.Sequence(lambda n: n)
+
+    quiz: models.Quiz = factory.SubFactory(QuizFactory)
+    # NOTE skipped bcs finding a way takes too long
+    # NOTE 1 hour in, i give up
+    # TODO: make 1 answer correct
+    # answers: Optional[List[models.Answer]] = factory.List([
+    #     factory.SubFactory("fastapi_tut.tests.factories.AnswerFactory") for _ in range(4)
+    # ])
+
+    quiz_id: int = factory.LazyAttribute(lambda a: a.quiz.id if a.quiz is not None else None)
+
+    model: ModelType = models.QuizQuestion
+    create_schema: CreateSchemaType = models.QuizQuestionCreate
+    update_schema: UpdateSchemaType = models.QuizQuestionUpdate

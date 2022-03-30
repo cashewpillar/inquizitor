@@ -19,15 +19,10 @@ Quiz crud - add models for student and teacher + factories
 		https://github.com/instructure/canvas-lms/blob/master/app/models/quizzes/quiz.rb
 
 USER TESTS - checking if superuser & stuff
-SQLMODEL CRUD REFERENCES SEE NAV: https://sqlmodel.tiangolo.com/tutorial/where/ 
 
 MIGRATIONS - [Reads](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
-Admin crud (esp for accessing mouse statistics (?))
 App Settings/ Configurations for Development, Deployment etc.
 Password reset
-STORING TOKENS IN COOKIES
-	https://indominusbyte.github.io/fastapi-jwt-auth/usage/jwt-in-cookies/
-	https://www.fastapitutorial.com/blog/fastapi-jwt-httponly-cookie/
 
 LEGEND ===========================================================
 TODO - to do

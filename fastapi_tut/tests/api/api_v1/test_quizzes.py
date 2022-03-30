@@ -33,8 +33,6 @@ class TestReadQuiz:
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
 		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
-		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
@@ -223,8 +221,8 @@ class TestUpdateQuiz:
 	async def test_update_teacher(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
+		# TODO replace with get-user when implemented
 		r = await client.post(
 			"/login/test-token", cookies=teacher_cookies
 		)
