@@ -62,3 +62,11 @@ class User(UserInDBBase, table=True):
 	def __repr__(self):
 		"""Represent instance as a unique string."""
 		return f"<User({self.email!r})>"
+
+class ShowUser(UserBase):
+	full_name: Optional[str] = Field(index=True)
+	first_name : str
+	last_name : str
+	is_superuser: bool = False
+	is_teacher : bool = False
+	is_student : bool = False

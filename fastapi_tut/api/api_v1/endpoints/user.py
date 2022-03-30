@@ -7,7 +7,7 @@ from typing import List
 
 from fastapi_tut import crud
 from fastapi_tut.api import deps
-from fastapi_tut.models.user import User, UserCreate
+from fastapi_tut.models.user import User, UserCreate, ShowUser
 
 router = APIRouter()
 
@@ -26,23 +26,53 @@ async def read_users(
 
     return users
 
-# @router.post("/")
-# async def create_user(
+@router.get("/{id}", response_model=ShowUser)
+async def read_user(
+    id : int,
+    db : Session = Depends(deps.get_db),
+    Authorize : AuthJWT = Depends()
+    ):
+
+    # is_superuser
+    Authorize.jwt_required()
+
+    users = crud.user.get_user(id, db)
+
+    # hindi dapat nakalabas yung pw lmao
+    return users
+
+@router.post("/", response_model=ShowUser)
+async def create_user(
+    user : UserCreate,
+    db : Session = Depends(deps.get_db),
+    Authorize : AuthJWT = Depends()
+):
+    # TODO
+    # doesnt return query errors properly (duplicate username, etc)
+
+    # is_superuser
+    Authorize.jwt_required()
+	
+    user_in = UserCreate(**user.dict())
+
+    crud.user.create(db, obj_in=user_in)
+	
+    return user_in
+
+# @router.put("/")
+# async def update_user(
 #     user : UserCreate,
 #     db : Session = Depends(deps.get_db),
 #     Authorize : AuthJWT = Depends()
-#     # arg schema
 # ):
-    
+#     # TODO
+#     # doesnt return query errors properly (duplicate username, etc)
+
 #     # is_superuser
 #     Authorize.jwt_required()
 	
 #     user_in = UserCreate(**user.dict())
 
-#     crud.user.create(db, obj_in=user_in)
+#     crud.user.update(db, obj_in=user_in)
 	
-#     return user_in
-
-# @router.put("/{id}")
-# async def update_user(exam_id: int, item_id: int):
-# 	return {"message": f"Taking item [ID: {item_id}]"}
+#     return {'msg' : 'Successfully update data.'}
