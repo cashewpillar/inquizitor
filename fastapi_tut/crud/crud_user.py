@@ -8,6 +8,10 @@ from fastapi_tut.models.user import User, UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
+	def get_users(self, db : Session):
+		users = db.query(User).all()
+		return users
+
 	def get_by_username(self, db:Session, *, username: str) -> Optional[User]:
 		return db.query(User).filter(User.username == username).first()
 
