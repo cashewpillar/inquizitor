@@ -38,7 +38,10 @@ async def create_quiz(
     Authorize.jwt_required()
 
     current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
-    # quiz_obj = Quiz.from_orm(quiz)
+    
+    #if user is student
+    if crud.user.is_student(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
 
 # generate random characters
     while True:
@@ -64,8 +67,17 @@ async def create_questions(
     question: QuizQuestionCreate, 
     db: Session = Depends(deps.get_db)
 ):
+    
+    quiz = crud.quiz.get(db, id=quiz_id)
+    if not quiz: #return error if quiz doesn't exist
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    #check if user is student
+    #check if teacher owns the quiz
+    if crud.user.is_student(current_user) or current_user.id != quiz.teacher_id:
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
     question_obj = QuizQuestion(**question.dict(), quiz_id=quiz_id)
-    # question_obj = QuizQuestion.from_orm(question)
     db.add(question_obj)
     db.commit()
     db.refresh(question_obj)
@@ -79,6 +91,17 @@ async def create_choices(
     choice: QuizChoiceCreate,
     db: Session = Depends(deps.get_db)
 ):
+
+    quiz = crud.quiz.get(db, id=quiz_id)
+    if not quiz: #return error if quiz doesn't exist
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    #check if user is student
+    #check if teacher owns the quiz
+    if crud.user.is_student(current_user) or current_user.id != quiz.teacher_id:
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+
     choice_obj = QuizChoice(**choice.dict(), question_id=question_id)
     db.add(choice_obj)
     db.commit()
