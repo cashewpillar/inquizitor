@@ -28,15 +28,14 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-	username : Optional[str] = None
-	email: Optional[EmailStr] = None
-	full_name: Optional[str] = None
-	is_superuser: bool = False
-	last_name : Optional[str] = None
-	first_name : Optional[str] = None
-	password: Optional[str] = None
-	is_teacher : Optional[bool] = None
-	is_student : Optional[bool] = None
+	username : Optional[str]
+	email: Optional[EmailStr]
+	is_superuser: Optional[bool]
+	last_name : Optional[str]
+	first_name : Optional[str]
+	hashed_password: Optional[str]
+	is_teacher : Optional[bool]
+	is_student : Optional[bool]
 
 
 class UserInDBBase(UserBase, PKModel):

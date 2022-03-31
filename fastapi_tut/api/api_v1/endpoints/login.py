@@ -73,21 +73,6 @@ async def logout(
 
 	return {'msg':'Successfully logged out.'}
 
-@router.post("/test-token", response_model=models.User)
-async def test_token(
-	db: Session = Depends(deps.get_db),
-	Authorize: AuthJWT = Depends()
-) -> Any:
-	"""
-	Test access token
-	"""
-	
-	Authorize.jwt_required()
-
-	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
-	return current_user
-
-
 # @router.post('/refresh', response_model=models.Token)
 @router.post('/refresh')
 async def refresh(
