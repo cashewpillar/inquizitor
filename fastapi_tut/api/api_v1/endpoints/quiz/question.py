@@ -26,17 +26,15 @@ async def read_question(
 	What-ifs:
 	1. Users without access to quiz reads a question [solved using quiz_index]
 	"""
-
-	if isinstance(quiz_index, str):
-		quiz = crud.quiz.get_by_code(db, code=quiz_index)
-	else:
-		quiz = crud.quiz.get(db, id=quiz_index)
+	quiz = crud.quiz.get_by_index(db, quiz_index)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 
 	question = crud.quiz_question.get(db, id=question_id)
 	if not question:
 		raise HTTPException(status_code=404, detail="Question not found")
+	if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
+		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
 	return question
 
 @router.put("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
@@ -51,20 +49,18 @@ async def update_question(
 	"""
 	Update question by quiz_index and question id.
 	"""
-
-	if isinstance(quiz_index, str):
-		quiz = crud.quiz.get_by_code(db, code=quiz_index)
-	else:
-		quiz = crud.quiz.get(db, id=quiz_index)
+	quiz = crud.quiz.get_by_index(db, quiz_index)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
-	# TODO add validation method to quiz to check if question belongs??
 
 	if not crud.user.is_superuser(current_user) and \
-		not (crud.user.is_teacher(current_user) and quiz.teacher_id == current_user.id):
+		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=quiz_index):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 
 	question = crud.quiz_question.get(db, id=question_id)
+	if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
+		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
+
 	crud.quiz_question.update(db, db_obj=question, obj_in=question_in)
 	if not question:
 		raise HTTPException(status_code=404, detail="Question not found")

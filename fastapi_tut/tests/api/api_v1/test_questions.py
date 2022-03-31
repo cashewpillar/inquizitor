@@ -59,6 +59,18 @@ class TestReadQuestion:
 		assert result["order"] == question.order
 		assert result["quiz_id"] == question.quiz_id
 
+	# NOTE supposedly on crud tests but seems therell be no crud tests
+	async def test_read_question_does_not_belong_to_quiz(
+		self, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		question = QuestionFactory()
+		r = await client.get(
+			f"/quizzes/{quiz.id}/questions/{question.id}", cookies=await superuser_cookies
+		)
+		result = r.json()
+		assert r.status_code == 404
+
 @pytest.mark.anyio
 class TestUpdateQuestion:
 	async def test_update_question_student(
@@ -96,7 +108,6 @@ class TestUpdateQuestion:
 			"/login/test-token", cookies=teacher_cookies
 		)
 		result = r.json()
-		# logging.info(f"{result}")
 		teacher = crud.user.get(db, id=result['id'])
 		quiz = QuizFactory(teacher=teacher)
 		repr(quiz) 

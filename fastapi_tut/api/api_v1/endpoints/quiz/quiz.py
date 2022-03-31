@@ -46,11 +46,7 @@ async def read_quiz(
 	"""
 	Retrieve quiz by id or quiz_code.
 	"""
-	if isinstance(index, str):
-		quiz = crud.quiz.get_by_code(db, code=index)
-	else:
-		quiz = crud.quiz.get(db, id=index)
-
+	quiz = crud.quiz.get_by_index(db, index)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	# if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
@@ -73,7 +69,7 @@ async def update_quiz(
 		raise HTTPException(status_code=404, detail="Quiz not found")
 		
 	if not crud.user.is_superuser(current_user) and \
-		not (crud.user.is_teacher(current_user) and quiz.teacher_id == current_user.id):
+		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=id):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 	quiz = crud.quiz.update(db, db_obj=quiz, obj_in=quiz_in)
 	return quiz
@@ -92,7 +88,7 @@ async def delete_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if not crud.user.is_superuser(current_user) and \
-		not (crud.user.is_teacher(current_user) and quiz.teacher_id == current_user.id):
+		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=id):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 	quiz = crud.quiz.remove(db, id=id)
 	return quiz

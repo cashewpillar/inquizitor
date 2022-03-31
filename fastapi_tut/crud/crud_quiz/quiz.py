@@ -1,5 +1,5 @@
 from sqlmodel import Session
-from typing import List
+from typing import List, Union
 
 from fastapi.encoders import jsonable_encoder
 
@@ -13,6 +13,16 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 	) -> Quiz:
 		"""Read quiz by quiz_code"""
 		return db.query(Quiz).filter(Quiz.quiz_code == code).first()
+
+	def get_by_index(
+		self, db: Session, quiz_index: Union[int, str]
+	) -> Quiz:
+		"""Read quiz by quiz_code or int"""
+		if isinstance(quiz_index, str):
+			quiz = self.get_by_code(db, code=quiz_index)
+		else:
+			quiz = self.get(db, id=quiz_index)
+		return quiz
 
 	def get_multi_by_name(
 		self, db:Session, *, name: str, skip: int = 0, limit: int = 100
@@ -45,5 +55,15 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			.limit(limit)
 			.all()
 		)
+
+	def has_question(self, db: Session, quiz_index: Union[int, str], question_id: int):
+		"""Verify if question belongs to the quiz"""
+		quiz = self.get_by_index(db, quiz_index)
+		question_ids = [question.id for question in quiz.questions]
+		return question_id in question_ids
+
+	def is_author(self, db: Session, user_id: int, quiz_index: Union[int, str]):
+		quiz = self.get_by_index(db, quiz_index)
+		return quiz.teacher_id == user_id
 
 quiz = CRUDQuiz(Quiz)
