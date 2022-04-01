@@ -189,8 +189,11 @@ class TestDeleteQuestion:
 		assert result["points"] == question.points
 		assert result["order"] == question.order
 
+		question = crud.quiz_question.get(db, id=question.id)
+		assert question is None
+
 	async def test_delete_question_superuser(
-		self, client: AsyncClient, superuser_cookies: Dict[str, str]
+		self, db:Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
 		question = QuestionFactory()
 		r = await client.delete(
@@ -202,3 +205,6 @@ class TestDeleteQuestion:
 		assert result["content"] == question.content
 		assert result["points"] == question.points
 		assert result["order"] == question.order
+
+		question = crud.quiz_question.get(db, id=question.id)
+		assert question is None

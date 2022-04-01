@@ -118,3 +118,20 @@ class QuestionFactory(BaseFactory):
     model: ModelType = models.QuizQuestion
     create_schema: CreateSchemaType = models.QuizQuestionCreate
     update_schema: UpdateSchemaType = models.QuizQuestionUpdate
+
+class ChoiceFactory(BaseFactory):
+    """Choice factory."""
+
+    class Meta:
+        model = models.QuizChoice
+
+    content: str = factory.Faker('word') 
+    is_correct: bool = False
+
+    question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
+
+    question_id: int = factory.LazyAttribute(lambda a: a.question.id if a.question is not None else None)
+
+    model: ModelType = models.QuizChoice
+    create_schema: CreateSchemaType = models.QuizChoiceCreate
+    update_schema: UpdateSchemaType = models.QuizChoiceUpdate

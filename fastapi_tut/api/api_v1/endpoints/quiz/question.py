@@ -59,7 +59,7 @@ async def update_question(
 	if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
 		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
 
-	crud.quiz_question.update(db, db_obj=question, obj_in=question_in)
+	question = crud.quiz_question.update(db, db_obj=question, obj_in=question_in)
 	if not question:
 		raise HTTPException(status_code=404, detail="Question not found")
 	return question
