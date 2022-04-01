@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 from fastapi_tut.models.quiz.quiz import Quiz
 
 from .question import QuizQuestion
@@ -23,7 +23,7 @@ class QuizAttemptUpdate(QuizAttemptBase):
     student_id : Optional[int] = None
     quiz_id : Optional[int] = None
 
-class QuizAttemptInDBBase(QuizAttemptBase, TableBase):
+class QuizAttemptInDBBase(QuizAttemptBase, PKModel):
     pass
 
 class QuizAttempt(QuizAttemptInDBBase, table=True):

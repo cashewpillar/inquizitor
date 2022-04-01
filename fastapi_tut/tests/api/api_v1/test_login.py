@@ -14,7 +14,7 @@ from fastapi_tut.core.config import settings
 logging.basicConfig(level=logging.INFO)
 
 LOGIN_DATA = {
-	"username": settings.FIRST_SUPERUSER_EMAIL,
+	"username": settings.FIRST_SUPERUSER_USERNAME,
 	"password": settings.FIRST_SUPERUSER_PASSWORD,
 }
 
@@ -39,7 +39,7 @@ async def test_use_access_token(
 	)
 	result = r.json()
 	assert r.status_code == 200
-	assert result["email"] == settings.FIRST_SUPERUSER_EMAIL
+	assert result["username"] == settings.FIRST_SUPERUSER_USERNAME
 	assert result["is_superuser"] == True
 
 @pytest.mark.anyio

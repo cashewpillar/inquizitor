@@ -16,6 +16,7 @@ from fastapi_tut import models, crud, utils
 from fastapi_tut.api import deps
 from fastapi_tut.core import security
 from fastapi_tut.core.config import settings
+from fastapi_tut import crud
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,10 +35,10 @@ async def login_access_token(
 	OAuth2 compatible token login, get an access token for future requests
 	"""
 	user = crud.user.authenticate(
-		db, email=form_data.username, password=form_data.password
+		db, username=form_data.username, password=form_data.password
 	)
 	if not user:
-		raise HTTPException(status_code=400, detail="Incorrent email or password")
+		raise HTTPException(status_code=400, detail="Incorrent user or password")
 	# if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
 	# 	raise HTTPException(status_code=401, detail="Not authorized.")
 	
@@ -50,10 +51,22 @@ async def login_access_token(
 	Authorize.set_access_cookies(access_token)
 	Authorize.set_refresh_cookies(refresh_token)
 
+	# print(dir(Authorize))
+
 	return {'msg':'Successfully logged in.'}
 
 @router.post('/logout')
-async def logout(Authorize: AuthJWT = Depends()):
+async def logout(
+	Authorize: AuthJWT = Depends(),
+	db: Session = Depends(deps.get_db)
+	):
+
+	Authorize.jwt_required()
+	crud.token.revoke_access(Authorize, db)
+	
+	Authorize.jwt_refresh_token_required()
+	crud.token.revoke_refresh(Authorize, db)
+
 	Authorize.unset_jwt_cookies()
 
 	return {'msg':'Successfully logged out.'}
@@ -66,6 +79,7 @@ async def test_token(
 	"""
 	Test access token
 	"""
+	
 	Authorize.jwt_required()
 
 	current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
@@ -93,21 +107,15 @@ async def refresh(
 
 @router.delete('/access-revoke', response_model=models.Msg)
 async def revoke_access(
-	db: Session = Depends(deps.get_db),
-	Authorize: AuthJWT = Depends()
+	Authorize: AuthJWT = Depends(),
+	db: Session = Depends(deps.get_db)
 ) -> Any:
 	"""
 	Revoke access token of current user
 	"""
 	Authorize.jwt_required()
-
-	jti = Authorize.get_raw_jwt()['jti']
-	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
-	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist automatically
-	db.add(db_obj)
-	db.commit()
-	db.refresh(db_obj)
+	
+	crud.token.revoke_access(Authorize, db)
 
 	return {'msg': "Access token has been revoked"}
 
@@ -122,12 +130,6 @@ async def revoke_refresh(
 	"""
 	Authorize.jwt_refresh_token_required()
 
-	jti = Authorize.get_raw_jwt()['jti']
-	db_obj = models.RevokedToken(jti=jti, is_revoked=True)
-	# TODO add the default token expiry (see core.config)
-	# to remove token from denylist automatically
-	db.add(db_obj)
-	db.commit()
-	db.refresh(db_obj)
+	crud.token.revoke_refresh(Authorize, db)
 
 	return {'msg': "Refresh token has been revoked"}

@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 		SQLALCHEMY_DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 	EMAIL_TEST_USER: EmailStr = "test@example.com" # type: ignore
+	FIRST_SUPERUSER_USERNAME : str = "admin"
 	FIRST_SUPERUSER_EMAIL: EmailStr = "admin@admin.com"
 	FIRST_SUPERUSER_LASTNAME: str = "Add"
 	FIRST_SUPERUSER_FIRSTNAME: str = "Mean"
@@ -42,36 +43,16 @@ class Settings(BaseSettings):
 	USERS_OPEN_REGISTRATION: bool = False
 
 	FIRST_STUDENT_EMAIL: EmailStr = "student@student.com"
+	FIRST_STUDENT_USERNAME : str = "student"
 	FIRST_STUDENT_LASTNAME: str = "Stew"
 	FIRST_STUDENT_FIRSTNAME: str = "Dent"
 	FIRST_STUDENT_PASSWORD: str = "superstudent"
 
 	FIRST_TEACHER_EMAIL: EmailStr = "teacher@teacher.com"
+	FIRST_TEACHER_USERNAME : str = "teacher"
 	FIRST_TEACHER_LASTNAME: str = "Tea"
 	FIRST_TEACHER_FIRSTNAME: str = "Chair"
 	FIRST_TEACHER_PASSWORD: str = "superteacher"
-
-	DESCRIPTION = """
-	FASTAPI_TUT helps you learn API STUFF AND FASTAPI. xD GG nc NC 🚀  
-
-	## Users 
-
-	You will be able to: 
-
-	* **Log In**. 
-
-	* **Take an exam** (_not implemented_).
-
-	* **Reset Password** (_not implemented_). 
-
-
-	## Admin
-
-	You will be able to:
-
-	* **Manage exam via dashboard** (_not implemented_). 
-
-	"""
 
 	authjwt_secret_key: str = SECRET_KEY
 	authjwt_denylist_enabled: bool = True

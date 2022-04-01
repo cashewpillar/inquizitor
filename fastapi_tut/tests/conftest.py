@@ -23,11 +23,6 @@ from fastapi_tut.tests.utils.utils import (
 @pytest.fixture(scope="session")
 def db() -> Generator:
 	"""Create database for the tests."""
-	# TODO, refer to flask-repo for session management
-	# yield TestSession
-
-	# TestSession.close()
-	# yield BaseFactory().Meta().sqlalchemy_session
 
 	# https://factoryboy.readthedocs.io/en/v2.6.1/orms.html#managing-sessions
 	common.Session.configure(bind=test_engine)
@@ -60,17 +55,6 @@ async def client(app: FastAPI, db: Session) -> Generator:
 	async with AsyncClient(app=app, base_url="http://test") as ac:
 		yield ac
 	app.dependency_overrides.clear()
-
-@pytest.fixture
-@pytest.mark.anyio
-async def production_client(app: FastAPI, db: Session) -> Generator:
-	""" Client for making asynchronous requests (?)
-		using the production database
-
-		NOTE: Created for unsupported testing cases such
-		as with the fastapi_jwt_auth library """
-	async with AsyncClient(app=app, base_url="http://test") as ac:
-		yield ac
 
 
 

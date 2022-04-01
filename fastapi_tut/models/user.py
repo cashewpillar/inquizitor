@@ -6,7 +6,7 @@ from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, String
 
-from fastapi_tut.db.base_class import TableBase
+from fastapi_tut.db.base_class import PKModel
 from fastapi_tut.models.quiz.link import QuizStudentLink
 
 # Shared Properties
@@ -39,7 +39,7 @@ class UserUpdate(UserBase):
 	is_student : Optional[bool] = None
 
 
-class UserInDBBase(UserBase, TableBase):
+class UserInDBBase(UserBase, PKModel):
 	class Config:
 		orm_mode = True
 

@@ -59,9 +59,6 @@
 
 - [data gathering](https://docs.google.com/forms/d/10Sh3mFSDDFLDSU0zRs4IrazD_ZwYSRBrY1eimmVAwJc/edit?fbclid=IwAR3YJFv_XsLop_dh6Td7LHfF1bf--9Qhy898PfDq5_2NUN96UITpSBCoY-Y)  -   [data responses](https://docs.google.com/spreadsheets/d/1GQnv96uQBPZYlaVhxOGUgCY3Ud92jL2Jrgcnp3KmR1E/edit?resourcekey#gid=1853497657)  -  [initial chapters 1-3](https://docs.google.com/document/d/1SogCDHCalx5yzXk1QAynxyxSCE_Q6m_-3kUshWWt8EQ/edit?fbclid=IwAR0JfOrIGcBSTkASUMgGMLQgoHv0P4M9USD2_ZPazmwYFejI2mY5o2sl7Z4#heading=h.vpxlmrhqpcpg)
 
-#### POETRY BASIC USAGE
-
-- [poetry docs](](https://python-poetry.org/docs/basic-usage/))
 
 #### PYTHON FUNCTION ANNOTATIONS | TYPE HINTS
 
@@ -87,10 +84,3 @@
 - [google search](https://www.google.com/search?q=sublime+text+split+screen+vertically&oq=sublime+text+split+screen+vertically&aqs=chrome..69i57j0l2j0i22i30l7.7151j0j7&sourceid=chrome&ie=UTF-8)
 - [switch editor window](https://stackoverflow.com/questions/38447486/in-sublime-how-to-switch-between-panels-in-a-2-column-view/38447556)
 - [space to tabs](https://stackoverflow.com/questions/22529265/sublime-text-3-convert-spaces-to-tabs)
-
-
-##### OTHERS
-
-- admin page refs
-  - [flask-admin docs](https://flask-admin.readthedocs.io/en/latest/) - [getting started](https://flask-admin.readthedocs.io/en/latest/introduction/#getting-started)
-  - [django admin sample](https://youtu.be/BJfyATa9nX0?t=184)
