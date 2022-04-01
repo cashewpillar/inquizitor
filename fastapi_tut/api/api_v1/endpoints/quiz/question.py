@@ -11,8 +11,6 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
-# DOING
-# /quizzes/{quiz_id}/questions/{question_id}
 @router.get("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
 async def read_question(
 	*,
@@ -64,4 +62,31 @@ async def update_question(
 	crud.quiz_question.update(db, db_obj=question, obj_in=question_in)
 	if not question:
 		raise HTTPException(status_code=404, detail="Question not found")
+	return question
+
+
+@router.delete("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
+async def delete_question(
+	*,
+	db: Session = Depends(deps.get_db),
+	quiz_index: Union[int, str] = Path(..., description="ID or Code of quiz to retrieve"),
+	question_id: int,
+	current_user: models.User = Depends(deps.get_current_user)
+) -> Any:
+	# """
+	# Delete question by id.
+	# """
+	quiz = crud.quiz.get_by_index(db, quiz_index)
+	if not quiz:
+		raise HTTPException(status_code=404, detail="Quiz not found")
+
+	if not crud.user.is_superuser(current_user) and \
+		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=quiz_index):
+		raise HTTPException(status_code=400, detail="Not enough permissions")
+
+	question = crud.quiz_question.get(db, id=question_id)
+	if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
+		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
+
+	question = crud.quiz_question.remove(db, id=question_id)
 	return question

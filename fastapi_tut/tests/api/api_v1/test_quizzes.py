@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 DT_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 @pytest.mark.anyio
-class TestReadQuiz:
+class TestReadQuizzes:
 	async def test_read_quizzes_superuser(
 		self, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
@@ -84,7 +84,9 @@ class TestReadQuiz:
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
-	async def test_read_teacher(
+@pytest.mark.anyio
+class TestReadQuiz:
+	async def test_read_quiz_teacher(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
@@ -107,7 +109,7 @@ class TestReadQuiz:
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id
 
-	async def test_read_teacher_code(
+	async def test_read_quiz_teacher_code(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
@@ -130,29 +132,7 @@ class TestReadQuiz:
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id
 
-	async def test_read_student(
-		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
-	) -> None:
-		# TODO replace with get-user when implemented
-		student_cookies = await student_cookies
-		r = await client.post(
-			"/login/test-token", cookies=student_cookies
-		)
-		result = r.json()
-		quiz = QuizFactory()
-		r = await client.get(
-			f"/quizzes/{quiz.id}", cookies=student_cookies
-		)
-		result = r.json()
-		assert r.status_code == 200
-		assert result["name"] == quiz.name
-		assert result["number_of_questions"] == quiz.number_of_questions
-		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
-		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		assert result["quiz_code"] == quiz.quiz_code
-		assert result["teacher_id"] == quiz.teacher_id
-
-	async def test_read_student_code(
+	async def test_read_quiz_student_code(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
@@ -175,10 +155,116 @@ class TestReadQuiz:
 		assert result["quiz_code"] == quiz.quiz_code
 		assert result["teacher_id"] == quiz.teacher_id
 
+	async def test_read_quiz_superuser(
+		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		# TODO replace with get-user when implemented
+		superuser_cookies = await superuser_cookies
+		r = await client.post(
+			"/login/test-token", cookies=superuser_cookies
+		)
+		result = r.json()
+		student = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory()
+		r = await client.get(
+			f"/quizzes/{quiz.quiz_code}", cookies=superuser_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+@pytest.mark.anyio
+class TestUpdateQuiz:
+	async def test_update_quiz_superuser(
+		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		quiz_in = QuizFactory.stub(schema_type="update")
+		r = await client.put(
+			f"/quizzes/{quiz.id}", cookies=await superuser_cookies, json=quiz_in
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz_in["name"]
+		assert result["desc"] == quiz_in["desc"]
+		assert result["due_date"] == quiz_in["due_date"]
+		assert result["number_of_questions"] == quiz_in["number_of_questions"]
+		assert result["quiz_code"] == quiz_in["quiz_code"]
+
+	async def test_update_quiz_teacher_is_author(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		teacher_cookies = await teacher_cookies
+		# TODO replace with get-user when implemented
+		r = await client.post(
+			"/login/test-token", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		quiz_in = QuizFactory.stub(schema_type="update")
+		r = await client.put(
+			f"/quizzes/{quiz.id}", cookies=teacher_cookies, json=quiz_in
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz_in["name"]
+		assert result["desc"] == quiz_in["desc"]
+		assert result["due_date"] == quiz_in["due_date"]
+		assert result["number_of_questions"] == quiz_in["number_of_questions"]
+		assert result["quiz_code"] == quiz_in["quiz_code"]
+
+	async def test_update_quiz_teacher_not_author(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		quiz_in = QuizFactory.stub(schema_type="update")
+		r = await client.put(
+			f"/quizzes/{quiz.id}", cookies=await teacher_cookies, json=quiz_in
+		)
+		result = r.json()
+		assert r.status_code == 400
+
+	async def test_update_quiz_student(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		quiz_in = QuizFactory.stub(schema_type="update")
+		r = await client.put(
+			f"/quizzes/{quiz.id}", cookies=await student_cookies, json=quiz_in
+		)
+		result = r.json()
+		assert r.status_code == 400
+
 
 @pytest.mark.anyio
 class TestDeleteQuiz:
-	async def test_delete_teacher(
+	# TODO tests deleting by student & superuser
+	async def test_delete_quiz_superuser(
+		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		r = await client.delete(
+			f"/quizzes/{quiz.id}", cookies=await superuser_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		assert result["name"] == quiz.name
+		assert result["number_of_questions"] == quiz.number_of_questions
+		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		assert result["quiz_code"] == quiz.quiz_code
+		assert result["teacher_id"] == quiz.teacher_id
+
+		quiz = crud.quiz.get(db, id=quiz.id)
+		assert quiz is None
+
+	async def test_delete_quiz_teacher_is_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
@@ -204,7 +290,7 @@ class TestDeleteQuiz:
 		quiz = crud.quiz.get(db, id=quiz.id)
 		assert quiz is None
 
-	async def test_delete_teacher_not_author(
+	async def test_delete_quiz_teacher_not_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		# TODO replace with get-user when implemented
@@ -216,27 +302,13 @@ class TestDeleteQuiz:
 		result = r.json()
 		assert r.status_code == 400
 
-@pytest.mark.anyio
-class TestUpdateQuiz:
-	async def test_update_teacher(
-		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	async def test_delete_quiz_student(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
-		teacher_cookies = await teacher_cookies
 		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		quiz = QuizFactory()
+		r = await client.delete(
+			f"/quizzes/{quiz.id}", cookies=await student_cookies
 		)
 		result = r.json()
-		teacher = crud.user.get(db, id=result['id'])
-		quiz = QuizFactory(teacher=teacher)
-		quiz_in = QuizFactory.stub(schema_type="update")
-		r = await client.put(
-			f"/quizzes/{quiz.id}", cookies=teacher_cookies, json=quiz_in
-		)
-		result = r.json()
-		assert r.status_code == 200
-		assert result["name"] == quiz_in["name"]
-		assert result["desc"] == quiz_in["desc"]
-		assert result["due_date"] == quiz_in["due_date"]
-		assert result["number_of_questions"] == quiz_in["number_of_questions"]
-		assert result["quiz_code"] == quiz_in["quiz_code"]
+		assert r.status_code == 400
