@@ -34,7 +34,11 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 		# update only attributes supplied with value
 		for k, v in user.__dict__.items():
 			if v:
-				existing_user.update({k : v})
+				print(k)
+				if k == "password":
+					existing_user.update({"hashed_password": get_password_hash(v)})
+				else:
+					existing_user.update({k : v})
 
 		db.commit()
 

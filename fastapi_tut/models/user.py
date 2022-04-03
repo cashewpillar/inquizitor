@@ -33,7 +33,7 @@ class UserUpdate(UserBase):
 	is_superuser: Optional[bool]
 	last_name : Optional[str]
 	first_name : Optional[str]
-	hashed_password: Optional[str]
+	password: Optional[str]
 	is_teacher : Optional[bool]
 	is_student : Optional[bool]
 
@@ -69,3 +69,4 @@ class ShowUser(UserBase):
 	is_superuser: bool = False
 	is_teacher : bool = False
 	is_student : bool = False
+	hashed_password : str

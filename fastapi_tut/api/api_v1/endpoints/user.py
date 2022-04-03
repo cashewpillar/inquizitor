@@ -11,14 +11,11 @@ from fastapi_tut.models.user import User, UserCreate, ShowUser, UserUpdate
 
 router = APIRouter()
 
-
 @router.get("/profile", response_model=ShowUser)
 async def read_profile(
     db : Session = Depends(deps.get_db),
-    Authorize : AuthJWT = Depends()
+    current_user: ShowUser = Depends(deps.get_current_user)
 ):
-    Authorize.jwt_required()
-    current_user = crud.user.get(db, id=Authorize.get_jwt_subject())
     
     return current_user
 
@@ -26,11 +23,11 @@ async def read_profile(
 @router.get("/", response_model=List[User])
 async def read_users(
     db : Session = Depends(deps.get_db),
-    Authorize : AuthJWT = Depends()
+    current_user: ShowUser = Depends(deps.get_current_user)
 ):
     
-    Authorize.jwt_required()
-    deps.has_superuser_access(Authorize.get_jwt_subject(), db)
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, details='Not enough permissions.')
 
     users = crud.user.get_users(db)
 
@@ -40,11 +37,11 @@ async def read_users(
 async def read_user(
     id : int,
     db : Session = Depends(deps.get_db),
-    Authorize : AuthJWT = Depends()
+    current_user: ShowUser = Depends(deps.get_current_user)
 ):
     
-    Authorize.jwt_required()
-    deps.has_superuser_access(Authorize.get_jwt_subject(), db)
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, details='Not enough permissions.')
 
     users = crud.user.get_user(id, db)
 
@@ -55,7 +52,7 @@ async def read_user(
 async def create_user(
     user : UserCreate,
     db : Session = Depends(deps.get_db),
-    Authorize : AuthJWT = Depends()
+    current_user: ShowUser = Depends(deps.get_current_user)
 ):
     """
     
@@ -64,8 +61,8 @@ async def create_user(
     
     """
 
-    Authorize.jwt_required()
-    deps.has_superuser_access(Authorize.get_jwt_subject(), db)
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, details='Not enough permissions.')
 	
     user_in = UserCreate(**user.dict())
 
@@ -76,9 +73,9 @@ async def create_user(
 @router.put("/{id}")
 async def update_user(
     id : int,
-    user : UserUpdate,
+    user_in : UserUpdate,
     db : Session = Depends(deps.get_db),
-    Authorize : AuthJWT = Depends()
+    current_user: ShowUser = Depends(deps.get_current_user)
 ):
     """
     
@@ -87,17 +84,19 @@ async def update_user(
     
     """
 
-    Authorize.jwt_required()
-    deps.has_superuser_access(Authorize.get_jwt_subject(), db)
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, details='Not enough permissions.')
 	
-    user_in = UserUpdate(**user.dict())
+    user_in = UserUpdate(**user_in.dict())
 
-    result = crud.user.update_user_by_id(id, user_in, db)
+    user = crud.user.get(db, id=id)
+
+    result = crud.user.update(db, db_obj=user, obj_in=user_in)
 
     if not result:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with {id} does not exist."
         )
-	
+
     return {'msg' : 'Successfully updated user.'}
