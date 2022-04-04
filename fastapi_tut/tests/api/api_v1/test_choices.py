@@ -19,7 +19,8 @@ class TestUpdateQuestion:
 	) -> None:
 		choice = ChoiceFactory()
 		choice_in = ChoiceFactory.stub(schema_type="update", is_correct=True)
-		quiz = crud.quiz_question.get(db, choice.question_id)
+		question = crud.quiz_question.get(db, choice.question_id)
+		quiz = crud.quiz.get(db, question.quiz_id)
 		r = await client.put(
 			f"/quizzes/{quiz.id}/questions/{choice.question_id}/choices/{choice.id}", 
 			cookies=await student_cookies,
@@ -33,7 +34,8 @@ class TestUpdateQuestion:
 	) -> None:
 		choice = ChoiceFactory()
 		choice_in = ChoiceFactory.stub(schema_type="update", is_correct=True)
-		quiz = crud.quiz_question.get(db, choice.question_id)
+		question = crud.quiz_question.get(db, choice.question_id)
+		quiz = crud.quiz.get(db, question.quiz_id)
 		r = await client.put(
 			f"/quizzes/{quiz.id}/questions/{choice.question_id}/choices/{choice.id}", 
 			cookies=await teacher_cookies,
