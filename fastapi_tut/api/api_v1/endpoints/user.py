@@ -1,8 +1,10 @@
 # initial, todo
 
 from sqlmodel import Session
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from fastapi_jwt_auth import AuthJWT
+from pydantic.networks import EmailStr
 from typing import Any, List
 
 from fastapi_tut import crud
@@ -70,6 +72,30 @@ async def read_profile(
     Get current user.
     """
     return current_user
+
+# DOING
+@router.put("/profile", response_model=ShowUser)
+def update_profile(
+    *,
+    db: Session = Depends(deps.get_db),
+    password: str = Body(None),
+    full_name: str = Body(None),
+    email: EmailStr = Body(None),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Update own user.
+    """
+    current_user_data = jsonable_encoder(current_user)
+    user_in = UserUpdate(**current_user_data)
+    if password is not None:
+        user_in.password = password
+    if full_name is not None:
+        user_in.full_name = full_name
+    if email is not None:
+        user_in.email = email
+    user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
+    return user
 
 @router.get("/{id}", response_model=ShowUser)
 async def read_user(
