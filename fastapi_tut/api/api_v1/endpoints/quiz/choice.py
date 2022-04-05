@@ -42,6 +42,30 @@ router = APIRouter()
 
 # 	return question
 
+@router.post("/{quiz_index}/questions/{question_id}", response_model=models.QuizChoice)
+async def create_choices(
+	*,
+    quiz_index: Union[int, str],
+    question_id: int,
+    choice_in: models.QuizChoiceCreate,
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user)
+):
+    quiz = crud.quiz.get_by_index(db, quiz_index)
+    if not quiz: #return error if quiz doesn't exist
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    #check if user is student
+    #check if teacher owns the quiz
+    if crud.user.is_student(current_user) or current_user.id != quiz.teacher_id:
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+
+    # choice_obj = QuizChoice(**choice.dict(), question_id=question_id)
+    choice_in.question_id = question_id
+    choice = crud.quiz_choice.create(db, obj_in=choice_in)
+    return choice
+
 @router.put("/{quiz_index}/questions/{question_id}/choices/{choice_id}", response_model=models.QuizChoice)
 async def update_choice(
 	*,

@@ -11,6 +11,27 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
+@router.post("/{quiz_index}/questions", response_model=models.QuizQuestion)
+async def create_questions(
+	*,
+    quiz_index: Union[int, str],
+    question_in: models.QuizQuestionCreate, 
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user)
+):
+    quiz = crud.quiz.get_by_index(db, quiz_index)
+    if not quiz: #return error if quiz doesn't exist
+        raise HTTPException(status_code=404, detail="Quiz not found")
+
+    #check if user is student
+    #check if teacher owns the quiz
+    if crud.user.is_student(current_user) or current_user.id != quiz.teacher_id:
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    question_in.quiz_id = quiz.id
+    question = crud.quiz_question.create(db, obj_in=question_in)
+    return question
+
 @router.get("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
 async def read_question(
 	*,

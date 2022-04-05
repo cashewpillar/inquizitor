@@ -1,4 +1,6 @@
 import logging
+import random
+import string
 from pprint import pformat
 from sqlmodel import Session
 from typing import Any, List, Union
@@ -10,6 +12,29 @@ from fastapi_tut import crud, models
 from fastapi_tut.api import deps
 
 router = APIRouter()
+
+@router.post("/", response_model=models.Quiz)
+async def create_quiz(
+	*,
+    quiz_in: models.QuizCreate, 
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_user)
+):
+    if crud.user.is_student(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+	# generate random characters
+    while True:
+        characters = string.ascii_letters + string.digits
+        quiz_code = ''.join(random.choice(characters) for i in range(6))
+        #check if generated quiz_code already exists
+        existing_code = db.query(models.Quiz).filter(models.Quiz.quiz_code == quiz_code).first()
+        if not existing_code:
+            break
+
+    quiz_in.quiz_code = quiz_code
+    quiz = crud.quiz.create(db, obj_in=quiz_in)
+    return quiz
 
 @router.get("/", response_model=List[models.Quiz])
 async def read_quizzes(
