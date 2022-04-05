@@ -34,8 +34,8 @@ async def test_get_tokens(client: AsyncClient) -> None:
 async def test_use_access_token(
 	client: AsyncClient, superuser_cookies: Dict[str, str]
 ) -> None:
-	r = await client.post(
-		"/login/test-token", cookies=await superuser_cookies
+	r = await client.get(
+		"/users/profile", cookies=await superuser_cookies
 	)
 	result = r.json()
 	assert r.status_code == 200
@@ -66,8 +66,8 @@ async def test_access_revoke(
 	assert "msg" in r.json()
 	assert "Access" in r.json()["msg"]
 
-	r = await client.post(
-		"/login/test-token", cookies=cookies
+	r = await client.get(
+		"/users/profile", cookies=cookies
 	)
 	result = r.json()
 	assert r.status_code == 401

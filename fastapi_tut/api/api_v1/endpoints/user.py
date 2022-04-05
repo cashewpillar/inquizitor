@@ -3,100 +3,109 @@
 from sqlmodel import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_jwt_auth import AuthJWT
-from typing import List
+from typing import Any, List
 
 from fastapi_tut import crud
 from fastapi_tut.api import deps
-from fastapi_tut.models.user import User, UserCreate, ShowUser, UserUpdate
+from fastapi_tut.models import User, UserCreate, ShowUser, UserUpdate
 
 router = APIRouter()
+
+"""
+NOTE
+reordered path operations by endpoint 
+@router.get("/")
+@router.post("/")
+@router.get("/{profile}")
+@router.get("/{id}")
+@router.put("/{id}")
+"""
+
+@router.get("/", response_model=List[ShowUser])
+async def read_users(
+    db : Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    # NOTE User instead of ShowUser para available lahat ng properties for processing
+    # mafifilter out naman yung response via response_model param
+    current_user: User = Depends(deps.get_current_active_superuser)
+) -> Any:
+    """
+    Retrieve users.
+    """
+    users = crud.user.get_multi(db, skip=skip, limit=limit)
+    return users
+
+@router.post("/", response_model=ShowUser)
+async def create_user(
+    *,
+    db : Session = Depends(deps.get_db),
+    user_in : UserCreate,
+    current_user: User = Depends(deps.get_current_active_superuser)
+):
+    """
+    Create new user.
+    """
+    user = crud.user.get_by_username(db, username=user_in.username)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this username already exists in the system.",
+        )
+    user = crud.user.get_by_email(db, email=user_in.email)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this email already exists in the system.",
+        )
+    user = crud.user.create(db, obj_in=user_in)
+    return user
 
 @router.get("/profile", response_model=ShowUser)
 async def read_profile(
     db : Session = Depends(deps.get_db),
-    current_user: ShowUser = Depends(deps.get_current_user)
-):
-    
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get current user.
+    """
     return current_user
-
-# Module 3: Exam
-@router.get("/", response_model=List[User])
-async def read_users(
-    db : Session = Depends(deps.get_db),
-    current_user: ShowUser = Depends(deps.get_current_user)
-):
-    
-    if not crud.user.is_superuser(current_user):
-        raise HTTPException(status_code=400, details='Not enough permissions.')
-
-    users = crud.user.get_users(db)
-
-    return users
 
 @router.get("/{id}", response_model=ShowUser)
 async def read_user(
     id : int,
     db : Session = Depends(deps.get_db),
-    current_user: ShowUser = Depends(deps.get_current_user)
-):
-    
-    if not crud.user.is_superuser(current_user):
-        raise HTTPException(status_code=400, details='Not enough permissions.')
-
-    users = crud.user.get_user(id, db)
-
-    
-    return users
-
-@router.post("/", response_model=ShowUser)
-async def create_user(
-    user : UserCreate,
-    db : Session = Depends(deps.get_db),
-    current_user: ShowUser = Depends(deps.get_current_user)
+    current_user: User = Depends(deps.get_current_user)
 ):
     """
-    
-    TODO
-        - doesnt return query errors properly (duplicate username, etc)
-    
+    Get a specific user by id.
     """
-
+    user = crud.user.get(db, id=id)
+    if user == current_user:
+        return user
     if not crud.user.is_superuser(current_user):
-        raise HTTPException(status_code=400, details='Not enough permissions.')
-	
-    user_in = UserCreate(**user.dict())
+        raise HTTPException(
+            status_code=400, 
+            detail="The user doesn't have enough privileges"
+        )
+    return user
 
-    crud.user.create(db, obj_in=user_in)
-	
-    return user_in
-
-@router.put("/{id}")
+@router.put("/{id}", response_model=ShowUser)
 async def update_user(
+    *,
+    db : Session = Depends(deps.get_db),
     id : int,
     user_in : UserUpdate,
-    db : Session = Depends(deps.get_db),
-    current_user: ShowUser = Depends(deps.get_current_user)
+    current_user: User = Depends(deps.get_current_active_superuser)
 ):
     """
-    
-    TODO
-        - doesnt return query errors properly (duplicate username, etc)
-    
+    Update a user.
     """
-
-    if not crud.user.is_superuser(current_user):
-        raise HTTPException(status_code=400, details='Not enough permissions.')
-	
-    user_in = UserUpdate(**user_in.dict())
-
     user = crud.user.get(db, id=id)
-
-    result = crud.user.update(db, db_obj=user, obj_in=user_in)
-
-    if not result:
+    if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=404,
             detail=f"User with {id} does not exist."
         )
-
-    return {'msg' : 'Successfully updated user.'}
+    user = crud.user.update(db, db_obj=user, obj_in=user_in)
+    return user

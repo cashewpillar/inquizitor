@@ -8,45 +8,11 @@ from fastapi_tut.models.user import User, UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-	def get_user(self, id : int, db : Session):
-		user = db.query(User).filter(User.id == id).first()
-		return user
-	
-	def get_users(self, db : Session):
-		users = db.query(User).all()
-		return users
-
-	def update_user_by_id(self, id : int, user : UserUpdate, db : Session):
-		"""
-		
-		TODO
-			- Di ko magets yung implementation ng super().update()
-			nonetheless, same logic naman ata nagawa ko dito except walang db.refresh()
-		
-		"""
-		
-		
-		existing_user = db.query(User).filter(User.id == id)
-
-		if not existing_user.first():
-			return False
-
-		# update only attributes supplied with value
-		for k, v in user.__dict__.items():
-			if v:
-				print(k)
-				if k == "password":
-					existing_user.update({"hashed_password": get_password_hash(v)})
-				else:
-					existing_user.update({k : v})
-
-		db.commit()
-
-		return existing_user
+	def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
+		return db.query(User).filter(User.email == email).first()
 
 	def get_by_username(self, db:Session, *, username: str) -> Optional[User]:
 		return db.query(User).filter(User.username == username).first()
-
 
 	def create(self, db: Session, *, obj_in: UserCreate) -> User:
 		db_obj = User(

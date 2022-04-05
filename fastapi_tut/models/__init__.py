@@ -25,7 +25,7 @@ from .quiz import (
 	QuizUpdate
 )
 from .token import Token, TokenPayload, RevokedToken
-from .user import User, UserCreate, UserUpdate
+from .user import User, UserCreate, UserUpdate, ShowUser
 
 
 """ SQLMODEL BOILERPLATE

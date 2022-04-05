@@ -20,13 +20,12 @@ class UserBase(SQLModel):
 	is_teacher : bool = False
 	is_student : bool = False
 
-
 # Properties to receive via API on creation
 class UserCreate(UserBase):
 	email: EmailStr
 	password: str
 
-
+# Properties to receive via API on update
 class UserUpdate(UserBase):
 	username : Optional[str]
 	email: Optional[EmailStr]
@@ -37,13 +36,11 @@ class UserUpdate(UserBase):
 	is_teacher : Optional[bool]
 	is_student : Optional[bool]
 
-
 class UserInDBBase(UserBase, PKModel):
 	class Config:
 		orm_mode = True
 
-
-# Additional properties  to return via API
+# Additional properties stored in db
 class User(UserInDBBase, table=True):
 	username : str = Field(sa_column=Column(String, unique=True, nullable=False))
 	email: EmailStr = Field(sa_column=Column(String, unique=True, nullable=False))
@@ -62,11 +59,6 @@ class User(UserInDBBase, table=True):
 		"""Represent instance as a unique string."""
 		return f"<User({self.email!r})>"
 
-class ShowUser(UserBase):
-	full_name: Optional[str] = Field(index=True)
-	first_name : str
-	last_name : str
-	is_superuser: bool = False
-	is_teacher : bool = False
-	is_student : bool = False
-	hashed_password : str
+# Additional Properties to return via API 
+class ShowUser(UserInDBBase):
+	pass

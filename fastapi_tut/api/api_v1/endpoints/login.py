@@ -23,8 +23,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# NOTE: schemas validate & determine the JSON response of each request
-# @router.post("/token", response_model=models.Token)
 @router.post("/token")
 async def login_access_token(
 	db: Session = Depends(deps.get_db), 
@@ -39,12 +37,7 @@ async def login_access_token(
 	)
 	if not user:
 		raise HTTPException(status_code=400, detail="Incorrent user or password")
-	# if form_data.username != settings.FIRST_SUPERUSER_EMAIL:
-	# 	raise HTTPException(status_code=401, detail="Not authorized.")
-	
-	# user_id = 1
 
-	# TODO: test time expiry
 	access_token = Authorize.create_access_token(subject=user.id, fresh= True,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 	refresh_token = Authorize.create_refresh_token(subject=user.id,
@@ -53,11 +46,9 @@ async def login_access_token(
 	Authorize.set_access_cookies(access_token)
 	Authorize.set_refresh_cookies(refresh_token)
 
-	# print(dir(Authorize))
-
 	return {'msg':'Successfully logged in.'}
 
-@router.post('/logout')
+@router.post('/logout', response_model=models.Msg)
 async def logout(
 	Authorize: AuthJWT = Depends(),
 	db: Session = Depends(deps.get_db)
@@ -73,8 +64,7 @@ async def logout(
 
 	return {'msg':'Successfully logged out.'}
 
-# @router.post('/refresh', response_model=models.Token)
-@router.post('/refresh')
+@router.post('/refresh', response_model=models.Msg)
 async def refresh(
 	Authorize: AuthJWT = Depends()
 ) -> Any:
