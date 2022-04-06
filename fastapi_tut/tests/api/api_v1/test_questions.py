@@ -74,10 +74,11 @@ class TestReadQuestion:
 @pytest.mark.anyio
 class TestUpdateQuestion:
 	async def test_update_question_student(
-		self, client: AsyncClient, student_cookies: Dict[str, str]
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
 		question = QuestionFactory()
-		question_in = QuestionFactory.stub(schema_type="update", quiz_id=3)
+		quiz = crud.quiz.get(db, question.quiz_id)
+		question_in = QuestionFactory.stub(schema_type="update", quiz=quiz)
 		r = await client.put(
 			f"/quizzes/{question.quiz_id}/questions/{question.id}", 
 			cookies=await student_cookies,
@@ -87,10 +88,11 @@ class TestUpdateQuestion:
 		assert r.status_code == 400
 
 	async def test_update_question_teacher_not_author(
-		self, client: AsyncClient, teacher_cookies: Dict[str, str]
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		question = QuestionFactory()
-		question_in = QuestionFactory.stub(schema_type="update", quiz_id=3)
+		quiz = crud.quiz.get(db, question.quiz_id)
+		question_in = QuestionFactory.stub(schema_type="update", quiz=quiz)
 		r = await client.put(
 			f"/quizzes/{question.quiz_id}/questions/{question.id}", 
 			cookies=await teacher_cookies,

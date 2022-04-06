@@ -74,6 +74,14 @@ class QuizFactory(BaseFactory):
     class Meta:
         model = models.Quiz
 
+    class Params:
+        # TODO
+        # students: Optional[List[models.User]] = factory.SubFactory(UserFactory)
+        teacher: models.User = factory.SubFactory(UserFactory)
+        questions: Optional[List[models.QuizQuestion]] = []
+        attempts: Optional[List[models.QuizAttempt]] = []
+
+
     name = factory.Faker('word')
     desc = factory.Faker('text')
     number_of_questions = factory.Faker("random_int", min=10, max=100, step=10)
@@ -81,13 +89,6 @@ class QuizFactory(BaseFactory):
     due_date = factory.LazyAttribute(lambda a: a.created_at + dt.timedelta(hours=5))
     quiz_code = factory.LazyFunction(random_str)
     # time_limit: int = factory.Faker("random_int", min=30*60, max=60*60, step=5*60)
-
-    teacher: models.User = factory.SubFactory(UserFactory)
-    # TODO
-    # students: Optional[List[models.User]] = factory.SubFactory(UserFactory)
-    questions: Optional[List[models.QuizQuestion]] = []
-    attempts: Optional[List[models.QuizAttempt]] = []
-
     teacher_id: int = factory.LazyAttribute(lambda a: a.teacher.id if a.teacher is not None else None)
     
     model: ModelType = models.Quiz
@@ -101,18 +102,19 @@ class QuestionFactory(BaseFactory):
     class Meta:
         model = models.QuizQuestion
 
+    class Params:
+        quiz: models.Quiz = factory.SubFactory(QuizFactory)
+        # NOTE skipped bcs finding a way takes too long
+        # NOTE 1 hour in, i give up
+        # TODO: make 1 answer correct
+        # answers: Optional[List[models.Answer]] = factory.List([
+        #     factory.SubFactory("fastapi_tut.tests.factories.AnswerFactory") for _ in range(4)
+        # ])
+
+
     content: str = factory.LazyAttribute(lambda a: fake.sentence().replace('.', '?')) 
     points: int = factory.Faker('random_int', min=1, max=5)
     order: int = factory.Sequence(lambda n: n)
-
-    quiz: models.Quiz = factory.SubFactory(QuizFactory)
-    # NOTE skipped bcs finding a way takes too long
-    # NOTE 1 hour in, i give up
-    # TODO: make 1 answer correct
-    # answers: Optional[List[models.Answer]] = factory.List([
-    #     factory.SubFactory("fastapi_tut.tests.factories.AnswerFactory") for _ in range(4)
-    # ])
-
     quiz_id: int = factory.LazyAttribute(lambda a: a.quiz.id if a.quiz is not None else None)
 
     model: ModelType = models.QuizQuestion
