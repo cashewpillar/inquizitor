@@ -23,16 +23,17 @@ async def create_quiz(
     if crud.user.is_student(current_user):
         raise HTTPException(status_code=400, detail="Not enough permissions")
 
+    # NOTE copied to crud_quiz/quiz.py as a method para accessible yung functionality from crud module
 	# generate random characters
-    while True:
-        characters = string.ascii_letters + string.digits
-        quiz_code = ''.join(random.choice(characters) for i in range(6))
-        #check if generated quiz_code already exists
-        existing_code = db.query(models.Quiz).filter(models.Quiz.quiz_code == quiz_code).first()
-        if not existing_code:
-            break
+    # while True:
+    #     characters = string.ascii_letters + string.digits
+    #     quiz_code = ''.join(random.choice(characters) for i in range(6))
+    #     #check if generated quiz_code already exists
+    #     existing_code = db.query(models.Quiz).filter(models.Quiz.quiz_code == quiz_code).first()
+    #     if not existing_code:
+    #         break
 
-    quiz_in.quiz_code = quiz_code
+    quiz_in.quiz_code = crud.quiz.generate_code(db)
     quiz = crud.quiz.create(db, obj_in=quiz_in)
     return quiz
 

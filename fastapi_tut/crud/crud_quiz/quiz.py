@@ -1,3 +1,5 @@
+import random
+import string
 from sqlmodel import Session
 from typing import List, Union
 
@@ -8,15 +10,22 @@ from fastapi_tut.crud.base import CRUDBase
 from fastapi_tut.models import Quiz, QuizCreate, QuizUpdate
 
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
-	def get_by_code(
-		self, db: Session, code: str
-	) -> Quiz:
+	def generate_code(self, db: Session) -> str:
+		"""generate random characters for quiz_code"""
+		while True:
+			characters = string.ascii_letters + string.digits
+			quiz_code = ''.join(random.choice(characters) for i in range(6))
+			#check if generated quiz_code already exists
+			existing_code = db.query(Quiz).filter(Quiz.quiz_code == quiz_code).first()
+			if not existing_code:
+				break
+		return quiz_code
+
+	def get_by_code(self, db: Session, code: str) -> Quiz:
 		"""Read quiz by quiz_code"""
 		return db.query(Quiz).filter(Quiz.quiz_code == code).first()
 
-	def get_by_index(
-		self, db: Session, quiz_index: Union[int, str]
-	) -> Quiz:
+	def get_by_index(self, db: Session, quiz_index: Union[int, str]) -> Quiz:
 		"""Read quiz by quiz_code or int"""
 		if isinstance(quiz_index, str):
 			quiz = self.get_by_code(db, code=quiz_index)
