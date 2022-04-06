@@ -125,11 +125,11 @@ class ChoiceFactory(BaseFactory):
     class Meta:
         model = models.QuizChoice
 
+    class Params:
+        question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
+
     content: str = factory.Faker('word') 
     is_correct: bool = False
-
-    question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
-
     question_id: int = factory.LazyAttribute(lambda a: a.question.id if a.question is not None else None)
 
     model: ModelType = models.QuizChoice
