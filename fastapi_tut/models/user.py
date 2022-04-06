@@ -20,31 +20,27 @@ class UserBase(SQLModel):
 	is_teacher : bool = False
 	is_student : bool = False
 
-
 # Properties to receive via API on creation
 class UserCreate(UserBase):
 	email: EmailStr
 	password: str
 
-
+# Properties to receive via API on update
 class UserUpdate(UserBase):
-	username : Optional[str] = None
-	email: Optional[EmailStr] = None
-	full_name: Optional[str] = None
-	is_superuser: bool = False
-	last_name : Optional[str] = None
-	first_name : Optional[str] = None
-	password: Optional[str] = None
-	is_teacher : Optional[bool] = None
-	is_student : Optional[bool] = None
-
+	username : Optional[str]
+	email: Optional[EmailStr]
+	is_superuser: Optional[bool]
+	last_name : Optional[str]
+	first_name : Optional[str]
+	password: Optional[str]
+	is_teacher : Optional[bool]
+	is_student : Optional[bool]
 
 class UserInDBBase(UserBase, PKModel):
 	class Config:
 		orm_mode = True
 
-
-# Additional properties  to return via API
+# Additional properties stored in db
 class User(UserInDBBase, table=True):
 	username : str = Field(sa_column=Column(String, unique=True, nullable=False))
 	email: EmailStr = Field(sa_column=Column(String, unique=True, nullable=False))
@@ -62,3 +58,7 @@ class User(UserInDBBase, table=True):
 	def __repr__(self):
 		"""Represent instance as a unique string."""
 		return f"<User({self.email!r})>"
+
+# Additional Properties to return via API 
+class ShowUser(UserInDBBase):
+	pass

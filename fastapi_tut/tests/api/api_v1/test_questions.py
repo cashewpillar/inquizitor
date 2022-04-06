@@ -106,8 +106,8 @@ class TestUpdateQuestion:
 	) -> None:
 		teacher_cookies = await teacher_cookies
 		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
 		)
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])
@@ -172,8 +172,8 @@ class TestDeleteQuestion:
 	) -> None:
 		teacher_cookies = await teacher_cookies
 		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
 		)
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])

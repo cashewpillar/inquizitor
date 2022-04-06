@@ -1,3 +1,5 @@
+# NOTE TO UPDATE W/ FACTORIES
+
 # import logging
 # import random
 # import pprint

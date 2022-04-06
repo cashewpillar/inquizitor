@@ -35,7 +35,7 @@
 
 ## [API DOCUMENTATION (run app before accessing)](http://127.0.0.1:8000/docs)
 
-- Authorization credentials: admin@admin.com | Password: superadmin
+- Authorization credentials: admin | Password: superadmin
 
 - Reset database using: `main.py initial-data` or `python main.py initial-data`
 
@@ -54,11 +54,6 @@
 
 
 ## DOCS
-
-#### THESIS 1 OUTPUT
-
-- [data gathering](https://docs.google.com/forms/d/10Sh3mFSDDFLDSU0zRs4IrazD_ZwYSRBrY1eimmVAwJc/edit?fbclid=IwAR3YJFv_XsLop_dh6Td7LHfF1bf--9Qhy898PfDq5_2NUN96UITpSBCoY-Y)  -   [data responses](https://docs.google.com/spreadsheets/d/1GQnv96uQBPZYlaVhxOGUgCY3Ud92jL2Jrgcnp3KmR1E/edit?resourcekey#gid=1853497657)  -  [initial chapters 1-3](https://docs.google.com/document/d/1SogCDHCalx5yzXk1QAynxyxSCE_Q6m_-3kUshWWt8EQ/edit?fbclid=IwAR0JfOrIGcBSTkASUMgGMLQgoHv0P4M9USD2_ZPazmwYFejI2mY5o2sl7Z4#heading=h.vpxlmrhqpcpg)
-
 
 #### PYTHON FUNCTION ANNOTATIONS | TYPE HINTS
 

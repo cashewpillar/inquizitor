@@ -46,9 +46,8 @@ class TestCreateChoice:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
 		)
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])
@@ -120,9 +119,8 @@ class TestUpdateChoice:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
 		)
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])
@@ -191,9 +189,8 @@ class TestDeleteChoice:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
-		r = await client.post(
-			"/login/test-token", cookies=teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
 		)
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])
