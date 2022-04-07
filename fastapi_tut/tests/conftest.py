@@ -16,6 +16,8 @@ from fastapi_tut.db.session import TestSession, test_engine
 from fastapi_tut.tests import common
 from fastapi_tut.tests.utils.utils import (
 	get_superuser_cookies,
+	get_student_cookies,
+	get_teacher_cookies,
 )
 
 @pytest.fixture(scope="session")
@@ -72,3 +74,11 @@ def user(db: Session) -> models.User:
 @pytest.fixture
 def superuser_cookies(app: FastAPI) -> Dict[str, str]:
 	return get_superuser_cookies(app)
+
+@pytest.fixture
+def student_cookies(app: FastAPI) -> Dict[str, str]:
+	return get_student_cookies(app)
+
+@pytest.fixture
+def teacher_cookies(app: FastAPI) -> Dict[str, str]:
+	return get_teacher_cookies(app)

@@ -37,7 +37,7 @@ async def login_access_token(
 	)
 	if not user:
 		raise HTTPException(status_code=400, detail="Incorrent user or password")
-
+		
 	access_token = Authorize.create_access_token(subject=user.id, fresh= True,
 		expires_time=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 	refresh_token = Authorize.create_refresh_token(subject=user.id,

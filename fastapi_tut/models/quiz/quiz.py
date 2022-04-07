@@ -17,15 +17,12 @@ class QuizBase(SQLModel):
     name: str = Field(max_length=50)
     desc: str = Field(max_length=500)    
     number_of_questions: int = 1
-    created_at : datetime = Field(default=datetime.utcnow())
-    due_date : datetime
-    quiz_code : str = Field(sa_column=Column(String, unique=True))
+    due_date : Optional[datetime] = None
     teacher_id : int = Field(foreign_key='user.id')
-    # time: int = Field(description="Duration of the quiz in seconds", default=1)
 
 # Properties to receive via API on creation
 class QuizCreate(QuizBase):
-    pass
+    quiz_code : str = Field(default=None, sa_column=Column(String, unique=True))
 
 class QuizUpdate(QuizBase):
     name: Optional[str] = None
@@ -33,13 +30,16 @@ class QuizUpdate(QuizBase):
     number_of_questions: Optional[int] = None
     due_date : Optional[datetime] = None
     quiz_code : Optional[str] = None
-    # time: Optional[int] = None
+    teacher_id : Optional[int] = None
 
 class QuizInDBBase(QuizBase, PKModel):
     pass
 
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
+    created_at : datetime = Field(default=datetime.utcnow())
+    quiz_code : str = Field(sa_column=Column(String, unique=True))
+
     teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
     students: List[QuizStudentLink] = Relationship(back_populates='quiz')
     attempts : List["QuizAttempt"] = Relationship(back_populates="quiz")
@@ -49,5 +49,11 @@ class Quiz(QuizInDBBase, table=True):
         """Represent instance as a unique string."""
         return f"<Quiz({self.name!r})>"
 
+#response model that will be sent to client
+class QuizRead(QuizBase):
+    id: int
+    quiz_code : str
+    created_at : datetime
+    teacher_id : int
 
 # many to many tables connecting user and quizzes

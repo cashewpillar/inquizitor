@@ -5,7 +5,8 @@ import string
 
 from fastapi_tut import models
 
-# TODO might remove templates once vue app is developed
+# TODO remove outdated fake-functions (now uses factories)
+
 fake = Faker()
 
 def random_str():

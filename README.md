@@ -11,6 +11,27 @@
 <br>
 
 
+## DOING
+
+- - crud-quiz
+    - api/api_v1/endpoints/quiz/quiz.py
+      - stats
+      - ![image-20220327170830952](C:\Users\halloween\AppData\Roaming\Typora\typora-user-images\image-20220327170830952.png)
+      - **per quiz & per student**
+      - <br>
+
+## TO DO
+
+#### tests
+
+- test initial/ first users: **admin** (update this), **student**, **teacher** 
+
+- remove production_client fixture
+
+  <br>
+
+
+
 
 ## [API DOCUMENTATION (run app before accessing)](http://127.0.0.1:8000/docs)
 
