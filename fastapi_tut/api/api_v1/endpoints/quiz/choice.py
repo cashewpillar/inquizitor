@@ -42,6 +42,34 @@ router = APIRouter()
 
 #   return question
 
+@router.get("/{quiz_index}/questions/{question_id}/choices/", response_model=List[models.QuizChoice])
+async def read_choices(
+    *,
+    db: Session = Depends(deps.get_db),
+    quiz_index: Union[int, str] = Path(..., description="ID or Code of quiz to retrieve"),
+    question_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Retrieve choices by question_id.
+    """
+    quiz = crud.quiz.get_by_index(db, quiz_index)
+    if not quiz:
+      raise HTTPException(status_code=404, detail="Quiz not found")
+
+    question = crud.quiz_question.get(db, id=question_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+    if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
+        raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
+
+    choices = crud.quiz_choice.get_multi_by_question(
+        db=db, question_id=question_id, skip=skip, limit=limit
+    )
+    return choices
+
 @router.post("/{quiz_index}/questions/{question_id}", response_model=models.QuizChoice)
 async def create_choices(
     *,
