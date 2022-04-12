@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi_tut.db.base_class import PKModel
-from .question import  QuizQuestion
+
 from sqlmodel import Field, Relationship, SQLModel
 
 class QuizChoiceBase(SQLModel):
@@ -22,9 +22,12 @@ class QuizChoiceInDBBase(QuizChoiceBase, PKModel):
     pass
 
 class QuizChoice(QuizChoiceInDBBase, table=True):
-    question : Optional[QuizQuestion] = Relationship(back_populates="choices")
+    question : Optional["QuizQuestion"] = Relationship(back_populates="choices")
     answers: List["QuizAnswer"] = Relationship(back_populates="choice")
 
 class QuizChoiceRead(QuizChoiceBase):
     id: int
     question_id: int
+
+from .question import QuizQuestion
+QuizChoice.update_forward_refs()

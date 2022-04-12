@@ -19,6 +19,7 @@ from .quiz import (
 	QuizQuestion, 
 	QuizQuestionCreate, 
 	QuizQuestionUpdate,
+	QuizQuestionReadWithChoices,
 
 	Quiz, 
 	QuizCreate, 
