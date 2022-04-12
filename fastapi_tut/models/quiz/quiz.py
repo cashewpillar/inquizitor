@@ -58,6 +58,8 @@ class QuizRead(QuizBase):
 
 class QuizReadWithQuestions(QuizBase):
     id : int
+    created_at : datetime
+    quiz_code : Optional[str] = None
     questions: List["QuizQuestion"] = []
 
 from .question import QuizQuestion
