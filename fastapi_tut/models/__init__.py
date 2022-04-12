@@ -3,6 +3,7 @@ from .quiz import (
 	QuizAnswer, 
 	QuizAnswerCreate, 
 	QuizAnswerUpdate,
+	QuizReadWithQuestions,
 
 	QuizAttempt, 
 	QuizAttemptCreate, 
@@ -19,6 +20,7 @@ from .quiz import (
 	QuizQuestion, 
 	QuizQuestionCreate, 
 	QuizQuestionUpdate,
+	QuizQuestionReadWithChoices,
 
 	Quiz, 
 	QuizCreate, 

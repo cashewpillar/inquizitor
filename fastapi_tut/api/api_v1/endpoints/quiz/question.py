@@ -32,7 +32,7 @@ async def create_questions(
     question = crud.quiz_question.create(db, obj_in=question_in)
     return question
 
-@router.get("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
+@router.get("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestionReadWithChoices)
 async def read_question(
 	*,
 	db: Session = Depends(deps.get_db),
