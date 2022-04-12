@@ -62,7 +62,7 @@ async def read_quizzes(
 
 	return quizzes
 
-@router.get("/{index}", response_model=models.Quiz)
+@router.get("/{index}", response_model=models.QuizReadWithQuestions)
 async def read_quiz(
 	*,
 	db: Session = Depends(deps.get_db),

@@ -56,4 +56,10 @@ class QuizRead(QuizBase):
     created_at : datetime
     teacher_id : int
 
+class QuizReadWithQuestions(QuizBase):
+    id : int
+    questions: List["QuizQuestion"] = []
+
+from .question import QuizQuestion
+QuizReadWithQuestions.update_forward_refs()
 # many to many tables connecting user and quizzes

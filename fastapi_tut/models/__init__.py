@@ -3,6 +3,7 @@ from .quiz import (
 	QuizAnswer, 
 	QuizAnswerCreate, 
 	QuizAnswerUpdate,
+	QuizReadWithQuestions,
 
 	QuizAttempt, 
 	QuizAttemptCreate, 
