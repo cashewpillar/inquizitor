@@ -75,8 +75,18 @@ async def read_quiz(
 	quiz = crud.quiz.get_by_index(db, index)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
-	# if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
-	# 	raise HTTPException(status_code=400, detail="Not enough permissions")
+	if crud.user.is_student(current_user):
+		# DOING: take-quiz
+		# create answer objects? maybe at the submit request
+		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz, current_user)
+		if not attempt:
+			# ensure that quiz-user combination is unique
+			quiz_attempt_in = QuizAttemptCreate(
+				student_id=current_user.id,	
+				quiz_id=quiz.id	
+			)
+			attempt = crud.quiz_attempt.create_by_quiz_and_user(db, object_in=quiz_attempt_in)
+
 	return quiz
 
 @router.put("/{id}", response_model=models.Quiz)
