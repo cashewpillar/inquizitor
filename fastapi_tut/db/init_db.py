@@ -1,3 +1,4 @@
+from random import randrange
 from sqlmodel import Session 
 from sqlalchemy.engine import Engine
 
@@ -59,8 +60,11 @@ def dummy_quiz(db: Session) -> None:
 			question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
 			question = crud.quiz_question.create(db, obj_in=question_in)
 
+			index_correct = randrange(0, 4)
 			for i in range(4):
 				choice_in = ChoiceFactory.stub(schema_type="create", question=question)
+				if i == index_correct:
+					choice_in["is_correct"] = True
 				choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
 def init_db(db: Session, engine: Engine) -> None:
