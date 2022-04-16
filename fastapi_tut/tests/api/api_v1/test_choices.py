@@ -84,6 +84,82 @@ class TestCreateChoice:
 		assert result["question_id"] == choice_in["question_id"]
 
 @pytest.mark.anyio
+class TestReadChoices:
+	async def test_read_choices_student(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		question = QuestionFactory(quiz=quiz)
+		choices = []
+		for choice in range(4):
+			choice = ChoiceFactory(question=question)
+			choices.append(choice)
+		r = await client.get(
+			f"/quizzes/{quiz.id}/questions/{question.id}", 
+			cookies=await student_cookies,
+		)
+		result = r.json()["choices"]
+		assert r.status_code == 200
+		assert choices == result
+
+	async def test_read_choices_teacher_not_author(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		question = QuestionFactory(quiz=quiz)
+		choices = []
+		for choice in range(4):
+			choice = ChoiceFactory(question=question)
+			choices.append(choice)
+		r = await client.get(
+			f"/quizzes/{quiz.id}/questions/{question.id}", 
+			cookies=await teacher_cookies,
+		)
+		result = r.json()["choices"]
+		assert r.status_code == 200
+		assert choices == result
+
+	async def test_read_choices_teacher_is_author(
+		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+	) -> None:
+		teacher_cookies = await teacher_cookies
+		r = await client.get(
+			"/users/profile", cookies=teacher_cookies
+		)
+		result = r.json()
+		teacher = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(teacher=teacher)
+		question = QuestionFactory(quiz=quiz)
+		choices = []
+		for choice in range(4):
+			choice = ChoiceFactory(question=question)
+			choices.append(choice)
+		r = await client.get(
+			f"/quizzes/{quiz.id}/questions/{question.id}", 
+			cookies=teacher_cookies,
+		)
+		result = r.json()["choices"]
+		assert r.status_code == 200
+		assert choices == result
+
+	async def test_read_choices_superuser(
+		self, db:Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		quiz = QuizFactory()
+		question = QuestionFactory(quiz=quiz)
+		choices = []
+		for choice in range(4):
+			choice = ChoiceFactory(question=question)
+			choices.append(choice)
+		r = await client.get(
+			f"/quizzes/{quiz.id}/questions/{question.id}", 
+			cookies=await superuser_cookies,
+		)
+		result = r.json()["choices"]
+		assert r.status_code == 200
+		assert choices == result
+		
+@pytest.mark.anyio
 class TestUpdateChoice:
 	async def test_update_choice_student(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
