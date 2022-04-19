@@ -39,7 +39,6 @@ class TestReadQuizzes:
 	async def test_read_quizzes_teacher(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
@@ -62,7 +61,6 @@ class TestReadQuizzes:
 	async def test_read_quizzes_student(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		student_cookies = await student_cookies
 		r = await client.get(
 			"/users/profile", cookies=student_cookies
@@ -89,7 +87,6 @@ class TestReadQuiz:
 	async def test_read_quiz_teacher(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
@@ -112,7 +109,6 @@ class TestReadQuiz:
 	async def test_read_quiz_teacher_code(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
@@ -135,7 +131,6 @@ class TestReadQuiz:
 	async def test_read_quiz_student_code(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		student_cookies = await student_cookies
 		r = await client.get(
 			"/users/profile", cookies=student_cookies
@@ -147,7 +142,9 @@ class TestReadQuiz:
 			f"/quizzes/{quiz.id}", cookies=student_cookies
 		)
 		result = r.json()
+		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz=quiz, user=student)
 		assert r.status_code == 200
+		assert attempt
 		assert result["name"] == quiz.name
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
@@ -158,7 +155,6 @@ class TestReadQuiz:
 	async def test_read_quiz_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		superuser_cookies = await superuser_cookies
 		r = await client.get(
 			"/users/profile", cookies=superuser_cookies
@@ -264,7 +260,6 @@ class TestUpdateQuiz:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
 		)
@@ -307,7 +302,6 @@ class TestUpdateQuiz:
 
 @pytest.mark.anyio
 class TestDeleteQuiz:
-	# TODO tests deleting by student & superuser
 	async def test_delete_quiz_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
@@ -330,7 +324,6 @@ class TestDeleteQuiz:
 	async def test_delete_quiz_teacher_is_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
@@ -356,7 +349,6 @@ class TestDeleteQuiz:
 	async def test_delete_quiz_teacher_not_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		teacher_cookies = await teacher_cookies
 		quiz = QuizFactory()
 		r = await client.delete(
@@ -368,7 +360,6 @@ class TestDeleteQuiz:
 	async def test_delete_quiz_student(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
 	) -> None:
-		# TODO replace with get-user when implemented
 		quiz = QuizFactory()
 		r = await client.delete(
 			f"/quizzes/{quiz.id}", cookies=await student_cookies

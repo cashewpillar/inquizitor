@@ -13,7 +13,7 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
-@router.post("/", response_model=models.Quiz)
+@router.post("/", response_model=models.QuizReadWithQuestions)
 async def create_quiz(
 	*,
     quiz_in: models.QuizCreate, 
@@ -78,14 +78,14 @@ async def read_quiz(
 	if crud.user.is_student(current_user):
 		# DOING: take-quiz
 		# create answer objects? maybe at the submit request
-		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz, current_user)
+		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz=quiz, user=current_user)
 		if not attempt:
 			# ensure that quiz-user combination is unique
 			quiz_attempt_in = QuizAttemptCreate(
 				student_id=current_user.id,	
 				quiz_id=quiz.id	
 			)
-			attempt = crud.quiz_attempt.create_by_quiz_and_user(db, object_in=quiz_attempt_in)
+			attempt = crud.quiz_attempt.create(db, object_in=quiz_attempt_in)
 
 	return quiz
 

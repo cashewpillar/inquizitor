@@ -58,19 +58,6 @@ async def client(app: FastAPI, db: Session) -> Generator:
 
 
 
-# NOTE to replace user fixture with factories
-# /tests/crud/test_user.py::test_check_if_user_is_superuser
-# /tests/crud/test_user.py::test_check_if_user_is_superuser_normal_user
-# /tests/crud/test_user.py::test_get_user
-# /tests/crud/test_user.py::test_update_user
-@pytest.fixture
-def user(db: Session) -> models.User:
-	"""Create user for the tests"""
-	data = utils.fake_user()
-	user_in = models.UserCreate(**data)
-	user = crud.user.create(db, obj_in=user_in)
-	return user
-
 @pytest.fixture
 def superuser_cookies(app: FastAPI) -> Dict[str, str]:
 	return get_superuser_cookies(app)

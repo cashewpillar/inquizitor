@@ -17,6 +17,4 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 			.filter(QuizAttempt.quiz_id == quiz.id, QuizAttempt.student_id == user.id)
 		)
 
-	def create
-
 quiz_attempt = CRUDQuizAttempt(QuizAttempt)
