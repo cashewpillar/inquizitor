@@ -87,7 +87,7 @@ class QuizFactory(BaseFactory):
     number_of_questions = factory.Faker("random_int", min=10, max=100, step=10)
     created_at = factory.LazyFunction(dt.datetime.utcnow)
     due_date = factory.LazyAttribute(lambda a: a.created_at + dt.timedelta(hours=5))
-    quiz_code = factory.LazyFunction(random_str)
+    quiz_code = None
     # time_limit: int = factory.Faker("random_int", min=30*60, max=60*60, step=5*60)
     teacher_id: int = factory.LazyAttribute(lambda a: a.teacher.id if a.teacher is not None else None)
     
