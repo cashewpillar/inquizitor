@@ -13,7 +13,7 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
-@router.post("/", response_model=models.Quiz)
+@router.post("/", response_model=models.QuizReadWithQuestions)
 async def create_quiz(
 	*,
     quiz_in: models.QuizCreate, 
@@ -75,8 +75,16 @@ async def read_quiz(
 	quiz = crud.quiz.get_by_index(db, index)
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
-	# if crud.user.is_student(current_user) or (crud.user.is_teacher(current_user) and quiz.teacher_id != current_user.id):
-	# 	raise HTTPException(status_code=400, detail="Not enough permissions")
+	if crud.user.is_student(current_user):
+		attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
+		if not attempt:
+			# TODO ensure that quiz-user combination is unique
+			quiz_attempt_in = models.QuizAttemptCreate(
+				student_id=current_user.id,	
+				quiz_id=quiz.id	
+			)
+			attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
+
 	return quiz
 
 @router.put("/{id}", response_model=models.Quiz)

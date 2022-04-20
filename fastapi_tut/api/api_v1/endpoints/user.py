@@ -1,5 +1,3 @@
-# initial, todo
-
 from sqlmodel import Session
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -12,16 +10,6 @@ from fastapi_tut.api import deps
 from fastapi_tut.models import User, UserCreate, ShowUser, UserUpdate
 
 router = APIRouter()
-
-"""
-NOTE
-reordered path operations by endpoint 
-@router.get("/")
-@router.post("/")
-@router.get("/{profile}")
-@router.get("/{id}")
-@router.put("/{id}")
-"""
 
 @router.get("/", response_model=List[ShowUser])
 async def read_users(

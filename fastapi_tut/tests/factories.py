@@ -63,6 +63,7 @@ class UserFactory(BaseFactory):
     first_name = factory.Faker('first_name') 
     password = factory.Faker('password')
     hashed_password = factory.LazyAttribute(lambda a: get_password_hash(a.password))
+    is_student = False
 
     model: ModelType = models.User
     create_schema: CreateSchemaType = models.UserCreate
@@ -104,13 +105,6 @@ class QuestionFactory(BaseFactory):
 
     class Params:
         quiz: models.Quiz = factory.SubFactory(QuizFactory)
-        # NOTE skipped bcs finding a way takes too long
-        # NOTE 1 hour in, i give up
-        # TODO: make 1 answer correct
-        # answers: Optional[List[models.Answer]] = factory.List([
-        #     factory.SubFactory("fastapi_tut.tests.factories.AnswerFactory") for _ in range(4)
-        # ])
-
 
     content: str = factory.LazyAttribute(lambda a: fake.sentence().replace('.', '?')) 
     points: int = factory.Faker('random_int', min=1, max=5)
@@ -137,3 +131,22 @@ class ChoiceFactory(BaseFactory):
     model: ModelType = models.QuizChoice
     create_schema: CreateSchemaType = models.QuizChoiceCreate
     update_schema: UpdateSchemaType = models.QuizChoiceUpdate
+
+class AnswerFactory(BaseFactory):
+    """Answer factory."""
+
+    class Meta:
+        model = models.QuizAnswer
+
+    class Params:
+        choice: models.QuizChoice = factory.SubFactory(ChoiceFactory)
+        student: models.User = factory.SubFactory(UserFactory)
+
+    content: str = factory.LazyAttribute(lambda a: a.choice.content)
+    is_correct: bool = factory.LazyAttribute(lambda a: a.choice.is_correct)
+    choice_id: int = factory.LazyAttribute(lambda a: a.choice.id if a.choice is not None else None)
+    student_id: int = factory.LazyAttribute(lambda a: a.student.id if a.student is not None else None)
+
+    model: ModelType = models.QuizAnswer
+    create_schema: CreateSchemaType = models.QuizAnswerCreate
+    update_schema: UpdateSchemaType = models.QuizAnswerUpdate
