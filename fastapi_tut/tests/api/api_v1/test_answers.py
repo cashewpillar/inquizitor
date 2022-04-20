@@ -1,15 +1,12 @@
-# TODO
-# remove unused imports by ctrl+D-ing
 import logging
 import pytest
+import random
 from httpx import AsyncClient
 from sqlmodel import Session
 from typing import Dict
 
-from fastapi.encoders import jsonable_encoder
-
 from fastapi_tut import crud
-from fastapi_tut.tests.factories import AnswerFactory, QuizFactory
+from fastapi_tut.tests.factories import AnswerFactory, QuizFactory, UserFactory
 
 @pytest.mark.anyio
 class TestReadQuizzes:
@@ -79,3 +76,40 @@ class TestReadQuizzes:
 		assert result["is_correct"] == answer_in["is_correct"]
 		assert result["student_id"] == answer_in["student_id"]
 		assert result["choice_id"] == answer_in["choice_id"]
+
+@pytest.mark.anyio
+class TestGetScore:
+	# TODO what if a question is left unanswered?
+	async def test_get_score(
+		self, db: Session, client: AsyncClient
+	) -> None:
+		user_in = UserFactory.stub(schema_type="create", is_student=True)
+		user = UserFactory(**user_in)
+		r = await client.post(
+				"/login/token", 
+				data={"username": user_in["username"], "password": user_in["password"]}
+			)
+		student_cookies = r.cookies
+
+		score = 0
+		quiz = crud.quiz.get(db, id=1)
+		for question in quiz.questions:
+			choice = random.choices(question.choices)[0]
+			answer_in = AnswerFactory.stub(
+				schema_type="create", 
+				content=choice.content, 
+				student=user, 
+				choice=choice
+			)
+			if choice.is_correct:
+				score += 1
+
+			r = await client.put(
+				f"/quizzes/{quiz.id}/questions/{question.id}/answer", 
+				cookies=student_cookies, 
+				json=answer_in
+			)
+			result = r.json()
+			assert r.status_code == 200
+
+		assert score == crud.quiz_attempt.get_score(db, quiz_id=quiz.id, student_id=user.id)

@@ -76,7 +76,7 @@ async def read_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if crud.user.is_student(current_user):
-		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz_id=quiz.id, user_id=current_user.id)
+		attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
 		if not attempt:
 			# TODO ensure that quiz-user combination is unique
 			quiz_attempt_in = models.QuizAttemptCreate(
