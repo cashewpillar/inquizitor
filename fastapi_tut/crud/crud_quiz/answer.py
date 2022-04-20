@@ -6,7 +6,7 @@ from fastapi_tut.crud.base import CRUDBase
 from fastapi_tut.models import QuizAnswer, QuizAnswerCreate, QuizAnswerUpdate
 
 class CRUDQuizAnswer(CRUDBase[QuizAnswer, QuizAnswerCreate, QuizAnswerUpdate]):
-	def get_by_choice_and_user(
+	def get_by_choice_and_user_ids(
 		self,
 		db: Session,
 		*,

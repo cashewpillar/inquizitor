@@ -105,12 +105,6 @@ class QuestionFactory(BaseFactory):
 
     class Params:
         quiz: models.Quiz = factory.SubFactory(QuizFactory)
-        # NOTE skipped bcs finding a way takes too long
-        # NOTE 1 hour in, i give up
-        # TODO: make 1 answer correct
-        # answers: Optional[List[models.Answer]] = factory.List([
-        #     factory.SubFactory("fastapi_tut.tests.factories.AnswerFactory") for _ in range(4)
-        # ])
 
     content: str = factory.LazyAttribute(lambda a: fake.sentence().replace('.', '?')) 
     points: int = factory.Faker('random_int', min=1, max=5)

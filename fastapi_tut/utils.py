@@ -5,32 +5,13 @@ import string
 
 from fastapi_tut import models
 
-# TODO remove outdated fake-functions (now uses factories)
-
 fake = Faker()
 
 def random_str():
 	return ''.join(random.choices(string.ascii_uppercase + string.digits, k = 10))
 
-def random_question_type():
-	return ''.join(random.choices(["Identification", "Multiple-Choices"]))
-
-def fake_answer(question_id):
-	"""return fake answer"""
-
-	return {"content": random_str(),
-			"is_correct": False,
-			"question_id": question_id}
-
-def fake_marks_of_user(quiz_id, user_id):
-	"""return fake score"""
-
-	return {"score": random.randint(0,30),  # NOTE total items of quiz not considered
-			"quiz_id": quiz_id,
-			"user_id": user_id}
-
 def fake_question(quiz_id, question_type_id, use_api=False):
-	"""return fake question"""
+	"""return fake question (kept for reference: using api banks for dummy questions)"""
 
 	if use_api:
 		import requests
@@ -42,32 +23,4 @@ def fake_question(quiz_id, question_type_id, use_api=False):
 			"quiz_id": quiz_id,
 			"question_type_id": question_type_id}
 
-def fake_quiz():
-	"""return fake values for name, desc, number_of_questions, and time."""
-
-	return {
-		# https://www.javatpoint.com/python-program-to-generate-a-random-string
-		"name": random_str(),
-		"desc": fake.text(),
-		"number_of_questions": random.randrange(10, 100, 10),
-		"time": random.randrange(30*60, 60*60, 5*60)
-	}
-
-def fake_user(password: Optional[str]=None, **attrs):
-	"""return fake values for full-name, email, and password."""
-
-	is_teacher = bool(random.randint(0,1))
-
-	password = fake.password() if password is None else password
-	return {
-		**{
-		"username": fake.simple_profile()['username'],
-		"last_name": fake.name(),
-		"first_name": fake.name(),
-		"email": fake.email(),
-		"password": password},
-		"is_teacher": is_teacher,
-		"is_student": (not is_teacher),
-		**attrs
-	}
 

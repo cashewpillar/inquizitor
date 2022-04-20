@@ -105,7 +105,6 @@ class TestUpdateQuestion:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
 		)
@@ -171,7 +170,6 @@ class TestDeleteQuestion:
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
 	) -> None:
 		teacher_cookies = await teacher_cookies
-		# TODO replace with get-user when implemented
 		r = await client.get(
 			"/users/profile", cookies=teacher_cookies
 		)

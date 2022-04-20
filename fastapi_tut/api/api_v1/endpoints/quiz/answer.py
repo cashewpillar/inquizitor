@@ -64,7 +64,7 @@ async def update_answer(
 			db, db_obj=attempt, obj_in={"recent_question_id": question_id}
 		)
 
-	answer = crud.quiz_answer.get_by_choice_and_user(
+	answer = crud.quiz_answer.get_by_choice_and_user_ids(
 		db, choice_id=answer_in.choice_id, student_id=answer_in.student_id
 	)
 	if answer:

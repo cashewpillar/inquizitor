@@ -1,5 +1,3 @@
-# TODO use factories instead of fixtures
-
 import logging
 from typing import List
 from fastapi.encoders import jsonable_encoder
@@ -8,7 +6,7 @@ from sqlmodel import Session
 from fastapi_tut import crud, models
 from fastapi_tut.core.security import verify_password
 from fastapi_tut.models.user import UserCreate, UserUpdate
-from fastapi_tut.utils import fake, fake_user
+from fastapi_tut.utils import fake
 from fastapi_tut.tests.factories import UserFactory
 
 def test_create_user(db: Session) -> None:
@@ -25,7 +23,7 @@ def test_authenticate_user(db: Session) -> None:
 	assert user_in["username"] == authenticated_user.username
 
 def test_not_authenticate_user(db: Session) -> None:
-	user_in = fake_user()
+	user_in = UserFactory.stub(schema_type="create")
 	user = crud.user.authenticate(db, username=user_in["username"], password=user_in["password"])
 	assert user is None
 
@@ -46,10 +44,6 @@ def test_get_user(db: Session) -> None:
 	assert user_2
 	assert user.username == user_2.username
 	assert jsonable_encoder(user) == jsonable_encoder(user_2)
-
-# TODO rename the model marks of user first, relationship attributes here
-# def test_get_user_relations(db: Session, user: models.User, marks_of_users: List[models.MarksOfUser]) -> None:
-# 	pass
 
 def test_update_user(db: Session) -> None:
 	user = UserFactory()
