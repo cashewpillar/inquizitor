@@ -65,6 +65,11 @@ class TestReadQuizzes:
 		choice = crud.quiz_choice.get(db, id=1)
 		answer_in = AnswerFactory.stub(schema_type="create", student=user, choice=choice)
 
+		# NOTE NOT WORKING access the quiz to create attempt obj
+		r = await client.get(
+			f"/quizzes/{quiz.quiz_code}", cookies=student_cookies
+		)
+
 		r = await client.put(
 			f"/quizzes/{quiz.id}/questions/{question.id}/answer", 
 			cookies=student_cookies, 
@@ -76,6 +81,9 @@ class TestReadQuizzes:
 		assert result["is_correct"] == answer_in["is_correct"]
 		assert result["student_id"] == answer_in["student_id"]
 		assert result["choice_id"] == answer_in["choice_id"]
+
+		attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=user.id)
+		assert attempt.recent_question_id == question.id
 
 @pytest.mark.anyio
 class TestGetScore:
@@ -112,4 +120,7 @@ class TestGetScore:
 			result = r.json()
 			assert r.status_code == 200
 
-		assert score == crud.quiz_attempt.get_score(db, quiz_id=quiz.id, student_id=user.id)
+		r = await client.get(f"/quizzes/{quiz.id}/finish", cookies=student_cookies)
+		result = r.json()
+		assert r.status_code == 200
+		assert result == score
