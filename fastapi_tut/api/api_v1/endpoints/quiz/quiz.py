@@ -79,11 +79,11 @@ async def read_quiz(
 		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz_id=quiz.id, user_id=current_user.id)
 		if not attempt:
 			# TODO ensure that quiz-user combination is unique
-			quiz_attempt_in = QuizAttemptCreate(
+			quiz_attempt_in = models.QuizAttemptCreate(
 				student_id=current_user.id,	
 				quiz_id=quiz.id	
 			)
-			attempt = crud.quiz_attempt.create(db, object_in=quiz_attempt_in)
+			attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
 
 	return quiz
 

@@ -15,6 +15,7 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 		return (
 			db.query(QuizAttempt)
 			.filter(QuizAttempt.quiz_id == quiz_id, QuizAttempt.student_id == user_id)
+			.first()
 		)
 
 	# DOING
