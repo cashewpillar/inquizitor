@@ -76,11 +76,9 @@ async def read_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if crud.user.is_student(current_user):
-		# DOING: take-quiz
-		# create answer objects? maybe at the submit request
-		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz=quiz, user=current_user)
+		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz_id=quiz.id, user_id=current_user.id)
 		if not attempt:
-			# ensure that quiz-user combination is unique
+			# TODO ensure that quiz-user combination is unique
 			quiz_attempt_in = QuizAttemptCreate(
 				student_id=current_user.id,	
 				quiz_id=quiz.id	

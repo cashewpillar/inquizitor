@@ -9,12 +9,22 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 		self,
 		db: Session,
 		*,
-		quiz: models.Quiz,
-		user: models.User
+		quiz_id: int,
+		user_id: int
 	) -> QuizAttempt:
 		return (
 			db.query(QuizAttempt)
-			.filter(QuizAttempt.quiz_id == quiz.id, QuizAttempt.student_id == user.id)
+			.filter(QuizAttempt.quiz_id == quiz_id, QuizAttempt.student_id == user_id)
 		)
 
+	# DOING
+	# def get_score(
+	# 	self,
+	# 	db: Session, 
+	# 	*,
+	# 	quiz_id: int,
+	# 	user_id: int
+	# ) -> int:
+	# 	score = 0
+		# get answers of user for that quiz
 quiz_attempt = CRUDQuizAttempt(QuizAttempt)

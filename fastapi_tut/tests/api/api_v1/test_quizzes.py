@@ -142,7 +142,7 @@ class TestReadQuiz:
 			f"/quizzes/{quiz.id}", cookies=student_cookies
 		)
 		result = r.json()
-		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz=quiz, user=student)
+		attempt = crud.quiz_attempt.get_by_quiz_and_user(db, quiz_id=quiz.id, user_id=student.id)
 		assert r.status_code == 200
 		assert attempt
 		assert result["name"] == quiz.name

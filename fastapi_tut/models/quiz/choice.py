@@ -1,15 +1,13 @@
+from sqlmodel import Field, Relationship, SQLModel
 from typing import List, Optional
 
 from fastapi_tut.db.base_class import PKModel
-
-from sqlmodel import Field, Relationship, SQLModel
 
 class QuizChoiceBase(SQLModel):
     content : str = Field(max_length=50)
     is_correct : bool
     question_id : Optional[int] = Field(default=None, foreign_key='quizquestion.id')
     
-
 class QuizChoiceCreate(QuizChoiceBase):
     pass
 

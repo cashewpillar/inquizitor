@@ -25,8 +25,6 @@ class QuizAnswerInDBBase(QuizAnswerBase, PKModel):
 class QuizAnswer(QuizAnswerInDBBase, table=True):
     student : Optional[User] = Relationship(back_populates='answers')
     choice : Optional[QuizChoice] = Relationship(back_populates="answers")
-    
 
     def __repr__(self):
-        # TODO return f"question: {self.question.content}, answer: {self.content}, is_correct: {self.is_correct}"
         return f"<Answer({self.content!r})>"
