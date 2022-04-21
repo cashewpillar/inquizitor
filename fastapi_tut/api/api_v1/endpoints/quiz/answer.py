@@ -9,22 +9,6 @@ from fastapi_tut.api import deps
 
 router = APIRouter()
 
-@router.get("/{quiz_index}/finish", response_model=int)
-async def finish_quiz(
-	*,
-	db: Session = Depends(deps.get_db),
-	quiz_index: Union[int, str],
-	current_user: models.User = Depends(deps.get_current_user)
-) -> Any:
-	"""
-	Finish the quiz and get scores for this attempt.
-	"""
-	quiz = crud.quiz.get(db, id=quiz_index) # NOTE can be made a dependency function for ease of reuse
-	if not quiz:
-		raise HTTPException(status_code=404, detail="Quiz not found")
-
-	return crud.quiz_attempt.get_score(db, quiz_id=quiz.id, student_id=current_user.id)
-
 @router.get("/{quiz_index}/answers", response_model=List[models.QuizAnswer])
 async def read_answers(
 	*,
@@ -38,7 +22,7 @@ async def read_answers(
 	"""
 	if crud.user.is_student(current_user):
 		user_id = current_user.id
-	elif crud.user.is_admin(current_user) or crud.user.is_teacher(current_user):
+	elif crud.user.is_superuser(current_user) or crud.user.is_teacher(current_user):
 		user_id = student_id
 
 	quiz = crud.quiz.get(db, id=quiz_index)

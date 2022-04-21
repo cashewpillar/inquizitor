@@ -1,12 +1,15 @@
 import logging
 import pytest
 import random
+from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlmodel import Session
-from typing import Dict
+from typing import Any, Dict
 
 from fastapi_tut import crud
 from fastapi_tut.tests.factories import AnswerFactory, QuizFactory, UserFactory
+from fastapi_tut.tests.utils.utils import get_quiz_session_objects
+
 
 @pytest.mark.anyio
 class TestUpdateAnswer:
@@ -128,77 +131,65 @@ class TestGetScore:
 @pytest.mark.anyio
 class TestReadAnswers:
 	"""
-	TODO
-	- test case when user havent answered quiz
+	NOTE
+	- any teacher can read answers of a specific student for a quiz they did not author
 	"""
-	# async def test_read_answers_superuser(
-	# 	self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
-	# ) -> None:
-	# 	superuser_cookies = await superuser_cookies
-	# 	r = await client.get(
-	# 		"/users/profile", cookies=superuser_cookies
-	# 	)
-	# 	result = r.json()
-	# 	user = crud.user.get(db, id=result['id'])
+	async def test_read_answers_admin(
+		self, 
+		app: FastAPI, 
+		client: AsyncClient, 
+		quiz_session_objects: Dict[str, Any], 
+		superuser_cookies: Dict[str, str]
+	) -> None:
+		quiz = quiz_session_objects["quiz"]
+		answers = quiz_session_objects["answers"]
+		student_cookies = quiz_session_objects["student_cookies"]
+		r = await client.get(
+			"/users/profile", cookies=student_cookies
+		)
+		user_id = r.json()['id']
 
-	# 	quiz = crud.quiz.get(db, id=1)
-	# 	r = await client.get(
-	# 		f"/quizzes/{quiz.id}/answers", cookies=superuser_cookies
-	# 	)
-	# 	result = r.json()
-	# 	assert r.status_code == 200
-	# 	for answer in result:
-	# 		assert answer[]
+		r = await client.get(
+			f"/quizzes/{quiz.id}/answers?student_id={user_id}", cookies=await superuser_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		for i, answer in enumerate(result):
+			assert answer["is_correct"]	 == answers[i]["is_correct"]
+			assert answer["student_id"] == answers[i]["student_id"]
+			assert answer["choice_id"] == answers[i]["choice_id"]
 
-# 	async def test_read_answers_teacher(
-# 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
-# 	) -> None:
-# 		teacher_cookies = await teacher_cookies
-# 		r = await client.get(
-# 			"/users/profile", cookies=teacher_cookies
-# 		)
-# 		result = r.json()
-# 		user = crud.user.get(db, id=result['id'])
+	async def test_read_answers_teacher(
+		self, 
+		app: FastAPI, 
+		client: AsyncClient, 
+		quiz_session_objects: Dict[str, Any], 
+		teacher_cookies: Dict[str, str]
+	) -> None:
+		quiz = quiz_session_objects["quiz"]
+		answers = quiz_session_objects["answers"]
+		student_cookies = quiz_session_objects["student_cookies"]
+		r = await client.get(
+			"/users/profile", cookies=student_cookies
+		)
+		user_id = r.json()['id']
 
-# 		quiz = crud.quiz.get(db, id=1)
-# 		question = crud.quiz_question.get(db, id=1)
-# 		choice = crud.quiz_choice.get(db, id=1)
-# 		answer_in = AnswerFactory.stub(schema_type="create", student=user, choice=choice)
-
-# 		r = await client.get(
-# 			f"/quizzes/{quiz.id}/answers", cookies=teacher_cookies
-# 		)
-# 		assert r.status_code == 400
+		r = await client.get(
+			f"/quizzes/{quiz.id}/answers?student_id={user_id}", cookies=await teacher_cookies
+		)
+		result = r.json()
+		assert r.status_code == 200
+		for i, answer in enumerate(result):
+			assert answer["is_correct"]	 == answers[i]["is_correct"]
+			assert answer["student_id"] == answers[i]["student_id"]
+			assert answer["choice_id"] == answers[i]["choice_id"]
 
 	async def test_read_answers_student(
-		self, db: Session, client: AsyncClient
+		self, app: FastAPI, client: AsyncClient, quiz_session_objects: Dict[str, Any]
 	) -> None:
-		user_in = UserFactory.stub(schema_type="create", is_student=True)
-		user = UserFactory(**user_in)
-		r = await client.post(
-				"/login/token", 
-				data={"username": user_in["username"], "password": user_in["password"]}
-			)
-		student_cookies = r.cookies
-
-		# add answers
-		quiz = crud.quiz.get(db, id=1)
-		answers = []
-		for question in quiz.questions:
-			choice = random.choices(question.choices)[0]
-			answer_in = AnswerFactory.stub(
-				schema_type="create", 
-				content=choice.content, 
-				student=user, 
-				choice=choice
-			)
-			answers.append(answer_in)
-
-			r = await client.put(
-				f"/quizzes/{quiz.id}/questions/{question.id}/answer", 
-				cookies=student_cookies, 
-				json=answer_in
-			)
+		quiz = quiz_session_objects["quiz"]
+		answers = quiz_session_objects["answers"]
+		student_cookies = quiz_session_objects["student_cookies"]
 
 		r = await client.get(f"/quizzes/{quiz.id}/answers", cookies=student_cookies)
 		result = r.json()
@@ -207,3 +198,21 @@ class TestReadAnswers:
 			assert answer["is_correct"]	 == answers[i]["is_correct"]
 			assert answer["student_id"] == answers[i]["student_id"]
 			assert answer["choice_id"] == answers[i]["choice_id"]
+
+	async def test_read_answers_student_no_answer(
+		self, db: Session, app: FastAPI, client: AsyncClient
+	) -> None:
+		user_in = UserFactory.stub(schema_type="create", is_student=True)
+		user = UserFactory(**user_in)
+		async with AsyncClient(app=app, base_url="http://test") as ac:
+			r = await ac.post(
+					"/login/token", 
+					data={"username": user_in["username"], "password": user_in["password"]}
+				)
+		student_cookies = r.cookies
+
+		QUIZ_ID = 1 # first dummy quiz
+		r = await client.get(f"/quizzes/{QUIZ_ID}/answers", cookies=student_cookies)
+		result = r.json()
+		assert r.status_code == 200
+		assert result == []
