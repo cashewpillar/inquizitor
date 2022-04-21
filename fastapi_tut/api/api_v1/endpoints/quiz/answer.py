@@ -20,14 +20,14 @@ async def read_answers(
 	"""
 	Read answers of current student for the quiz.
 	"""
+	quiz = crud.quiz.get(db, id=quiz_index)
+	if not quiz:
+		raise HTTPException(status_code=404, detail="Quiz not found")
+
 	if crud.user.is_student(current_user):
 		user_id = current_user.id
 	elif crud.user.is_superuser(current_user) or crud.user.is_teacher(current_user):
 		user_id = student_id
-
-	quiz = crud.quiz.get(db, id=quiz_index)
-	if not quiz:
-		raise HTTPException(status_code=404, detail="Quiz not found")
 
 	answers_of_current_user = crud.quiz_answer.get_all_by_quiz_and_student_ids(
 		db, quiz_id=quiz.id, student_id=user_id
