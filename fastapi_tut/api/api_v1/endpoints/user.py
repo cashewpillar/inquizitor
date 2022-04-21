@@ -30,8 +30,7 @@ async def read_users(
 async def create_user(
     *,
     db : Session = Depends(deps.get_db),
-    user_in : UserCreate,
-    current_user: User = Depends(deps.get_current_active_superuser)
+    user_in : UserCreate
 ):
     """
     Create new user.
