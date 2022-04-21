@@ -37,7 +37,6 @@ async def create_user(
     """
     user = crud.user.get_by_username(db, username=user_in.username)
     if user:
-        print("test")
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
