@@ -30,14 +30,14 @@ async def read_users(
 async def create_user(
     *,
     db : Session = Depends(deps.get_db),
-    user_in : UserCreate,
-    current_user: User = Depends(deps.get_current_active_superuser)
+    user_in : UserCreate
 ):
     """
     Create new user.
     """
     user = crud.user.get_by_username(db, username=user_in.username)
     if user:
+        print("test")
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
