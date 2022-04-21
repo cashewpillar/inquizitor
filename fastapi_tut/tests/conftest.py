@@ -18,6 +18,7 @@ from fastapi_tut.tests.utils.utils import (
 	get_superuser_cookies,
 	get_student_cookies,
 	get_teacher_cookies,
+	get_quiz_session_objects
 )
 
 @pytest.fixture(scope="session")
@@ -69,3 +70,9 @@ def student_cookies(app: FastAPI) -> Dict[str, str]:
 @pytest.fixture
 def teacher_cookies(app: FastAPI) -> Dict[str, str]:
 	return get_teacher_cookies(app)
+
+@pytest.fixture
+@pytest.mark.anyio
+async def quiz_session_objects(app: FastAPI, db: Session) -> Dict[str, str]:
+	return await get_quiz_session_objects(app, db)
+

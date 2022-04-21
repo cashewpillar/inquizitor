@@ -126,3 +126,19 @@ async def delete_quiz(
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 	quiz = crud.quiz.remove(db, id=id)
 	return quiz
+
+@router.get("/{quiz_index}/finish", response_model=int)
+async def finish_quiz(
+	*,
+	db: Session = Depends(deps.get_db),
+	quiz_index: Union[int, str],
+	current_user: models.User = Depends(deps.get_current_user)
+) -> Any:
+	"""
+	Finish the quiz and get scores for this attempt.
+	"""
+	quiz = crud.quiz.get(db, id=quiz_index) # NOTE can be made a dependency function for ease of reuse
+	if not quiz:
+		raise HTTPException(status_code=404, detail="Quiz not found")
+
+	return crud.quiz_attempt.get_score(db, quiz_id=quiz.id, student_id=current_user.id)
