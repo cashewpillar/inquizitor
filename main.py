@@ -31,8 +31,8 @@ NOTE - remember me
 '''
 
 
-from fastapi_tut import create_app
-from fastapi_tut.commands import cli
+from inquizitor import create_app
+from inquizitor.commands import cli
 
 app = create_app()
 
