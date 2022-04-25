@@ -11,24 +11,6 @@
 <br>
 
 
-## DOING
-
-- - crud-quiz
-    - api/api_v1/endpoints/quiz/quiz.py
-      - stats
-      - ![image-20220327170830952](C:\Users\halloween\AppData\Roaming\Typora\typora-user-images\image-20220327170830952.png)
-      - **per quiz & per student**
-      - <br>
-
-## TO DO
-
-#### tests
-
-- test initial/ first users: **admin** (update this), **student**, **teacher** 
-
-- remove production_client fixture
-
-  <br>
 
 
 
@@ -54,12 +36,6 @@
 
 
 ## DOCS
-
-#### PYTHON FUNCTION ANNOTATIONS | TYPE HINTS
-
-* NOTE: used throughout fastapi docs
-
-- [refresher from fastapi](https://fastapi.tiangolo.com/python-types/) - [stackoverflow](https://stackoverflow.com/questions/14379753/what-does-mean-in-python-function-definitions)  -  [python pep](https://www.python.org/dev/peps/pep-3107/	)
 
 <br>
 
