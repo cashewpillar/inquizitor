@@ -33,8 +33,7 @@ class QuizQuestionRead(QuizQuestionBase):
     id: int
     quiz_id: int
 
-class QuizQuestionReadWithChoices(QuizQuestionBase):
-
+class QuizQuestionReadWithChoices(QuizQuestionInDBBase):
     choices: List["QuizChoice"] = []
 
 from inquizitor.models.quiz.choice import QuizChoice

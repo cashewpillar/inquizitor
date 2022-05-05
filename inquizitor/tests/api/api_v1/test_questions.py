@@ -26,6 +26,7 @@ class TestReadQuestion:
 		)
 		result = r.json()
 		assert r.status_code == 200
+		assert result["id"] == question.id
 		assert result["content"] == question.content
 		assert result["points"] == question.points
 		assert result["order"] == question.order
@@ -40,6 +41,7 @@ class TestReadQuestion:
 		)
 		result = r.json()
 		assert r.status_code == 200
+		assert result["id"] == question.id
 		assert result["content"] == question.content
 		assert result["points"] == question.points
 		assert result["order"] == question.order
@@ -54,6 +56,7 @@ class TestReadQuestion:
 		)
 		result = r.json()
 		assert r.status_code == 200
+		assert result["id"] == question.id
 		assert result["content"] == question.content
 		assert result["points"] == question.points
 		assert result["order"] == question.order
