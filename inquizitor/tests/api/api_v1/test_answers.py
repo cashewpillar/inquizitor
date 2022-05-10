@@ -9,7 +9,7 @@ from inquizitor import crud
 from inquizitor.tests.factories import AnswerFactory, QuizFactory, UserFactory
 
 @pytest.mark.anyio
-class TestReadQuizzes:
+class TestUpdateAnswer:
 	async def test_update_answer_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
