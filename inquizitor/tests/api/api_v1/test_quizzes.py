@@ -73,20 +73,28 @@ class TestReadQuizzes:
 		question_1 = QuestionFactory(quiz=quiz)
 		choice_1 = ChoiceFactory(question=question_1)
 		answer_1 = AnswerFactory(choice=choice_1, student=student)
-		student_link_in = QuizStudentLinkCreate(student_id=student.id, quiz_id=quiz.id)
-		crud.quiz_student_link.create(db, obj_in=student_link_in)
+		# student_link_in = QuizStudentLinkCreate(student_id=student.id, quiz_id=quiz.id)
+		# crud.quiz_student_link.create(db, obj_in=student_link_in)
+
+		quizzes_in_db = crud.quiz.get_multi_by_participant(
+			# NOTE change to line below when feature is needed
+			# db=db, participant=current_user, skip=skip, limit=limit
+			db=db, student=student
+		)
+
 		r = await client.get(
 			"/quizzes/", cookies=student_cookies
 		)
 		result = r.json()
-		assert r.status_code == 200
-		assert result[-1]["name"] == quiz.name
-		assert result[-1]["number_of_questions"] == quiz.number_of_questions
-		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
-		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		assert result[-1]["quiz_code"] == quiz.quiz_code
-		assert result[-1]["teacher_id"] == quiz.teacher_id
-		assert answer_1 in result[-1]["answers"]
+		# assert r.status_code == 200
+		# assert result[-1]["name"] == quiz.name
+		# assert result[-1]["number_of_questions"] == quiz.number_of_questions
+		# assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+		# assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+		# assert result[-1]["quiz_code"] == quiz.quiz_code
+		# assert result[-1]["teacher_id"] == quiz.teacher_id
+		# assert answer_1 in result[-1]["answers"]
+		assert result == quizzes_in_db
 
 @pytest.mark.anyio
 class TestReadQuiz:
@@ -148,7 +156,7 @@ class TestReadQuiz:
 			f"/quizzes/{quiz.id}", cookies=student_cookies
 		)
 		result = r.json()
-		attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=student.id)
+		attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=student.id)
 		assert r.status_code == 200
 		assert attempt
 		assert result["name"] == quiz.name

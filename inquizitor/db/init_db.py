@@ -90,7 +90,9 @@ def dummy_quiz(db: Session) -> None:
 					schema_type="create", 
 					content=choice.content, 
 					student=first_student, 
-					choice=choice
+					choice=choice,
+					attempt=attempt,
+					question=question
 				)
 				answer = crud.quiz_answer.create(db, obj_in=answer_in)
 

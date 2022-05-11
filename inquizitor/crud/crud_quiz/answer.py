@@ -6,27 +6,28 @@ from inquizitor.crud.base import CRUDBase
 from inquizitor.models import QuizAnswer, QuizAnswerCreate, QuizAnswerUpdate
 
 class CRUDQuizAnswer(CRUDBase[QuizAnswer, QuizAnswerCreate, QuizAnswerUpdate]):
-	def get_by_choice_and_user_ids(
+	def get_by_question_and_attempt_ids(
 		self,
 		db: Session,
 		*,
-		choice_id: int,
-		student_id: int
+		question_id: int,
+		attempt_id: int
 	) -> QuizAnswer:
 		return (
 			db.query(QuizAnswer)
-			.filter(QuizAnswer.choice_id == choice_id, QuizAnswer.student_id == student_id)
+			.filter(QuizAnswer.question_id == question_id, QuizAnswer.attempt_id == attempt_id)
 			.first()
 		)
 
-	def get_all_by_quiz_and_student_ids(
+	def get_all_by_attempt(
 		self,
 		db: Session,
 		*,
-		quiz_id: int,
-		student_id: int
+		attempt_id: int
 	) -> List[QuizAnswer]:
-		student = crud.user.get(db, id=student_id)
-		return [answer for answer in student.answers if answer.choice.question.quiz_id == quiz_id]
+		attempt = crud.quiz_attempt.get(db, id=attempt_id)
+		student = crud.user.get(db, id=attempt.student_id)
+
+		return [answer for answer in student.answers if answer.attempt_id == attempt.id]
 
 quiz_answer = CRUDQuizAnswer(QuizAnswer)

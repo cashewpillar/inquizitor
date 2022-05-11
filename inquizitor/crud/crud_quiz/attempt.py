@@ -1,11 +1,14 @@
+import logging
+from pprint import pformat
 from sqlmodel import Session
+from typing import List
 
 from inquizitor import crud, models
 from inquizitor.crud.base import CRUDBase
 from inquizitor.models import QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
 class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate]):
-	def get_by_quiz_and_student_ids(
+	def get_latest_by_quiz_and_student_ids(
 		self,
 		db: Session,
 		*,
@@ -14,21 +17,66 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 	) -> QuizAttempt:
 		return (
 			db.query(QuizAttempt)
-			.filter(QuizAttempt.quiz_id == quiz_id, QuizAttempt.student_id == student_id)
+			.filter(
+				QuizAttempt.quiz_id == quiz_id, 
+				QuizAttempt.student_id == student_id
+			)
+			# NOTE cant make ordering by date to work YET, maybe should stringify but ehh
+			# all instances of latest are currently set to ID instead of STARTED at
+			.order_by(QuizAttempt.id.desc()) 
 			.first()
 		)
 
+	def get_multi_by_quiz_and_student_ids(
+		self,
+		db: Session,
+		*,
+		quiz_id: int,
+		student_id: int
+	) -> QuizAttempt:
+		return (
+			db.query(QuizAttempt)
+			.filter(
+				QuizAttempt.quiz_id == quiz_id, 
+				QuizAttempt.student_id == student_id
+			)
+			.order_by(QuizAttempt.id.desc())
+			.all()
+		)
+
+	def get_multi_latest_by_student_id(
+		self,
+		db: Session,
+		*,
+		student_id: int
+	) -> List[QuizAttempt]:
+		unique_attempts = [] 
+		attempts = (
+			db.query(QuizAttempt)
+			.filter(
+				QuizAttempt.student_id == student_id
+			)
+			.order_by(QuizAttempt.id.desc())
+			.all()
+		)
+		for attempt in attempts:
+			if attempt.quiz_id not in [attempt.quiz_id for attempt in unique_attempts]:
+				unique_attempts.append(attempt)
+
+		return unique_attempts
+
+	# DOING
 	def get_score(
 		self,
 		db: Session, 
 		*,
-		quiz_id: int,
-		student_id: int
+		id: int
 	) -> int:
+		attempt = crud.quiz_attempt.get(db, id=id)
+
 		score = 0
-		answers = crud.quiz_answer.get_all_by_quiz_and_student_ids(
-			db, quiz_id=quiz_id, student_id=student_id 
-		)
+		answers = crud.quiz_answer.get_all_by_attempt(
+			db, attempt_id=attempt.id)
 		for answer in answers:
 			choice = crud.quiz_choice.get(db, id=answer.choice_id)
 			question = crud.quiz_question.get(db, id=choice.question_id)

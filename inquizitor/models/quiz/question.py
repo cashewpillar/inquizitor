@@ -23,7 +23,7 @@ class QuizQuestionInDBBase(QuizQuestionBase, PKModel):
 
 class QuizQuestion(QuizQuestionInDBBase, table=True):
     choices: List["QuizChoice"] = Relationship(back_populates="question")
-    attempts: List["QuizAttempt"] = Relationship(back_populates="question")
+    attempts: List["QuizAttempt"] = Relationship(back_populates="recent_question")
     quiz: Optional["Quiz"] = Relationship(back_populates="questions")
     
     def __repr__(self):

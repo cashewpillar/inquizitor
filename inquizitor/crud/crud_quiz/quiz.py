@@ -45,6 +45,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			.all()
 		)
 
+	# DOING
 	# NOTE might need query with offset and limit here
 	def get_multi_by_participant(
 		self, db:Session, *, student: models.User
@@ -54,12 +55,17 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 
 		# NOTE this does not get answers for LATEST attempt, not sure fix outside course deadline
 		quizzes = []
-		for link in student.student_quizzes:
-			quiz_in_db = crud.quiz.get(db, id=link.quiz_id)
+		# for link in student.student_quizzes: # NOTE confusing. i thought it was a list of quizzes, but instead it was a list of links
+		unique_attempts = crud.quiz_attempt.get_multi_latest_by_student_id(
+			db, student_id=student.id
+		)
+		for attempt in unique_attempts:
+			quiz_in_db = crud.quiz.get(db, id=attempt.quiz_id)
+
 			quiz = jsonable_encoder(quiz_in_db)
 			quiz["questions"] = quiz_in_db.questions
-			quiz["answers"] = crud.quiz_answer.get_all_by_quiz_and_student_ids(
-				db, quiz_id=quiz_in_db.id, student_id=student.id 
+			quiz["answers"] = crud.quiz_answer.get_all_by_attempt(
+				db, attempt_id=attempt.id
 			)
 			quizzes.append(quiz)
 

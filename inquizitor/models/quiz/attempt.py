@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional, List
 
@@ -12,6 +13,7 @@ class QuizAttemptBase(SQLModel):
     recent_question_id: Optional[int] = Field(default=None, foreign_key="quizquestion.id")
     student_id: int = Field(foreign_key="user.id")
     quiz_id: int = Field(foreign_key="quiz.id")
+    started_at: datetime = Field(default=datetime.utcnow())
 
 class QuizAttemptCreate(QuizAttemptBase):
     pass
@@ -26,6 +28,7 @@ class QuizAttemptInDBBase(QuizAttemptBase, PKModel):
     pass
 
 class QuizAttempt(QuizAttemptInDBBase, table=True):
-    question: Optional[QuizQuestion] = Relationship(back_populates="attempts")
+    recent_question: Optional[QuizQuestion] = Relationship(back_populates="attempts")
     student: Optional[User] = Relationship(back_populates='attempts')
     quiz: Optional[Quiz] = Relationship(back_populates="attempts")
+    answers: Optional["QuizAnswer"] = Relationship(back_populates='attempt')

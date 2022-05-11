@@ -23,7 +23,16 @@ async def finish_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 
-	return crud.quiz_attempt.get_score(db, quiz_id=quiz.id, student_id=current_user.id)
+	attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+		db, quiz_id=quiz.id, student_id=current_user.id
+	)
+	if not attempt:
+		raise HTTPException(status_code=404, detail="Attempt for this quiz session was not found")
+
+	attempt_in = models.QuizAttemptUpdate(is_done=True)
+	attempt = crud.quiz_attempt.update(db, db_obj=attempt, obj_in=attempt_in)
+
+	return crud.quiz_attempt.get_score(db, id=attempt.id)
 
 @router.put("/{quiz_index}/questions/{question_id}/answer", response_model=models.QuizAnswer)
 async def update_answer(
@@ -48,8 +57,8 @@ async def update_answer(
 	if not crud.quiz.has_question(db, quiz_index=quiz_index, question_id=question.id):
 		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
 
-	attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
-	if not attempt:
+	attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
+	if not attempt or attempt.is_done:
 		quiz_attempt_in = models.QuizAttemptCreate(
 			student_id=current_user.id,	
 			quiz_id=quiz.id,
@@ -57,9 +66,10 @@ async def update_answer(
 		)
 		attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
 	else:
-		crud.quiz_attempt.update(
+		attempt = crud.quiz_attempt.update(
 			db, db_obj=attempt, obj_in={"recent_question_id": question_id}
 		)
+	answer_in.attempt_id = attempt.id
 
 	link = crud.quiz_student_link.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
 	if not link:
@@ -69,8 +79,8 @@ async def update_answer(
 		)
 		link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
 
-	answer = crud.quiz_answer.get_by_choice_and_user_ids(
-		db, choice_id=answer_in.choice_id, student_id=answer_in.student_id
+	answer = crud.quiz_answer.get_by_question_and_attempt_ids(
+		db, question_id=question_id, attempt_id=attempt.id
 	)
 	if answer:
 		answer = crud.quiz_answer.update(db, db_obj=answer, obj_in=answer_in)
