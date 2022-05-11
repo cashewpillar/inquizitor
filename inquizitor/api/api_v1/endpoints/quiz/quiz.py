@@ -37,7 +37,7 @@ async def create_quiz(
     quiz = crud.quiz.create(db, obj_in=quiz_in)
     return quiz
 
-@router.get("/", response_model=List[models.Quiz])
+@router.get("/", response_model=List[models.QuizReadWithQuestions])
 async def read_quizzes(
 	db: Session = Depends(deps.get_db),
 	skip: int = 0,

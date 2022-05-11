@@ -84,7 +84,9 @@ class TestUpdateAnswer:
 		assert result["choice_id"] == answer_in["choice_id"]
 
 		attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=user.id)
+		link = crud.quiz_student_link.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=user.id)
 		assert attempt.recent_question_id == question.id
+		assert link
 
 @pytest.mark.anyio
 class TestGetScore:
@@ -111,7 +113,7 @@ class TestGetScore:
 				choice=choice
 			)
 			if choice.is_correct:
-				score += 1
+				score += question.points
 
 			r = await client.put(
 				f"/quizzes/{quiz.id}/questions/{question.id}/answer", 

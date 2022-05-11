@@ -31,10 +31,11 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 		)
 		for answer in answers:
 			choice = crud.quiz_choice.get(db, id=answer.choice_id)
+			question = crud.quiz_question.get(db, id=choice.question_id)
 			answer_in = models.QuizAnswerUpdate(is_correct=choice.is_correct)
 			answer = crud.quiz_answer.update(db, db_obj=answer, obj_in=answer_in)
 			if answer.is_correct:
-				score += 1
+				score += question.points
 
 		return score
 

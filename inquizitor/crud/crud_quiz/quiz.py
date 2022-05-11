@@ -51,7 +51,19 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		# self, db:Session, *, student: models.User, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
 		"""Read quizzes participated by the student."""
-		return [jsonable_encoder(crud.quiz.get(db, id=link.quiz_id)) for link in student.student_quizzes]
+
+		# NOTE this does not get answers for LATEST attempt, not sure fix outside course deadline
+		quizzes = []
+		for link in student.student_quizzes:
+			quiz_in_db = crud.quiz.get(db, id=link.quiz_id)
+			quiz = jsonable_encoder(quiz_in_db)
+			quiz["questions"] = quiz_in_db.questions
+			quiz["answers"] = crud.quiz_answer.get_all_by_quiz_and_student_ids(
+				db, quiz_id=quiz_in_db.id, student_id=student.id 
+			)
+			quizzes.append(quiz)
+
+		return quizzes
 
 	def get_multi_by_author(
 		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100

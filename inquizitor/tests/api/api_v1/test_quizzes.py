@@ -10,7 +10,7 @@ from fastapi.encoders import jsonable_encoder
 
 from inquizitor import crud
 from inquizitor.models import QuizStudentLinkCreate
-from inquizitor.tests.factories import QuizFactory
+from inquizitor.tests.factories import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -46,6 +46,7 @@ class TestReadQuizzes:
 		result = r.json()
 		teacher = crud.user.get(db, id=result['id'])
 		quiz = QuizFactory(teacher=teacher)
+		question = QuestionFactory(quiz=quiz)
 		r = await client.get(
 			"/quizzes/", cookies=teacher_cookies
 		)
@@ -57,6 +58,7 @@ class TestReadQuizzes:
 		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
+		assert result[-1]["questions"] == quiz.questions
 
 	async def test_read_quizzes_student(
 		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
@@ -68,6 +70,9 @@ class TestReadQuizzes:
 		result = r.json()
 		student = crud.user.get(db, id=result['id'])
 		quiz = QuizFactory()
+		question_1 = QuestionFactory(quiz=quiz)
+		choice_1 = ChoiceFactory(question=question_1)
+		answer_1 = AnswerFactory(choice=choice_1, student=student)
 		student_link_in = QuizStudentLinkCreate(student_id=student.id, quiz_id=quiz.id)
 		crud.quiz_student_link.create(db, obj_in=student_link_in)
 		r = await client.get(
@@ -81,6 +86,7 @@ class TestReadQuizzes:
 		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
 		assert result[-1]["quiz_code"] == quiz.quiz_code
 		assert result[-1]["teacher_id"] == quiz.teacher_id
+		assert answer_1 in result[-1]["answers"]
 
 @pytest.mark.anyio
 class TestReadQuiz:
