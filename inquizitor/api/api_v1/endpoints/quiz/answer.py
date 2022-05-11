@@ -49,9 +49,6 @@ async def update_answer(
 		raise HTTPException(status_code=404, detail="Question does not belong to the specified quiz")
 
 	attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
-	# crud.quiz_attempt.update(
-	# 	db, db_obj=attempt, obj_in={"recent_question_id": question_id}
-	# )
 	if not attempt:
 		quiz_attempt_in = models.QuizAttemptCreate(
 			student_id=current_user.id,	
@@ -63,6 +60,14 @@ async def update_answer(
 		crud.quiz_attempt.update(
 			db, db_obj=attempt, obj_in={"recent_question_id": question_id}
 		)
+
+	link = crud.quiz_student_link.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
+	if not link:
+		quiz_student_link_in = models.QuizStudentLinkCreate(
+			student_id=current_user.id,	
+			quiz_id=quiz.id,
+		)
+		link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
 
 	answer = crud.quiz_answer.get_by_choice_and_user_ids(
 		db, choice_id=answer_in.choice_id, student_id=answer_in.student_id

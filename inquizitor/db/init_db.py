@@ -1,15 +1,17 @@
-from random import randrange
+import random
 from sqlmodel import Session 
 from sqlalchemy.engine import Engine
 
 from sqlmodel import SQLModel
 
-from inquizitor import crud
+from inquizitor import crud, models
 from inquizitor.core.config import settings
 from inquizitor.core.security import get_password_hash
 from inquizitor.db import base # noqa: F401
 from inquizitor.models.user import UserCreate
-from inquizitor.tests.factories import QuizFactory, QuestionFactory, ChoiceFactory
+from inquizitor.tests.factories import (
+	AnswerFactory, QuizFactory, QuestionFactory, ChoiceFactory
+)
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly
@@ -47,6 +49,7 @@ def init_users(db: Session) -> None:
 
 def dummy_quiz(db: Session) -> None:
 	first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
+	first_student = crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL)
 	NUM_QUESTIONS = 5
 	for i in range(10):
 		quiz_in = QuizFactory.stub(
@@ -60,12 +63,37 @@ def dummy_quiz(db: Session) -> None:
 			question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
 			question = crud.quiz_question.create(db, obj_in=question_in)
 
-			index_correct = randrange(0, 4)
+			index_correct = random.randrange(0, 4)
 			for i in range(4):
 				choice_in = ChoiceFactory.stub(schema_type="create", question=question)
 				if i == index_correct:
 					choice_in["is_correct"] = True
 				choice = crud.quiz_choice.create(db, obj_in=choice_in)
+
+		if quiz.id % 2 == 0:
+			# First student accesses half the dummy quizzes
+			quiz_student_link_in = models.QuizStudentLinkCreate(
+				student_id=first_student.id,	
+				quiz_id=quiz.id,
+			)
+			quiz_attempt_in = models.QuizAttemptCreate(
+				student_id=first_student.id,	
+				quiz_id=quiz.id,
+			)
+			link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
+			attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
+
+			# First student answers
+			for question in quiz.questions:
+				choice = random.choices(question.choices)[0]
+				answer_in = AnswerFactory.stub(
+					schema_type="create", 
+					content=choice.content, 
+					student=first_student, 
+					choice=choice
+				)
+				answer = crud.quiz_answer.create(db, obj_in=answer_in)
+
 
 def init_db(db: Session, engine: Engine) -> None:
 	# Tables should be created with Alembic migrations

@@ -10,6 +10,7 @@ from inquizitor.tests.factories import AnswerFactory, QuizFactory, UserFactory
 
 @pytest.mark.anyio
 class TestUpdateAnswer:
+	# NOTE superuser and teacher should also be able to answer a quiz for testing purposes (?)
 	async def test_update_answer_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
