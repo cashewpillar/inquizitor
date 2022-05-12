@@ -56,6 +56,7 @@ class QuizRead(QuizInDBBase):
 class QuizReadWithQuestions(QuizInDBBase):
     questions: List["QuizQuestion"] = []
     answers: Optional[list] = [] # NOTE removed QuizAnswer validation by making it generic
+    score: Optional[int] # same as above
 
 from .question import QuizQuestion
 QuizReadWithQuestions.update_forward_refs()

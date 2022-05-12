@@ -1,3 +1,4 @@
+import logging
 from sqlmodel import Session
 from typing import List
 
@@ -28,6 +29,7 @@ class CRUDQuizAnswer(CRUDBase[QuizAnswer, QuizAnswerCreate, QuizAnswerUpdate]):
 		attempt = crud.quiz_attempt.get(db, id=attempt_id)
 		student = crud.user.get(db, id=attempt.student_id)
 
+		# logging.info(f"A{attempt.id}S{student.id} ANS: {[answer for answer in student.answers if answer.attempt_id == attempt.id]}")
 		return [answer for answer in student.answers if answer.attempt_id == attempt.id]
 
 quiz_answer = CRUDQuizAnswer(QuizAnswer)

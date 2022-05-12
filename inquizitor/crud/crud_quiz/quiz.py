@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 from sqlmodel import Session
@@ -64,9 +65,10 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 
 			quiz = jsonable_encoder(quiz_in_db)
 			quiz["questions"] = quiz_in_db.questions
-			quiz["answers"] = crud.quiz_answer.get_all_by_attempt(
+			quiz["answers"] = jsonable_encoder(crud.quiz_answer.get_all_by_attempt(
 				db, attempt_id=attempt.id
-			)
+			))
+			quiz["score"] = crud.quiz_attempt.get_score(db, id=attempt.id)
 			quizzes.append(quiz)
 
 		return quizzes
