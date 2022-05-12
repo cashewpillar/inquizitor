@@ -2,7 +2,9 @@ import logging
 import pytest
 import random
 import time
+from fastapi.encoders import jsonable_encoder
 from httpx import AsyncClient
+from pprint import pformat
 from sqlmodel import Session
 from typing import Dict
 
@@ -181,3 +183,70 @@ class TestRetakeQuiz:
 				db, attempt_id=attempt.id
 			)
 			assert len(answers) == len(quiz.questions)
+
+@pytest.mark.anyio
+class TestGetQuizResults:
+	async def test_get_quiz_results_superuser(
+		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+	) -> None:
+		superuser_cookies = await superuser_cookies
+		r = await client.get(
+			"/users/profile", cookies=superuser_cookies
+		)
+		result = r.json()
+		superuser = crud.user.get(db, id=result['id'])
+
+		unique_attempts = []
+		quiz = crud.quiz.get(db, id=3)
+		for i in range(5): # 5 students take the quiz
+			student_in = UserFactory.stub(schema_type="create", is_student=True)
+			student = UserFactory(**student_in)
+			r = await client.post(
+				"/login/token", 
+				data={"username": student_in["username"], "password": student_in["password"]}
+			)
+			student_cookies = r.cookies
+
+			for question in quiz.questions:
+				choice = random.choices(question.choices)[0]
+				answer_in = AnswerFactory.stub(
+					schema_type="create", 
+					content=choice.content, 
+					student=student, 
+					choice=choice,
+					question=question
+				)
+
+				r = await client.put(
+					f"/quizzes/{quiz.id}/questions/{question.id}/answer", 
+					cookies=student_cookies, 
+					json=answer_in
+				)
+				assert r.status_code == 200
+
+			attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=student.id)
+			unique_attempts.append(attempt)
+
+			r = await client.get(f"/quizzes/{quiz.id}/finish", cookies=student_cookies)
+			assert r.status_code == 200
+
+
+		r = await client.get(f"/quizzes/{quiz.id}/results", cookies=superuser_cookies)
+		results = r.json()
+
+		assert r.status_code == 200			
+		for result in results:
+			assert result["answers"]
+			assert result["questions"]
+
+		unique_attempt_ids = [attempt.id for attempt in unique_attempts]
+		unique_attempt_ids.sort()
+		results = [result["answers"][0]["attempt_id"] for result in results]
+		results.sort()
+
+		assert unique_attempt_ids == results
+
+		# delete attempts made this session for the purposes of next tests
+		for id in unique_attempt_ids:
+			attempt = crud.quiz_attempt.remove(db, id=id)
+

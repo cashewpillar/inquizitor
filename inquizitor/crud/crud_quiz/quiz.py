@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+from pprint import pformat
 from sqlmodel import Session
 from typing import List, Union
 
@@ -46,7 +47,6 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			.all()
 		)
 
-	# DOING
 	# NOTE might need query with offset and limit here
 	def get_multi_by_participant(
 		self, db:Session, *, student: models.User
@@ -71,6 +71,28 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			quiz["score"] = crud.quiz_attempt.get_score(db, id=attempt.id)
 			quizzes.append(quiz)
 
+		return quizzes
+
+	def get_multi_results_by_quiz_id(
+		self, db:Session, *, id: int, skip: int = 0, limit: int = 100
+	) -> List[models.QuizReadWithQuestions]:
+		"""Read results for the quiz"""
+
+		quizzes = []
+		unique_attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(
+			db, id=id
+		)
+		for attempt in unique_attempts:
+			quiz_in_db = crud.quiz.get(db, id=id)
+			quiz = jsonable_encoder(quiz_in_db)
+			quiz["questions"] = quiz_in_db.questions
+			quiz["answers"] = jsonable_encoder(crud.quiz_answer.get_all_by_attempt(
+				db, attempt_id=attempt.id
+			))
+			quiz["score"] = crud.quiz_attempt.get_score(db, id=attempt.id)
+			quizzes.append(quiz)
+
+		# logging.info(f"{pformat(quizzes)}")
 		return quizzes
 
 	def get_multi_by_author(

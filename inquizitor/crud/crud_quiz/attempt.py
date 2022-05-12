@@ -65,7 +65,28 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
 		return unique_attempts
 
-	# DOING
+	def get_multi_latest_by_quiz_id(
+		self,
+		db: Session,
+		*,
+		id: int
+	) -> List[QuizAttempt]:
+		unique_attempts = [] 
+		attempts = (
+			db.query(QuizAttempt)
+			.filter(
+				QuizAttempt.quiz_id == id
+			)
+			.order_by(QuizAttempt.id.desc())
+			.all()
+		)
+		for attempt in attempts:
+			if attempt.student_id not in [attempt.student_id for attempt in unique_attempts]:
+				unique_attempts.append(attempt)
+
+		# logging.info(f"UNIQUEATTEMPTS: {pformat(unique_attempts)}")
+		return unique_attempts
+
 	def get_score(
 		self,
 		db: Session, 
