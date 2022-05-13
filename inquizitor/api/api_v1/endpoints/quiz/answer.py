@@ -101,10 +101,10 @@ async def get_quiz_results(
 	Get latest attempts of participants for this quiz
 	"""
 	if not crud.user.is_superuser(current_user) and \
-		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=id):
+		not crud.quiz.is_author(db, user_id=current_user.id, quiz_index=quiz_index):
 		raise HTTPException(status_code=400, detail="Not enough permissions")
 
-	quiz = crud.quiz.get(db, id=quiz_index) # NOTE can be made a dependency function for ease of reuse
+	quiz = crud.quiz.get_by_index(db, quiz_index=quiz_index) # NOTE can be made a dependency function for ease of reuse
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 
