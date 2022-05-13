@@ -81,6 +81,8 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 				db, attempt_id=attempt.id
 			))
 			quiz["score"] = crud.quiz_attempt.get_score(db, id=attempt.id)
+			quiz["participant_name"] = crud.user.get(db, id=attempt.student_id).full_name
+
 			quizzes.append(quiz)
 
 		return quizzes
@@ -102,6 +104,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 				db, attempt_id=attempt.id
 			))
 			quiz["score"] = crud.quiz_attempt.get_score(db, id=attempt.id)
+			quiz["participant_name"] = crud.user.get(db, id=attempt.student_id).full_name
 			quizzes.append(quiz)
 
 		# logging.info(f"{pformat(quizzes)}")

@@ -12,7 +12,7 @@ from inquizitor.core.security import get_password_hash
 from inquizitor.db import base # noqa: F401
 from inquizitor.models.user import UserCreate
 from inquizitor.tests.factories import (
-	AnswerFactory, QuizFactory, QuestionFactory, ChoiceFactory
+	AnswerFactory, QuizFactory, QuestionFactory, ChoiceFactory, UserFactory
 )
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
@@ -48,11 +48,22 @@ def init_users(db: Session) -> None:
 		)
 		first_teacher = crud.user.create(db, obj_in=user_in) # noqa: F841
 
+def init_test_students(db: Session):
+	test_students = [crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL), ]
+	for i in range(3):
+		user_in = UserFactory.stub(schema_type="create", is_student=True)
+		user_in = models.UserCreate(**user_in)
+		user = crud.user.create(db, obj_in=user_in)
+		test_students.append(user)
+
+	return test_students
+
 
 def dummy_quiz(db: Session) -> None:
-	first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
-	first_student = crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL)
 	NUM_QUESTIONS = 5
+	test_students = init_test_students(db)
+	first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
+
 	for i in range(10):
 		quiz_in = QuizFactory.stub(
 			schema_type="create", 
@@ -74,30 +85,32 @@ def dummy_quiz(db: Session) -> None:
 				choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
 		if quiz.id % 2 == 0:
-			# First student accesses half the dummy quizzes
-			quiz_student_link_in = models.QuizStudentLinkCreate(
-				student_id=first_student.id,	
-				quiz_id=quiz.id,
-			)
-			quiz_attempt_in = models.QuizAttemptCreate(
-				student_id=first_student.id,	
-				quiz_id=quiz.id,
-			)
-			link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
-			attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
-
-			# First student answers
-			for question in quiz.questions:
-				choice = random.choices(question.choices)[0]
-				answer_in = AnswerFactory.stub(
-					schema_type="create", 
-					content=choice.content, 
-					student=first_student, 
-					choice=choice,
-					attempt=attempt,
-					question=question
+			for student in test_students:
+				user = UserFactory
+				# First student accesses half the dummy quizzes
+				quiz_student_link_in = models.QuizStudentLinkCreate(
+					student_id=student.id,	
+					quiz_id=quiz.id,
 				)
-				answer = crud.quiz_answer.create(db, obj_in=answer_in)
+				quiz_attempt_in = models.QuizAttemptCreate(
+					student_id=student.id,	
+					quiz_id=quiz.id,
+				)
+				link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
+				attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
+
+				# First student answers
+				for question in quiz.questions:
+					choice = random.choices(question.choices)[0]
+					answer_in = AnswerFactory.stub(
+						schema_type="create", 
+						content=choice.content, 
+						student=student, 
+						choice=choice,
+						attempt=attempt,
+						question=question
+					)
+					answer = crud.quiz_answer.create(db, obj_in=answer_in)
 
 
 def init_db(db: Session, engine: Engine) -> None:

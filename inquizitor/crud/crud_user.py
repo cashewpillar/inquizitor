@@ -21,6 +21,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 				hashed_password=get_password_hash(obj_in.password),
 				last_name=obj_in.last_name,
 				first_name=obj_in.first_name,
+				full_name=f"{obj_in.last_name}, {obj_in.first_name}",
 				is_superuser=obj_in.is_superuser,
 				is_teacher=obj_in.is_teacher,
 				is_student=obj_in.is_student

@@ -53,10 +53,12 @@ class QuizRead(QuizInDBBase):
     created_at : datetime
     teacher_id : int
 
+# NOTE the model with answers and score should have been a separate model (quiz_attempt)
 class QuizReadWithQuestions(QuizInDBBase):
     questions: List["QuizQuestion"] = []
     answers: Optional[list] = [] # NOTE removed QuizAnswer validation by making it generic
     score: Optional[int] # same as above
+    participant_name: Optional[str] = None
 
 from .question import QuizQuestion
 QuizReadWithQuestions.update_forward_refs()

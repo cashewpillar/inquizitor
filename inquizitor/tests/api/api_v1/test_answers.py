@@ -238,6 +238,8 @@ class TestGetQuizResults:
 		for result in results:
 			assert result["answers"]
 			assert result["questions"]
+			assert type(result["score"]) == type(1)
+			assert result["participant_name"]
 
 		unique_attempt_ids = [attempt.id for attempt in unique_attempts]
 		unique_attempt_ids.sort()
