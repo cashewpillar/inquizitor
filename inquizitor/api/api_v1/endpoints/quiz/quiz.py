@@ -5,6 +5,7 @@ from pprint import pformat
 from sqlmodel import Session
 from typing import Any, List, Union
 
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends, HTTPException, Path
 from fastapi_jwt_auth import AuthJWT
 
@@ -23,7 +24,7 @@ async def create_quiz(
     if crud.user.is_student(current_user):
         raise HTTPException(status_code=400, detail="Not enough permissions")
 
-    quiz_in.quiz_code = crud.quiz.generate_code(db)
+    # quiz_in.quiz_code = crud.quiz.generate_code(db)
     quiz = crud.quiz.create(db, obj_in=quiz_in)
     return quiz
 
@@ -49,7 +50,7 @@ async def read_quizzes(
 		quizzes = crud.quiz.get_multi_by_author(
 			db=db, teacher_id=current_user.id, skip=skip, limit=limit
 		)
-
+	# logging.info(f"{pformat(jsonable_encoder(quizzes))}")
 	return quizzes
 
 @router.get("/{index}", response_model=models.QuizReadWithQuestions)

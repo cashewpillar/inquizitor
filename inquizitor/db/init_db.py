@@ -1,8 +1,10 @@
+import logging
 import random
+from pprint import pformat
 from sqlmodel import Session 
 from sqlalchemy.engine import Engine
-
 from sqlmodel import SQLModel
+from fastapi.encoders import jsonable_encoder
 
 from inquizitor import crud, models
 from inquizitor.core.config import settings
@@ -57,6 +59,7 @@ def dummy_quiz(db: Session) -> None:
 			teacher=first_teacher, 
 			number_of_questions=NUM_QUESTIONS
 		)
+		quiz_in = models.QuizCreate(**quiz_in)
 		quiz = crud.quiz.create(db, obj_in=quiz_in)
 
 		for i in range(NUM_QUESTIONS):

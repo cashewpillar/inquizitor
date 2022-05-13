@@ -1,0 +1,31 @@
+18:05:26 INFO {'answers': [],
+ 'created_at': '2022-05-13T10:05:26.216960',
+ 'desc': 'Want reason resource. Parent reality pass pressure add cut. Whole '
+         'stage could town ever consider. Live worker quality moment either.',
+ 'due_date': '2022-05-13T15:05:26.216960',
+ 'id': 71,
+ 'name': 'reduce',
+ 'number_of_questions': 20,
+ 'questions': [],
+ 'quiz_code': None,
+ 'score': None,
+ 'teacher_id': 62}
+
+
+18:05:27 INFO {'answers': [],
+ 'created_at': '2022-05-13T10:05:26.740928',
+ 'desc': 'Couple kitchen teach per certain help. Present measure civil read '
+         'bar student great.\n'
+         'Blood though eat foot rate. Owner get rock while. Career all after '
+         'right artist any.\n'
+         'Them professional six.',
+ 'due_date': '2022-05-13T15:05:26.740928',
+ 'id': 72,
+ 'name': 'middle',
+ 'number_of_questions': 80,
+ 'questions': [],
+ 'quiz_code': None,
+ 'score': None,
+ 'teacher_id': 63}
+
+

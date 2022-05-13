@@ -12,6 +12,18 @@ from inquizitor.crud.base import CRUDBase
 from inquizitor.models import Quiz, QuizCreate, QuizUpdate
 
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
+	def create(self, db: Session, *, obj_in: QuizCreate) -> Quiz:
+		db_obj = Quiz(
+				name=obj_in.name,
+				desc=obj_in.desc,
+				number_of_questions=obj_in.number_of_questions,
+				created_at=obj_in.created_at,
+				due_date=obj_in.due_date,
+				quiz_code=self.generate_code(db),
+				teacher_id=obj_in.teacher_id,
+				)
+		return super().create(db, obj_in=db_obj)
+
 	def generate_code(self, db: Session) -> str:
 		"""generate random characters for quiz_code"""
 		while True:
@@ -99,6 +111,17 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
 		"""Read quizzes participated by the student."""
+		# logging.info(f"""
+		# 	{
+		# 		pformat(
+		# 			db.query(Quiz)
+		# 			.filter(Quiz.teacher_id == teacher_id)
+		# 			.offset(skip)
+		# 			.limit(limit)
+		# 			.all()
+		# 		)
+		# 	}
+		# """)
 		return (
 			db.query(Quiz)
 			.filter(Quiz.teacher_id == teacher_id)
