@@ -167,6 +167,24 @@ class TestReadQuiz:
 		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
 		assert result["teacher_id"] == quiz.teacher_id
 
+	async def test_read_quiz_student_quiz_already_closed(
+		self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+	) -> None:
+		student_cookies = await student_cookies
+		r = await client.get(
+			"/users/profile", cookies=student_cookies
+		)
+		result = r.json()
+		student = crud.user.get(db, id=result['id'])
+		quiz = QuizFactory(
+			due_date=dt.datetime.utcnow() - dt.timedelta(seconds=10)
+		)
+		r = await client.get(
+			f"/quizzes/{quiz.id}", cookies=student_cookies
+		)
+		result = r.json()
+		assert r.status_code == 400
+
 	async def test_read_quiz_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:

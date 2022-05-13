@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 import random
 import string
@@ -50,7 +51,6 @@ async def read_quizzes(
 		quizzes = crud.quiz.get_multi_by_author(
 			db=db, teacher_id=current_user.id, skip=skip, limit=limit
 		)
-	# logging.info(f"{pformat(jsonable_encoder(quizzes))}")
 	return quizzes
 
 @router.get("/{index}", response_model=models.QuizReadWithQuestions)
@@ -67,6 +67,9 @@ async def read_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if crud.user.is_student(current_user):
+		if dt.datetime.utcnow() > quiz.due_date:
+			raise HTTPException(status_code=400, detail="Quiz due date has already passed")
+
 		attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
 		if not attempt or attempt.is_done:
 			# TODO ensure that quiz-user combination is unique
