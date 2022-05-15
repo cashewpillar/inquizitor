@@ -86,7 +86,7 @@ class QuizFactory(BaseFactory):
     name = factory.Faker('word')
     desc = factory.Faker('text')
     number_of_questions = factory.Faker("random_int", min=10, max=100, step=10)
-    created_at = factory.LazyFunction(dt.datetime.utcnow)
+    created_at = factory.LazyFunction(dt.datetime.now)
     due_date = factory.LazyAttribute(lambda a: a.created_at + dt.timedelta(hours=5))
     quiz_code = None
     # time_limit: int = factory.Faker("random_int", min=30*60, max=60*60, step=5*60)
@@ -148,7 +148,7 @@ class AttemptFactory(BaseFactory):
     recent_question_id: int = factory.LazyAttribute(lambda a: a.recent_question.id if a.recent_question is not None else None)
     student_id: int = factory.LazyAttribute(lambda a: a.student.id if a.student is not None else None)
     quiz_id: int = factory.LazyAttribute(lambda a: a.quiz.id if a.quiz is not None else None)
-    started_at = factory.LazyFunction(dt.datetime.utcnow)
+    started_at = factory.LazyFunction(dt.datetime.now)
 
     model: ModelType = models.QuizAttempt
     create_schema: CreateSchemaType = models.QuizAttemptCreate

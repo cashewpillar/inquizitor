@@ -14,7 +14,7 @@ class QuizBase(SQLModel):
     name: Optional[str] = Field(default=None, max_length=50)
     desc: Optional[str] = Field(default=None, max_length=500)    
     number_of_questions: int = 1
-    created_at : datetime = Field(default=datetime.utcnow())
+    created_at : datetime = Field(default=datetime.now())
     due_date : Optional[datetime] = None
     quiz_code : str = Field(default=None, sa_column=Column(String, unique=True))
     teacher_id : Optional[int] = Field(default=None, foreign_key='user.id')

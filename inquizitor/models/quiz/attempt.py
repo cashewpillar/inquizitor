@@ -13,7 +13,7 @@ class QuizAttemptBase(SQLModel):
     recent_question_id: Optional[int] = Field(default=None, foreign_key="quizquestion.id")
     student_id: int = Field(foreign_key="user.id")
     quiz_id: int = Field(foreign_key="quiz.id")
-    started_at: datetime = Field(default=datetime.utcnow())
+    started_at: datetime = Field(default=datetime.now())
 
 class QuizAttemptCreate(QuizAttemptBase):
     pass

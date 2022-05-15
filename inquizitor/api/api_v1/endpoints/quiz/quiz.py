@@ -67,12 +67,10 @@ async def read_quiz(
 	if not quiz:
 		raise HTTPException(status_code=404, detail="Quiz not found")
 	if crud.user.is_student(current_user):
-		if dt.datetime.utcnow() > quiz.due_date:
+		if dt.datetime.now() > quiz.due_date:
 			raise HTTPException(status_code=400, detail="Quiz due date has already passed")
-
 		attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
 		if not attempt or attempt.is_done:
-			# TODO ensure that quiz-user combination is unique
 			quiz_attempt_in = models.QuizAttemptCreate(
 				student_id=current_user.id,	
 				quiz_id=quiz.id	

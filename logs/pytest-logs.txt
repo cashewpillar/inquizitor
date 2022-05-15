@@ -1,12 +1,11 @@
-19:36:01 INFO {'answers': [],
- 'created_at': '2022-05-13T11:36:00.609438',
- 'desc': 'Apply argue in player. Public experience present beyond. Idea heavy '
-         'but find past.\n'
-         'Apply writer avoid body. Center production question day.',
- 'due_date': '2022-05-13T16:36:00.609438',
+17:25:13 INFO {'answers': [],
+ 'created_at': '2022-05-15T17:25:13.289450',
+ 'desc': 'Suggest condition baby stand whom course approach wall. Letter '
+         'ground worker religious else. Bar market police gas response.',
+ 'due_date': '2022-05-15T22:25:13.289450',
  'id': 71,
- 'name': 'social',
- 'number_of_questions': 90,
+ 'name': 'guy',
+ 'number_of_questions': 80,
  'participant_name': None,
  'questions': [],
  'quiz_code': None,
@@ -14,15 +13,14 @@
  'teacher_id': 65}
 
 
-19:36:01 INFO {'answers': [],
- 'created_at': '2022-05-13T11:36:01.139437',
- 'desc': 'Direction total maybe Republican. Lot school once point rather '
-         'service follow. These soldier word car thought field treatment '
-         'three.',
- 'due_date': '2022-05-13T16:36:01.139437',
+17:25:14 INFO {'answers': [],
+ 'created_at': '2022-05-15T17:25:13.816449',
+ 'desc': 'Tend ever final risk glass white data. Buy black program mother tend '
+         'risk.',
+ 'due_date': '2022-05-15T22:25:13.816449',
  'id': 72,
- 'name': 'add',
- 'number_of_questions': 30,
+ 'name': 'practice',
+ 'number_of_questions': 100,
  'participant_name': None,
  'questions': [],
  'quiz_code': None,

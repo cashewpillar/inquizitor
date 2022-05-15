@@ -177,7 +177,7 @@ class TestReadQuiz:
 		result = r.json()
 		student = crud.user.get(db, id=result['id'])
 		quiz = QuizFactory(
-			due_date=dt.datetime.utcnow() - dt.timedelta(seconds=10)
+			due_date=dt.datetime.now() - dt.timedelta(seconds=10)
 		)
 		r = await client.get(
 			f"/quizzes/{quiz.id}", cookies=student_cookies
