@@ -95,6 +95,7 @@ def dummy_quiz(db: Session) -> None:
 				quiz_attempt_in = models.QuizAttemptCreate(
 					student_id=student.id,	
 					quiz_id=quiz.id,
+					is_done=True
 				)
 				link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
 				attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
