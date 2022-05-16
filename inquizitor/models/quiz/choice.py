@@ -21,7 +21,7 @@ class QuizChoiceInDBBase(QuizChoiceBase, PKModel):
 
 class QuizChoice(QuizChoiceInDBBase, table=True):
     question : Optional["QuizQuestion"] = Relationship(back_populates="choices")
-    answers: List["QuizAnswer"] = Relationship(back_populates="choice")
+    answers: List["QuizAnswer"] = Relationship(back_populates="choice", sa_relationship_kwargs={"cascade": "delete"})
 
 class QuizChoiceRead(QuizChoiceBase):
     id: int

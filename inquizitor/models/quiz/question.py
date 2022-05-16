@@ -22,7 +22,7 @@ class QuizQuestionInDBBase(QuizQuestionBase, PKModel):
     pass
 
 class QuizQuestion(QuizQuestionInDBBase, table=True):
-    choices: List["QuizChoice"] = Relationship(back_populates="question")
+    choices: List["QuizChoice"] = Relationship(back_populates="question", sa_relationship_kwargs={"cascade": "delete"})
     attempts: List["QuizAttempt"] = Relationship(back_populates="recent_question")
     quiz: Optional["Quiz"] = Relationship(back_populates="questions")
     

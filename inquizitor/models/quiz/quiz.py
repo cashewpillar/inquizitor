@@ -39,9 +39,9 @@ class QuizInDBBase(QuizBase, PKModel):
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
     teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
-    students: List[QuizStudentLink] = Relationship(back_populates='quiz')
-    attempts : List["QuizAttempt"] = Relationship(back_populates="quiz")
-    questions: List["QuizQuestion"] = Relationship(back_populates="quiz")
+    students: List[QuizStudentLink] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
+    attempts : List["QuizAttempt"] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
+    questions: List["QuizQuestion"] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
 
     def __repr__(self):
         """Represent instance as a unique string."""
