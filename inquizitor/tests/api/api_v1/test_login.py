@@ -71,21 +71,3 @@ async def test_access_revoke(
 	)
 	result = r.json()
 	assert r.status_code == 401
-
-@pytest.mark.anyio
-async def test_refresh_revoke(
-	client: AsyncClient, superuser_cookies: Dict[str, str]
-) -> None:
-	cookies = await superuser_cookies
-	r = await client.delete(
-		"/login/refresh-revoke", cookies=cookies
-	)
-	assert r.status_code == 200
-	assert "msg" in r.json()
-	assert "Refresh" in r.json()["msg"]
-
-	r = await client.post(
-		"/login/refresh", cookies=cookies
-	)
-	result = r.json()
-	assert r.status_code == 401

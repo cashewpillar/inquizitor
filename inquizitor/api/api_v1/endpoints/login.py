@@ -1,7 +1,3 @@
-# might use extension when have time
-# https://github.com/fastapi-users/fastapi-users
-# https://github.com/MushroomMaula/fastapi_login
-
 import logging
 from datetime import timedelta
 from typing import Any
@@ -95,18 +91,3 @@ async def revoke_access(
 	crud.token.revoke_access(Authorize, db)
 
 	return {'msg': "Access token has been revoked"}
-
-
-@router.delete('/refresh-revoke', response_model=models.Msg)
-async def revoke_refresh(
-	db: Session = Depends(deps.get_db),
-	Authorize: AuthJWT = Depends()
-) -> Any:
-	"""
-	Revoke refresh token of current user
-	"""
-	Authorize.jwt_refresh_token_required()
-
-	crud.token.revoke_refresh(Authorize, db)
-
-	return {'msg': "Refresh token has been revoked"}
