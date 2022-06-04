@@ -27,7 +27,8 @@ async def update_answer(
 	*,
 	db: Session = Depends(deps.get_db),
 	attempt_and_link: Tuple[models.QuizAttempt, models.QuizStudentLink] = Depends(deps.get_attempt_and_link),
-	answer_in: Union[models.QuizAnswerCreate, models.QuizAnswerUpdate]
+	answer_in: Union[models.QuizAnswerCreate, models.QuizAnswerUpdate],
+	current_student: models.User = Depends(deps.get_current_student)
 ) -> Any:
 	"""
 	Update answer for the given question.

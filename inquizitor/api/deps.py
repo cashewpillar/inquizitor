@@ -2,7 +2,7 @@ from sqlmodel import Session
 from sqlalchemy import and_
 from typing import Generator, Tuple, Union
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import JWTDecodeError
@@ -68,7 +68,9 @@ def get_current_student(
 
 
 def get_quiz(
-  *, db: Session = Depends(get_db), quiz_index: Union[int, str]
+  *, 
+  db: Session = Depends(get_db), 
+  quiz_index: Union[int, str] = Path(..., description="ID or Code of quiz to retrieve")
 ) -> models.Quiz:
   quiz = crud.quiz.get(db, id=quiz_index)
   if not quiz:
