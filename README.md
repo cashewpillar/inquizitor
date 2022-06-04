@@ -10,14 +10,13 @@
 
 <br>
 
+## DEV
 
-
-
-
-
-## [API DOCUMENTATION (run app before accessing)](http://127.0.0.1:8000/docs)
-
-- Authorization credentials: admin | Password: superadmin
+| Username | Password     |
+| -------- | ------------ |
+| admin    | superadmin   |
+| teacher  | superteacher |
+| student  | superstudent |
 
 - Reset database using: `main.py initial-data` or `python main.py initial-data`
 
@@ -25,8 +24,16 @@
 
   - if using sqlite, run the installed sqlitebrowser
 
+
   - on the main white space upon running the app, drag&drop the `data.db` file (found within app module after running initial-data)  
+
 
   - under the Tables(n) tab, right-click the table you want to view and select 'Browse'
 
  <br>
+
+## DOCUMENTATION
+
+to access the interactive API documentation, go to http://127.0.0.1:8000/docs
+
+<img src="media/doc-swagger-ui.png" style="zoom: 200%;" />
