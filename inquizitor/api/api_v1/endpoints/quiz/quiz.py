@@ -93,7 +93,7 @@ async def update_quiz(
   current_author: models.User = Depends(deps.get_current_author)
 ) -> Any:
   """
-  Update quiz by id.
+  Update quiz by index.
   """
   quiz = crud.quiz.update(db, db_obj=quiz, obj_in=quiz_in)
   return quiz
@@ -106,7 +106,7 @@ async def delete_quiz(
   current_author: models.User = Depends(deps.get_current_author)
 ) -> Any:
   """
-  Delete quiz by id.
+  Delete quiz by index.
   """
 
   quiz = crud.quiz.remove(db, id=quiz.id)

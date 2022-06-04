@@ -62,7 +62,7 @@ def get_current_student(
 ) -> models.User:
   if not crud.user.is_student(current_user):
     raise HTTPException(
-      status_code=400, detail="The user doesn't have enough privileges"
+      status_code=400, detail="User must be a student"
     )
   return current_user
 
