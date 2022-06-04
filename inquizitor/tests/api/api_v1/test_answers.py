@@ -91,7 +91,7 @@ class TestUpdateAnswer:
 @pytest.mark.anyio
 class TestGetScore:
 	# TODO what if a question is left unanswered?
-	async def test_get_score(
+	async def test_get_score_student(
 		self, db: Session, client: AsyncClient
 	) -> None:
 		user_in = UserFactory.stub(schema_type="create", is_student=True)

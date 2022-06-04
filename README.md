@@ -29,6 +29,7 @@
 
 
   - under the Tables(n) tab, right-click the table you want to view and select 'Browse'
+  - Use [Black Playground](https://black.vercel.app/) to check if code snippet conforms to PEP8
 
  <br>
 

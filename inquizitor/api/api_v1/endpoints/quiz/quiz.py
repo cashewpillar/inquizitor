@@ -19,7 +19,7 @@ async def create_quiz(
     quiz_in: models.QuizCreate, 
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_user)
-):
+) -> Any:
     """
     Create a quiz.
     """

@@ -48,7 +48,10 @@ async def login_access_token(
 async def logout(
 	Authorize: AuthJWT = Depends(),
 	db: Session = Depends(deps.get_db)
-	):
+) -> Any:
+	"""
+	Revoke access and refresh tokens
+	"""
 
 	Authorize.jwt_required()
 	crud.token.revoke_access(Authorize, db)
