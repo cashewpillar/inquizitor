@@ -1,7 +1,3 @@
-"""
-Factories to help in tests.
-"""
-
 import datetime as dt
 import factory
 import random

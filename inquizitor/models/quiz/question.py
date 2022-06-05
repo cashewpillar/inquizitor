@@ -2,8 +2,6 @@ from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional, List
 from inquizitor.db.base_class import PKModel
 
-
-
 class QuizQuestionBase(SQLModel):
     content: str = Field(max_length=200)
     points : int

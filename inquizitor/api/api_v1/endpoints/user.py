@@ -18,7 +18,7 @@ async def read_users(
     limit: int = 100,
     # NOTE User instead of ShowUser para available lahat ng properties for processing
     # mafifilter out naman yung response via response_model param
-    current_user: User = Depends(deps.get_current_active_superuser)
+    current_user: User = Depends(deps.get_current_superuser)
 ) -> Any:
     """
     Retrieve users.
@@ -109,7 +109,7 @@ async def update_user(
     db : Session = Depends(deps.get_db),
     id : int,
     user_in : UserUpdate,
-    current_user: User = Depends(deps.get_current_active_superuser)
+    current_user: User = Depends(deps.get_current_superuser)
 ):
     """
     Update a user.

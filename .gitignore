@@ -4,5 +4,7 @@ __pycache__/
 
 .env
 data.db
+logs/
 
 *.pdf
+*.lnk
