@@ -59,16 +59,13 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			.all()
 		)
 
-	# NOTE might need query with offset and limit here
 	def get_multi_by_participant(
-		self, db:Session, *, student: models.User
-		# self, db:Session, *, student: models.User, skip: int = 0, limit: int = 100
+		self, db:Session, *, student: models.User, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
-		"""Read quizzes participated by the student."""
+		"""Read quizzes answered by the student."""
 
 		# NOTE this does not get answers for LATEST attempt, not sure fix outside course deadline
 		quizzes = []
-		# for link in student.student_quizzes: # NOTE confusing. i thought it was a list of quizzes, but instead it was a list of links
 		unique_attempts = crud.quiz_attempt.get_multi_latest_by_student_id(
 			db, student_id=student.id
 		)
@@ -107,24 +104,12 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 			quiz["participant_name"] = crud.user.get(db, id=attempt.student_id).full_name
 			quizzes.append(quiz)
 
-		# logging.info(f"{pformat(quizzes)}")
 		return quizzes
 
 	def get_multi_by_author(
 		self, db:Session, *, teacher_id: int, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
 		"""Read quizzes participated by the student."""
-		# logging.info(f"""
-		# 	{
-		# 		pformat(
-		# 			db.query(Quiz)
-		# 			.filter(Quiz.teacher_id == teacher_id)
-		# 			.offset(skip)
-		# 			.limit(limit)
-		# 			.all()
-		# 		)
-		# 	}
-		# """)
 		return (
 			db.query(Quiz)
 			.filter(Quiz.teacher_id == teacher_id)

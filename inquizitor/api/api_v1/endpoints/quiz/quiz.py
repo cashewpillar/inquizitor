@@ -44,9 +44,7 @@ async def read_quizzes(
     quizzes = crud.quiz.get_multi(db, skip=skip, limit=limit)
   elif crud.user.is_student(current_user):
     quizzes = crud.quiz.get_multi_by_participant(
-      # NOTE change to line below when feature is needed
-      # db=db, participant=current_user, skip=skip, limit=limit
-      db=db, student=current_user
+      db=db, student=current_user, skip=skip, limit=limit
     )
   elif crud.user.is_teacher(current_user):
     quizzes = crud.quiz.get_multi_by_author(

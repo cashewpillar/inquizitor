@@ -26,15 +26,14 @@ class TestReadQuizzes:
 			"/quizzes/", cookies=await superuser_cookies
 		)
 		result = r.json()
-		logging.info(f"{pformat(result[-1])}\n\n")
 		assert r.status_code == 200
-		# NOTE tests use asyncio and trio (each function is called twice)
+		# NOTE tests use asyncio and trio (each test function is called twice)
 		# so i used the index -1 to get the latest added quiz
 		assert result[-1]["name"] == quiz.name
 		assert result[-1]["number_of_questions"] == quiz.number_of_questions
 		assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result[-1]["quiz_code"]
+		# assert result[-1]["quiz_code"] # NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
 		assert result[-1]["teacher_id"] == quiz.teacher_id
 
 	async def test_read_quizzes_teacher(
@@ -78,8 +77,6 @@ class TestReadQuizzes:
 		# crud.quiz_student_link.create(db, obj_in=student_link_in)
 
 		quizzes_in_db = crud.quiz.get_multi_by_participant(
-			# NOTE change to line below when feature is needed
-			# db=db, participant=current_user, skip=skip, limit=limit
 			db=db, student=student
 		)
 
@@ -87,15 +84,10 @@ class TestReadQuizzes:
 			"/quizzes/", cookies=student_cookies
 		)
 		result = r.json()
-		# assert r.status_code == 200
-		# assert result[-1]["name"] == quiz.name
-		# assert result[-1]["number_of_questions"] == quiz.number_of_questions
-		# assert result[-1]["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
-		# assert result[-1]["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result[-1]["quiz_code"]
-		# assert result[-1]["teacher_id"] == quiz.teacher_id
-		# assert answer_1 in result[-1]["answers"]
+		assert r.status_code == 200
 		assert result == quizzes_in_db
+		# logging.info(f"{pformat(result)}")
+		# assert answer_1 in result[0]
 
 @pytest.mark.anyio
 class TestReadQuiz:
@@ -118,7 +110,7 @@ class TestReadQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"] 
 		assert result["teacher_id"] == quiz.teacher_id
 
 	async def test_read_quiz_teacher_code(
@@ -140,7 +132,7 @@ class TestReadQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"]
 		assert result["teacher_id"] == quiz.teacher_id
 
 	async def test_read_quiz_student_code(
@@ -164,7 +156,7 @@ class TestReadQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"]
 		assert result["teacher_id"] == quiz.teacher_id
 
 	async def test_read_quiz_student_quiz_already_closed(
@@ -204,7 +196,7 @@ class TestReadQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"]
 		assert result["teacher_id"] == quiz.teacher_id
 
 @pytest.mark.anyio
@@ -229,7 +221,7 @@ class TestCreateQuiz:
 		assert result["number_of_questions"] == quiz_in["number_of_questions"]
 		assert result["created_at"] == quiz_in["created_at"]
 		assert result["due_date"] == quiz_in["due_date"]
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		assert result["quiz_code"]
 		assert result["teacher_id"] == quiz_in["teacher_id"]
 
 	async def test_create_quiz_teacher_is_author(
@@ -252,7 +244,7 @@ class TestCreateQuiz:
 		assert result["number_of_questions"] == quiz_in["number_of_questions"]
 		assert result["created_at"] == quiz_in["created_at"]
 		assert result["due_date"] == quiz_in["due_date"]
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"]
 		assert result["teacher_id"] == quiz_in["teacher_id"]
 
 	async def test_create_quiz_student(
@@ -287,7 +279,7 @@ class TestUpdateQuiz:
 		assert result["desc"] == quiz_in["desc"]
 		assert result["due_date"] == quiz_in["due_date"]
 		assert result["number_of_questions"] == quiz_in["number_of_questions"]
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation? == quiz_in["quiz_code"]
+		# assert result["quiz_code"] 
 
 	async def test_update_quiz_teacher_is_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
@@ -309,7 +301,7 @@ class TestUpdateQuiz:
 		assert result["desc"] == quiz_in["desc"]
 		assert result["due_date"] == quiz_in["due_date"]
 		assert result["number_of_questions"] == quiz_in["number_of_questions"]
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation? == quiz_in["quiz_code"]
+		# assert result["quiz_code"]
 
 	async def test_update_quiz_teacher_not_author(
 		self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
@@ -348,7 +340,7 @@ class TestDeleteQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"]
 		assert result["teacher_id"] == quiz.teacher_id
 
 		quiz = crud.quiz.get(db, id=quiz.id)
@@ -373,7 +365,7 @@ class TestDeleteQuiz:
 		assert result["number_of_questions"] == quiz.number_of_questions
 		assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
 		assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
-		# assert result["quiz_code"] NOTE pending issue, should the factory be able to dictate the quiz_code to be had upon quiz creation?
+		# assert result["quiz_code"] 
 		assert result["teacher_id"] == quiz.teacher_id
 
 		quiz = crud.quiz.get(db, id=quiz.id)

@@ -13,7 +13,6 @@ from inquizitor.tests.factories import AnswerFactory, QuizFactory, UserFactory
 
 @pytest.mark.anyio
 class TestUpdateAnswer:
-	# NOTE superuser and teacher should also be able to answer a quiz for testing purposes (?)
 	async def test_update_answer_superuser(
 		self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
 	) -> None:
@@ -69,7 +68,6 @@ class TestUpdateAnswer:
 		choice = crud.quiz_choice.get(db, id=1)
 		answer_in = AnswerFactory.stub(schema_type="create", student=user, choice=choice, question=question)
 
-		# NOTE NOT WORKING access the quiz to create attempt obj
 		r = await client.get(
 			f"/quizzes/{quiz.quiz_code}", cookies=student_cookies
 		)
