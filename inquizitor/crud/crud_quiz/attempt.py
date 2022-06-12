@@ -9,47 +9,37 @@ from inquizitor.models import QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
 class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate]):
 	def get_latest_by_quiz_and_student_ids(
-		self,
-		db: Session,
-		*,
-		quiz_id: int,
-		student_id: int
+		self, db: Session, *, quiz_id: int, student_id: int
 	) -> QuizAttempt:
+		"""Read latest attempt of student for the given quiz"""
+
 		return (
 			db.query(QuizAttempt)
 			.filter(
-				QuizAttempt.quiz_id == quiz_id, 
-				QuizAttempt.student_id == student_id
+				QuizAttempt.quiz_id == quiz_id, QuizAttempt.student_id == student_id
 			)
 			# NOTE cant make ordering by date to work YET, maybe should stringify but ehh
-			# all instances of latest are currently set to ID instead of STARTED at
+			# all methods prepended w/ `get_latest` currently use ID instead of STARTED at
 			.order_by(QuizAttempt.id.desc()) 
 			.first()
 		)
 
 	def get_multi_by_quiz_and_student_ids(
-		self,
-		db: Session,
-		*,
-		quiz_id: int,
-		student_id: int
+		self, db: Session, *, quiz_id: int, student_id: int
 	) -> QuizAttempt:
+		"""Read all attempts of student for the given quiz"""
+		
 		return (
 			db.query(QuizAttempt)
 			.filter(
-				QuizAttempt.quiz_id == quiz_id, 
-				QuizAttempt.student_id == student_id
+				QuizAttempt.quiz_id == quiz_id, QuizAttempt.student_id == student_id
 			)
 			.order_by(QuizAttempt.id.desc())
 			.all()
 		)
 
-	def get_multi_latest_by_student_id(
-		self,
-		db: Session,
-		*,
-		student_id: int
-	) -> List[QuizAttempt]:
+	def get_multi_latest_by_student_id( self, db: Session, *, student_id: int) -> List[QuizAttempt]:
+		"""Read all latest attempts of student for all quizzes taken"""
 		unique_attempts = [] 
 		attempts = (
 			db.query(QuizAttempt)
@@ -65,12 +55,8 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
 		return unique_attempts
 
-	def get_multi_latest_by_quiz_id(
-		self,
-		db: Session,
-		*,
-		id: int
-	) -> List[QuizAttempt]:
+	def get_multi_latest_by_quiz_id( self, db: Session, *, id: int) -> List[QuizAttempt]:
+		"""Read all latest student attempts on a given quiz"""
 		unique_attempts = [] 
 		attempts = (
 			db.query(QuizAttempt)
@@ -84,15 +70,10 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 			if attempt.student_id not in [attempt.student_id for attempt in unique_attempts]:
 				unique_attempts.append(attempt)
 
-		# logging.info(f"UNIQUEATTEMPTS: {pformat(unique_attempts)}")
 		return unique_attempts
 
-	def get_score(
-		self,
-		db: Session, 
-		*,
-		id: int
-	) -> int:
+	def get_score(self, db: Session, *, id: int) -> int:
+		"""Compute the score for the given attempt ID."""
 		attempt = crud.quiz_attempt.get(db, id=id)
 
 		score = 0

@@ -151,6 +151,7 @@ class TestRetakeQuiz:
 		user = crud.user.get(db, id=result['id'])
 
 		quiz = crud.quiz.get(db, id=1)
+		answers = []
 		for i in range(2):
 			for question in quiz.questions:
 				choice = random.choices(question.choices)[0]
@@ -169,6 +170,9 @@ class TestRetakeQuiz:
 				)
 				assert r.status_code == 200
 
+				if i == 1: # store answers of latest attempt
+					answers.append(answer_in)
+
 			r = await client.get(f"/quizzes/{quiz.id}/finish", cookies=student_cookies)
 			assert r.status_code == 200
 
@@ -177,10 +181,17 @@ class TestRetakeQuiz:
 		)
 		for attempt in attempts:
 			quiz = crud.quiz.get(db, id=attempt.quiz_id)
-			answers = crud.quiz_answer.get_all_by_attempt(
+			answers_in_db = crud.quiz_answer.get_all_by_attempt(
 				db, attempt_id=attempt.id
 			)
-			assert len(answers) == len(quiz.questions)
+			assert len(answers_in_db) == len(quiz.questions)
+
+			if attempts[0] == attempt: # latest attempt answers should match those retrieved from db
+				answers_in_db = [answer.content for answer in answers_in_db]
+				for i, answer in enumerate(answers):
+					assert answer["content"] in answers_in_db
+
+
 
 @pytest.mark.anyio
 class TestGetQuizResults:
