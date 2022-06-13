@@ -25,7 +25,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 		return super().create(db, obj_in=db_obj)
 
 	def generate_code(self, db: Session) -> str:
-		"""generate random characters for quiz_code"""
+		"""Generate random characters for quiz_code"""
 		while True:
 			characters = string.ascii_letters + string.digits
 			quiz_code = ''.join(random.choice(characters) for i in range(6))
@@ -50,7 +50,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 	def get_multi_by_name(
 		self, db:Session, *, name: str, skip: int = 0, limit: int = 100
 	) -> List[Quiz]:
-		"""Read quiz by name attribute only. (not unique)"""
+		"""Read quizzes by name attribute only (not unique)"""
 		return (
 			db.query(Quiz)
 			.filter(Quiz.name == name)
@@ -64,7 +64,6 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 	) -> List[Quiz]:
 		"""Read quizzes answered by the student."""
 
-		# NOTE this does not get answers for LATEST attempt, not sure fix outside course deadline
 		quizzes = []
 		unique_attempts = crud.quiz_attempt.get_multi_latest_by_student_id(
 			db, student_id=student.id
