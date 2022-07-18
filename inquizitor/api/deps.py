@@ -106,6 +106,20 @@ def get_choice(
 
   return choice
 
+def get_attempt(
+  *,
+  db: Session = Depends(get_db),
+  quiz: models.Quiz = Depends(get_quiz),
+  current_student: models.User = Depends(get_current_student),
+) -> models.QuizAttempt:
+  attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+    db, quiz_id=quiz.id, student_id=current_student.id
+  )
+  if not attempt:
+    raise HTTPException(status_code=404, detail="Attempt for this quiz not found.")
+
+  return attempt
+
 def get_attempt_and_link(
   *,
   db: Session = Depends(get_db),
@@ -113,8 +127,8 @@ def get_attempt_and_link(
   question: models.QuizQuestion = Depends(get_question),
   current_student: models.User = Depends(get_current_student),
 ) -> Tuple[models.QuizAttempt, models.QuizStudentLink]:
-  attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_student.id)
-  if not attempt:
+  attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_student.id)
+  if not attempt or attempt.is_done:
     quiz_attempt_in = models.QuizAttemptCreate(
       student_id=current_student.id, 
       quiz_id=quiz.id,
@@ -122,7 +136,7 @@ def get_attempt_and_link(
     )
     attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
   else:
-    crud.quiz_attempt.update(
+    attempt = crud.quiz_attempt.update(
       db, db_obj=attempt, obj_in={"recent_question_id": question.id}
     )
 

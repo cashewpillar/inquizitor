@@ -14,7 +14,7 @@ class QuizBase(SQLModel):
     name: Optional[str] = Field(default=None, max_length=50)
     desc: Optional[str] = Field(default=None, max_length=500)    
     number_of_questions: int = 1
-    created_at : datetime = Field(default=datetime.utcnow())
+    created_at : datetime = Field(default=datetime.now())
     due_date : Optional[datetime] = None
     quiz_code : str = Field(default=None, sa_column=Column(String, unique=True))
     teacher_id : Optional[int] = Field(default=None, foreign_key='user.id')
@@ -39,9 +39,9 @@ class QuizInDBBase(QuizBase, PKModel):
 # Additional properties  to return via API
 class Quiz(QuizInDBBase, table=True):
     teacher : Optional[User] = Relationship(back_populates='teacher_quizzes')
-    students: List[QuizStudentLink] = Relationship(back_populates='quiz')
-    attempts : List["QuizAttempt"] = Relationship(back_populates="quiz")
-    questions: List["QuizQuestion"] = Relationship(back_populates="quiz")
+    students: List[QuizStudentLink] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
+    attempts : List["QuizAttempt"] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
+    questions: List["QuizQuestion"] = Relationship(back_populates='quiz', sa_relationship_kwargs={"cascade": "delete"})
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -53,9 +53,12 @@ class QuizRead(QuizInDBBase):
     created_at : datetime
     teacher_id : int
 
+# NOTE the model with answers and score should have been a separate model (quiz_attempt)
 class QuizReadWithQuestions(QuizInDBBase):
     questions: List["QuizQuestion"] = []
     answers: Optional[list] = [] # NOTE removed QuizAnswer validation by making it generic
+    score: Optional[int] # same as above
+    participant_name: Optional[str] = None
 
 from .question import QuizQuestion
 QuizReadWithQuestions.update_forward_refs()

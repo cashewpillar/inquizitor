@@ -17,8 +17,8 @@ class UserBase(SQLModel):
 	is_superuser: bool = False
 	last_name : str
 	first_name : str
-	is_teacher : bool = False
-	is_student : bool = False
+	is_teacher : bool
+	is_student : bool
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):

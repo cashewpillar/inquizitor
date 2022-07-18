@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 import random
 import string
@@ -5,6 +6,7 @@ from pprint import pformat
 from sqlmodel import Session
 from typing import Any, List, Union
 
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends, HTTPException, Path
 from fastapi_jwt_auth import AuthJWT
 
@@ -42,9 +44,7 @@ async def read_quizzes(
     quizzes = crud.quiz.get_multi(db, skip=skip, limit=limit)
   elif crud.user.is_student(current_user):
     quizzes = crud.quiz.get_multi_by_participant(
-      # NOTE change to line below when feature is needed
-      # db=db, participant=current_user, skip=skip, limit=limit
-      db=db, student=current_user
+      db=db, student=current_user, skip=skip, limit=limit
     )
   elif crud.user.is_teacher(current_user):
     quizzes = crud.quiz.get_multi_by_author(
@@ -64,8 +64,11 @@ async def read_quiz(
   Retrieve quiz by id or quiz_code.
   """
   if crud.user.is_student(current_user):
-    attempt = crud.quiz_attempt.get_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
-    if not attempt:
+    if dt.datetime.now() > quiz.due_date:
+      raise HTTPException(status_code=400, detail="Quiz due date has already passed")
+      
+    attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(db, quiz_id=quiz.id, student_id=current_user.id)
+    if not attempt or attempt.is_done:
       # TODO ensure that quiz-user combination is unique
       quiz_attempt_in = models.QuizAttemptCreate(
         student_id=current_user.id, 
@@ -80,7 +83,6 @@ async def read_quiz(
         quiz_id=quiz.id,
       )
       link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
-    
 
   return quiz
 

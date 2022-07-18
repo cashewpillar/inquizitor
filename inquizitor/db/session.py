@@ -1,7 +1,18 @@
 from sqlmodel import Session, create_engine
 from sqlmodel.pool import StaticPool
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlite3 import Connection as SQLite3Connection
 
 from inquizitor.core.config import settings
+
+# sqlite cascade delete https://github.com/tiangolo/sqlmodel/issues/213
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    if isinstance(dbapi_connection, SQLite3Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 if settings.USE_SQLITE:
 	engine = create_engine(
