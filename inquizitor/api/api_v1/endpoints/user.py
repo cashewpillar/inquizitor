@@ -11,14 +11,15 @@ from inquizitor.models import User, UserCreate, ShowUser, UserUpdate
 
 router = APIRouter()
 
+
 @router.get("/", response_model=List[ShowUser])
 async def read_users(
-    db : Session = Depends(deps.get_db),
+    db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
     # NOTE User instead of ShowUser para available lahat ng properties for processing
     # mafifilter out naman yung response via response_model param
-    current_user: User = Depends(deps.get_current_superuser)
+    current_user: User = Depends(deps.get_current_superuser),
 ) -> Any:
     """
     Retrieve users.
@@ -26,11 +27,12 @@ async def read_users(
     users = crud.user.get_multi(db, skip=skip, limit=limit)
     return users
 
+
 @router.post("/", response_model=ShowUser)
 async def create_user(
     *,
-    db : Session = Depends(deps.get_db),
-    user_in : UserCreate,
+    db: Session = Depends(deps.get_db),
+    user_in: UserCreate,
 ):
     """
     Create new user.
@@ -50,15 +52,17 @@ async def create_user(
     user = crud.user.create(db, obj_in=user_in)
     return user
 
+
 @router.get("/profile", response_model=ShowUser)
 async def read_profile(
-    db : Session = Depends(deps.get_db),
-    current_user: User = Depends(deps.get_current_user)
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Get current user.
     """
     return current_user
+
 
 # DOING
 @router.put("/profile", response_model=ShowUser)
@@ -84,11 +88,12 @@ def update_profile(
     user = crud.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
 
+
 @router.get("/{id}", response_model=ShowUser)
 async def read_user(
-    id : int,
-    db : Session = Depends(deps.get_db),
-    current_user: User = Depends(deps.get_current_user)
+    id: int,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
 ):
     """
     Get a specific user by id.
@@ -98,27 +103,24 @@ async def read_user(
         return user
     if not crud.user.is_superuser(current_user):
         raise HTTPException(
-            status_code=400, 
-            detail="The user doesn't have enough privileges"
+            status_code=400, detail="The user doesn't have enough privileges"
         )
     return user
+
 
 @router.put("/{id}", response_model=ShowUser)
 async def update_user(
     *,
-    db : Session = Depends(deps.get_db),
-    id : int,
-    user_in : UserUpdate,
-    current_user: User = Depends(deps.get_current_superuser)
+    db: Session = Depends(deps.get_db),
+    id: int,
+    user_in: UserUpdate,
+    current_user: User = Depends(deps.get_current_superuser),
 ):
     """
     Update a user.
     """
     user = crud.user.get(db, id=id)
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail=f"User with {id} does not exist."
-        )
+        raise HTTPException(status_code=404, detail=f"User with {id} does not exist.")
     user = crud.user.update(db, db_obj=user, obj_in=user_in)
     return user

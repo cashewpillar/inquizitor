@@ -11,6 +11,7 @@ from inquizitor.api import deps
 
 router = APIRouter()
 
+
 @router.post("/{quiz_index}/questions/{question_id}", response_model=models.QuizChoice)
 async def create_choices(
     *,
@@ -27,7 +28,11 @@ async def create_choices(
     choice = crud.quiz_choice.create(db, obj_in=choice_in)
     return choice
 
-@router.put("/{quiz_index}/questions/{question_id}/choices/{choice_id}", response_model=models.QuizChoice)
+
+@router.put(
+    "/{quiz_index}/questions/{question_id}/choices/{choice_id}",
+    response_model=models.QuizChoice,
+)
 async def update_choice(
     *,
     db: Session = Depends(deps.get_db),
@@ -43,7 +48,10 @@ async def update_choice(
     return choice
 
 
-@router.delete("/{quiz_index}/questions/{question_id}/choices/{choice_id}", response_model=models.QuizChoice)
+@router.delete(
+    "/{quiz_index}/questions/{question_id}/choices/{choice_id}",
+    response_model=models.QuizChoice,
+)
 async def delete_choice(
     *,
     db: Session = Depends(deps.get_db),

@@ -1,12 +1,12 @@
-from .crud_user import user 
+from .crud_user import user
 from .crud_token import token
 from .crud_quiz import (
-	quiz_answer,
-	quiz_attempt,
-	quiz_choice,
-	quiz_student_link,
-	quiz_question,
-	quiz,
+    quiz_answer,
+    quiz_attempt,
+    quiz_choice,
+    quiz_student_link,
+    quiz_question,
+    quiz,
 )
 
 # For a new basic set of CRUD operations you could do
