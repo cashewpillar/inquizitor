@@ -3,7 +3,9 @@ from sqlmodel import Session
 from inquizitor.crud.base import CRUDBase
 from inquizitor.models import QuizChoice, QuizChoiceCreate, QuizChoiceUpdate
 
+
 class CRUDQuizChoice(CRUDBase[QuizChoice, QuizChoiceCreate, QuizChoiceUpdate]):
-	pass
+    pass
+
 
 quiz_choice = CRUDQuizChoice(QuizChoice)

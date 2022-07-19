@@ -11,12 +11,13 @@ from inquizitor.api import deps
 
 router = APIRouter()
 
+
 @router.post("/{quiz_index}/questions", response_model=models.QuizQuestion)
 async def create_questions(
     *,
     db: Session = Depends(deps.get_db),
     quiz: models.Quiz = Depends(deps.get_quiz),
-    question_in: models.QuizQuestionCreate, 
+    question_in: models.QuizQuestionCreate,
     current_author: models.User = Depends(deps.get_current_author),
 ) -> Any:
     """
@@ -27,18 +28,23 @@ async def create_questions(
     question = crud.quiz_question.create(db, obj_in=question_in)
     return question
 
-@router.get("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestionReadWithChoices)
+
+@router.get(
+    "/{quiz_index}/questions/{question_id}",
+    response_model=models.QuizQuestionReadWithChoices,
+)
 async def read_question(
     *,
     db: Session = Depends(deps.get_db),
     question: models.QuizQuestion = Depends(deps.get_question),
-    current_user: models.User = Depends(deps.get_current_user)
+    current_user: models.User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Retrieve question by id.
     """
 
     return question
+
 
 @router.put("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
 async def update_question(
@@ -56,7 +62,9 @@ async def update_question(
     return question
 
 
-@router.delete("/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion)
+@router.delete(
+    "/{quiz_index}/questions/{question_id}", response_model=models.QuizQuestion
+)
 async def delete_question(
     *,
     db: Session = Depends(deps.get_db),
