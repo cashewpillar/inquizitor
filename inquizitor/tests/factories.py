@@ -112,6 +112,10 @@ class QuestionFactory(BaseFactory):
     quiz_id: int = factory.LazyAttribute(
         lambda a: a.quiz.id if a.quiz is not None else None
     )
+    question_type: models.QuestionType = factory.Faker(
+        "random_element", 
+        elements=[x[1] for x in enumerate(models.QuestionType)]
+    )
 
     model: ModelType = models.QuizQuestion
     create_schema: CreateSchemaType = models.QuizQuestionCreate

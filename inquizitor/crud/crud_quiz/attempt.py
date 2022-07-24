@@ -82,8 +82,16 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
         for answer in answers:
             choice = crud.quiz_choice.get(db, id=answer.choice_id)
             question = crud.quiz_question.get(db, id=choice.question_id)
-            answer_in = models.QuizAnswerUpdate(is_correct=choice.is_correct)
+            if question.question_type == models.QuestionType.choice:
+                answer_in = models.QuizAnswerUpdate(is_correct=choice.is_correct)
+            elif question.question_type == models.QuestionType.blank:
+                accepted_answers = [choice.content for choice in crud.quiz_question.get_choices(db, question_id=question.id)]
+                answer_in = models.QuizAnswerUpdate(
+                    is_correct=answer.content in accepted_answers 
+                )
             answer = crud.quiz_answer.update(db, db_obj=answer, obj_in=answer_in)
+
+
             if answer.is_correct:
                 score += question.points
 
