@@ -113,8 +113,7 @@ class QuestionFactory(BaseFactory):
         lambda a: a.quiz.id if a.quiz is not None else None
     )
     question_type: models.QuestionType = factory.Faker(
-        "random_element", 
-        elements=[x[1] for x in enumerate(models.QuestionType)]
+        "random_element", elements=[x[1] for x in enumerate(models.QuestionType)]
     )
 
     model: ModelType = models.QuizQuestion

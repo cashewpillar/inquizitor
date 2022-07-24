@@ -15,7 +15,8 @@ class CRUDQuizQuestion(CRUDBase[QuizQuestion, QuizQuestionCreate, QuizQuestionUp
     def get_choices(self, db: Session, question_id: int):
         """Get a list of choices for the given question"""
         question = self.get(db, question_id)
-        
+
         return question.choices
+
 
 quiz_question = CRUDQuizQuestion(QuizQuestion)
