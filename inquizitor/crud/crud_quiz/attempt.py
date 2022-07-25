@@ -80,22 +80,19 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
         score = 0
         answers = crud.quiz_answer.get_all_by_attempt(db, attempt_id=attempt.id)
         for answer in answers:
-            choice = crud.quiz_choice.get(db, id=answer.choice_id)
-            question = crud.quiz_question.get(db, id=choice.question_id)
-            if question.question_type == models.QuestionType.choice:
+            question = crud.quiz_question.get(db, id=answer.question_id)
+            is_fill_in_the_blank = question.question_type == models.QuestionType.blank
+            if is_fill_in_the_blank:
+                if answer.content in [choice.content for choice in question.choices]:
+                    is_correct = True
+                else:
+                    is_correct = False
+                answer_in = models.QuizAnswerUpdate(is_correct=is_correct)
+            else:
+                choice = crud.quiz_choice.get(db, id=answer.choice_id)
                 answer_in = models.QuizAnswerUpdate(is_correct=choice.is_correct)
-            elif question.question_type == models.QuestionType.blank:
-                accepted_answers = [
-                    choice.content
-                    for choice in crud.quiz_question.get_choices(
-                        db, question_id=question.id
-                    )
-                ]
-                answer_in = models.QuizAnswerUpdate(
-                    is_correct=answer.content in accepted_answers
-                )
-            answer = crud.quiz_answer.update(db, db_obj=answer, obj_in=answer_in)
 
+            answer = crud.quiz_answer.update(db, db_obj=answer, obj_in=answer_in)
             if answer.is_correct:
                 score += question.points
 
