@@ -5,8 +5,8 @@ from inquizitor.db.base_class import PKModel
 
 
 class QuizStudentLinkBase(SQLModel):
-    quiz_id: int = Field(foreign_key="quiz.id", default=None)
-    student_id: int = Field(foreign_key="user.id", default=None)
+    quiz_id: int = Field(foreign_key="quiz.id", default=None, primary_key=True)
+    student_id: int = Field(foreign_key="user.id", default=None, primary_key=True)
 
 
 class QuizStudentLinkCreate(QuizStudentLinkBase):
@@ -18,7 +18,7 @@ class QuizStudentLinkUpdate(QuizStudentLinkBase):
     student_id: Optional[int] = None
 
 
-class QuizStudentLinkInDBBase(QuizStudentLinkBase, PKModel):
+class QuizStudentLinkInDBBase(QuizStudentLinkBase):
     pass
 
 
