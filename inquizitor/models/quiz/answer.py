@@ -11,7 +11,7 @@ class QuizAnswerBase(SQLModel):
     student_id: int = Field(foreign_key="user.id")
     choice_id: Optional[int] = Field(foreign_key="quizchoice.id")
     attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
-    question_id: Optional[int] = Field(foreign_key="quizquestion.id")
+    question_id: int = Field(foreign_key="quizquestion.id")
 
 
 class QuizAnswerCreate(QuizAnswerBase):
