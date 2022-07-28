@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post("/{quiz_index}/questions/{question_id}", response_model=models.QuizChoice)
-async def create_choices(
+async def create_choice(
     *,
     db: Session = Depends(deps.get_db),
     choice_in: models.QuizChoiceCreate,

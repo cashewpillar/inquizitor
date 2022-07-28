@@ -9,3 +9,4 @@ from .question import (
     QuizQuestionReadWithChoices,
 )
 from .quiz import Quiz, QuizCreate, QuizUpdate, QuizReadWithQuestions
+from .action import QuizAction, QuizActionCreate, QuizActionUpdate

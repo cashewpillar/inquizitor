@@ -7,6 +7,7 @@ from .crud_quiz import (
     quiz_student_link,
     quiz_question,
     quiz,
+    quiz_action
 )
 
 # For a new basic set of CRUD operations you could do

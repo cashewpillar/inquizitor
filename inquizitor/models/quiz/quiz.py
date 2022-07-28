@@ -52,6 +52,9 @@ class Quiz(QuizInDBBase, table=True):
     questions: List["QuizQuestion"] = Relationship(
         back_populates="quiz", sa_relationship_kwargs={"cascade": "delete"}
     )
+    actions: Optional["QuizAction"] = Relationship(
+        back_populates="quiz", sa_relationship_kwargs={"cascade": "delete"}
+    )
 
     def __repr__(self):
         """Represent instance as a unique string."""
