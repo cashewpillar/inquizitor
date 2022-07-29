@@ -12,6 +12,12 @@ def test_create_action(db: Session) -> None:
     assert action.student == student
     assert action.focus == focus
 
+def test_create_multiple_actions(db: Session) -> None:
+    student = crud.user.get_by_username(db, username="student")
+    with pytest.raises(Exception) as e_info:
+        action_in = models.QuizActionCreate(focus=1, blur=1, double_click=1, student_id=student.id)
+        action = crud.quiz_action.create(db=db, obj_in=action_in)
+
 def test_get_action(db: Session) -> None:
     double_click = 1
     student = crud.user.get_by_username(db, username="student")
@@ -44,6 +50,7 @@ def test_remove_action(db: Session) -> None:
 
 def test_factory(db: Session) -> None:
     action = ActionFactory()
+    action2 = ActionFactory(custom=True, focus=1)
     assert sum([
         action.blur,
         action.focus,
@@ -53,15 +60,14 @@ def test_factory(db: Session) -> None:
         action.right_click,
         action.double_click,
     ]) == 1
-
-    # DOING
-    # action2 = ActionFactory(blur=1)
-    # assert sum([
-    #     action2.blur,
-    #     action2.focus,
-    #     action2.copy_,
-    #     action2.paste,
-    #     action2.left_click,
-    #     action2.right_click,
-    #     action2.double_click,
-    # ]) == 1
+    assert sum([
+        action2.blur,
+        action2.focus,
+        action2.copy_,
+        action2.paste,
+        action2.left_click,
+        action2.right_click,
+        action2.double_click,
+    ]) == 1
+    with pytest.raises(Exception) as e_info:
+        action2 = ActionFactory(custom=True, blur=1, copy=1)

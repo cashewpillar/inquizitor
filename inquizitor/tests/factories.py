@@ -1,8 +1,10 @@
 import datetime as dt
 import factory
+import logging
 import random
 from factory.alchemy import SQLAlchemyModelFactory
 from fastapi.encoders import jsonable_encoder
+from pprint import pformat
 from typing import List, Optional, Union
 
 from inquizitor import models
@@ -201,19 +203,22 @@ class ActionFactory(BaseFactory):
         attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
         quiz: models.Quiz = factory.SubFactory(QuizFactory)
         question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
-        
+
         ACTIONS: List[int] = [1,0,0,0,0,0,0]
         random_action: list = factory.LazyAttribute(
             lambda a: random.sample(a.ACTIONS, len(a.ACTIONS))
         )
+        # set to True when creating an object with a custom action 
+        # i.e. action = ActionFactory(custom=True, focus=1)
+        custom: bool = False 
 
-    blur: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    focus: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    copy_: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    paste: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    left_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    right_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
-    double_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    blur: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    focus: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    copy_: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    paste: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    left_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    right_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    double_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
 
     student_id: int = factory.LazyAttribute(
         lambda a: a.student.id if a.student is not None else None

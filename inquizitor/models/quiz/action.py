@@ -22,17 +22,22 @@ class QuizActionBase(SQLModel):
     right_click: int = Field(default=0)
     double_click: int = Field(default=0)
 
-    # @root_validator(pre=True)
-    # def check_has_action(cls, values):
-
-    # @validator('blur', 'focus', 'copy_', 'paste', 'left_click', 'right_click', 'double_click')
-    # def check_has_action(cls, v, values, **kwargs):
-    #     logging.info(f"{values}\n")
-    #     if sum(values) > 1:
-    #         raise ValueError('Only a single action is allowed per record')
-    #     elif sum(values) < 1:
-    #         raise ValueError('Record must have an action/ event')
-    #     return values
+    @validator('double_click')
+    def check_has_action(cls, v, values, **kwargs):
+        actions = [
+            values['blur'],
+            values['focus'],
+            values['copy_'],
+            values['paste'],
+            values['left_click'],
+            values['right_click'],
+            v, # values['double_click'],
+        ]
+        if sum(actions) > 1:
+            raise Exception('Only a single action is allowed per record')
+        elif sum(actions) < 1:
+            raise Exception('Record must have an action/ event')
+        return v
 
 class QuizActionCreate(QuizActionBase):
     pass
