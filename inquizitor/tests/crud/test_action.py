@@ -1,12 +1,8 @@
-'''
-TEST CASES TO CONSIDER
-1. What happens when student/ attempt/ quiz/ question is deleted?
-'''
-
 import pytest
 from sqlmodel import Session
 
 from inquizitor import crud, models
+from inquizitor.tests.factories import ActionFactory 
 
 def test_create_action(db: Session) -> None:
     focus = 1
@@ -34,7 +30,7 @@ def test_update_action(db: Session) -> None:
     with pytest.raises(Exception) as e_info:
         crud.quiz_action.update(db=db, db_obj=item, obj_in=item_update)
 
-def test_delete_action(db: Session) -> None:
+def test_remove_action(db: Session) -> None:
     focus = 1
     student = crud.user.get_by_username(db, username="student")
     action_in = models.QuizActionCreate(focus=focus, student_id=student.id)
@@ -45,3 +41,27 @@ def test_delete_action(db: Session) -> None:
     assert action2.id == action.id
     assert action2.student == action.student
     assert action2.focus == action.focus
+
+def test_factory(db: Session) -> None:
+    action = ActionFactory()
+    assert sum([
+        action.blur,
+        action.focus,
+        action.copy_,
+        action.paste,
+        action.left_click,
+        action.right_click,
+        action.double_click,
+    ]) == 1
+
+    # DOING
+    # action2 = ActionFactory(blur=1)
+    # assert sum([
+    #     action2.blur,
+    #     action2.focus,
+    #     action2.copy_,
+    #     action2.paste,
+    #     action2.left_click,
+    #     action2.right_click,
+    #     action2.double_click,
+    # ]) == 1

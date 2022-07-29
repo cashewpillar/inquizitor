@@ -27,7 +27,7 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
     def get_multi_by_quiz_and_student_ids(
         self, db: Session, *, quiz_id: int, student_id: int
-    ) -> QuizAttempt:
+    ) -> List[QuizAttempt]:
         """Read all attempts of student for the given quiz"""
 
         return (

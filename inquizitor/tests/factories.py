@@ -2,9 +2,8 @@ import datetime as dt
 import factory
 import random
 from factory.alchemy import SQLAlchemyModelFactory
-from typing import List, Optional, Union
-
 from fastapi.encoders import jsonable_encoder
+from typing import List, Optional, Union
 
 from inquizitor import models
 from inquizitor.crud.base import CreateSchemaType, ModelType, UpdateSchemaType
@@ -20,7 +19,6 @@ from inquizitor.tests import common
 
 #     class Meta:
 #         model = models.This
-
 
 class BaseFactory(SQLAlchemyModelFactory):
     """Base factory."""
@@ -45,7 +43,6 @@ class BaseFactory(SQLAlchemyModelFactory):
         cls._meta.model = cls.model
         return jsonable_encoder(x)
 
-
 # TODO for update: check new attributes
 class UserFactory(BaseFactory):
     """User factory."""
@@ -66,7 +63,6 @@ class UserFactory(BaseFactory):
     model: ModelType = models.User
     create_schema: CreateSchemaType = models.UserCreate
     update_schema: UpdateSchemaType = models.UserUpdate
-
 
 class QuizFactory(BaseFactory):
     """Quiz factory."""
@@ -96,7 +92,6 @@ class QuizFactory(BaseFactory):
     create_schema: CreateSchemaType = models.QuizCreate
     update_schema: UpdateSchemaType = models.QuizUpdate
 
-
 class QuestionFactory(BaseFactory):
     """Question factory."""
 
@@ -117,7 +112,6 @@ class QuestionFactory(BaseFactory):
     create_schema: CreateSchemaType = models.QuizQuestionCreate
     update_schema: UpdateSchemaType = models.QuizQuestionUpdate
 
-
 class ChoiceFactory(BaseFactory):
     """Choice factory."""
 
@@ -136,7 +130,6 @@ class ChoiceFactory(BaseFactory):
     model: ModelType = models.QuizChoice
     create_schema: CreateSchemaType = models.QuizChoiceCreate
     update_schema: UpdateSchemaType = models.QuizChoiceUpdate
-
 
 class AttemptFactory(BaseFactory):
     """Attempt factory."""
@@ -165,7 +158,6 @@ class AttemptFactory(BaseFactory):
     model: ModelType = models.QuizAttempt
     create_schema: CreateSchemaType = models.QuizAttemptCreate
     update_schema: UpdateSchemaType = models.QuizAttemptUpdate
-
 
 class AnswerFactory(BaseFactory):
     """Answer factory."""
@@ -197,3 +189,45 @@ class AnswerFactory(BaseFactory):
     model: ModelType = models.QuizAnswer
     create_schema: CreateSchemaType = models.QuizAnswerCreate
     update_schema: UpdateSchemaType = models.QuizAnswerUpdate
+
+class ActionFactory(BaseFactory):
+    """Action factory."""
+
+    class Meta:
+        model = models.QuizAction
+
+    class Params:
+        student: models.User = factory.SubFactory(UserFactory)
+        attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
+        quiz: models.Quiz = factory.SubFactory(QuizFactory)
+        question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
+        
+        ACTIONS: List[int] = [1,0,0,0,0,0,0]
+        random_action: list = factory.LazyAttribute(
+            lambda a: random.sample(a.ACTIONS, len(a.ACTIONS))
+        )
+
+    blur: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    focus: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    copy_: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    paste: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    left_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    right_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+    double_click: int = factory.LazyAttribute(lambda a: a.random_action.pop())
+
+    student_id: int = factory.LazyAttribute(
+        lambda a: a.student.id if a.student is not None else None
+    )
+    attempt_id: int = factory.LazyAttribute(
+        lambda a: a.attempt.id if a.attempt is not None else None
+    )
+    quiz_id: int = factory.LazyAttribute(
+        lambda a: a.quiz.id if a.quiz is not None else None
+    )
+    question_id: int = factory.LazyAttribute(
+        lambda a: a.question.id if a.question is not None else None
+    )
+
+    model: ModelType = models.QuizAction
+    create_schema: CreateSchemaType = models.QuizActionCreate
+    update_schema: UpdateSchemaType = models.QuizActionUpdate

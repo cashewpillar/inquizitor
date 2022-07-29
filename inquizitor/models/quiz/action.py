@@ -1,7 +1,7 @@
 import datetime as dt
 import logging
 from inquizitor.db.base_class import PKModel
-from pydantic import validator
+from pydantic import root_validator, validator
 from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional
 
@@ -22,7 +22,9 @@ class QuizActionBase(SQLModel):
     right_click: int = Field(default=0)
     double_click: int = Field(default=0)
 
-    # TODO
+    # @root_validator(pre=True)
+    # def check_has_action(cls, values):
+
     # @validator('blur', 'focus', 'copy_', 'paste', 'left_click', 'right_click', 'double_click')
     # def check_has_action(cls, v, values, **kwargs):
     #     logging.info(f"{values}\n")
