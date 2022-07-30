@@ -1,7 +1,7 @@
 import datetime as dt
 import factory
-import logging
 import random
+import string
 from factory.alchemy import SQLAlchemyModelFactory
 from fastapi.encoders import jsonable_encoder
 from pprint import pformat
@@ -52,8 +52,8 @@ class UserFactory(BaseFactory):
     class Meta:
         model = models.User
 
-    username = factory.Faker("user_name")
-    email = factory.Faker("email")
+    username = factory.LazyAttribute(lambda a: f"{fake.user_name()}{random.randint(1,1000)}")
+    email = factory.LazyAttribute(lambda a: f"{fake.email()}{''.join(random.sample(string.ascii_lowercase, 2))}")
     full_name = factory.Faker("name")
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
@@ -204,9 +204,9 @@ class ActionFactory(BaseFactory):
         quiz: models.Quiz = factory.SubFactory(QuizFactory)
         question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
 
-        ACTIONS: List[int] = [1,0,0,0,0,0,0]
+        ACTIONS: List[int] = [0,0,0,0,1,0,0]
         random_action: list = factory.LazyAttribute(
-            lambda a: random.sample(a.ACTIONS, len(a.ACTIONS))
+            lambda a: list(random.sample(a.ACTIONS, len(a.ACTIONS)))
         )
         # set to True when creating an object with a custom action 
         # i.e. action = ActionFactory(custom=True, focus=1)
@@ -221,13 +221,13 @@ class ActionFactory(BaseFactory):
     double_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
 
     student_id: int = factory.LazyAttribute(
-        lambda a: a.student.id if a.student is not None else None
+        lambda a: a.attempt.student_id if a.attempt else None
     )
     attempt_id: int = factory.LazyAttribute(
-        lambda a: a.attempt.id if a.attempt is not None else None
+        lambda a: a.attempt.id if a.attempt  else None
     )
     quiz_id: int = factory.LazyAttribute(
-        lambda a: a.quiz.id if a.quiz is not None else None
+        lambda a: a.question.quiz_id if a.question else None
     )
     question_id: int = factory.LazyAttribute(
         lambda a: a.question.id if a.question is not None else None

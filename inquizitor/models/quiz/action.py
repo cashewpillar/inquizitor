@@ -16,7 +16,7 @@ class QuizActionBase(SQLModel):
     blur: int = Field(default=0)
     focus: int = Field(default=0)
     # NameError: Field name "copy" shadows a BaseModel attribute; use a different field name with "alias='copy'"
-    copy_: int = Field(alias='copy', default=0)
+    copy_: int = Field(default=0)
     paste: int = Field(default=0)
     left_click: int = Field(default=0)
     right_click: int = Field(default=0)
@@ -63,4 +63,4 @@ class QuizAction(QuizActionInDBBase, table=True):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return f"<Action({self.time!r} - blur={self.blur!r} focus={self.focus!r}) copy={self.copy_!r} paste={self.paste!r} left_click={self.left_click!r} right_click={self.right_click!r} double_click={self.double_click!r}>"
+        return f"<Action({self.student.username!r}-{self.time!r}) - blur={self.blur!r} focus={self.focus!r} copy={self.copy_!r} paste={self.paste!r} left_click={self.left_click!r} right_click={self.right_click!r} double_click={self.double_click!r}>"
