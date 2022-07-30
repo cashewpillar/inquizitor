@@ -58,10 +58,6 @@ class User(UserInDBBase, table=True):
     attempts: List["QuizAttempt"] = Relationship(back_populates="student")
     answers: List["QuizAnswer"] = Relationship(back_populates="student")
 
-    actions: Optional["QuizAction"] = Relationship(
-        back_populates="student", sa_relationship_kwargs={"cascade": "delete"}
-    )
-
     def __repr__(self):
         """Represent instance as a unique string."""
         return f"<User({self.email!r})>"

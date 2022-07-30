@@ -9,10 +9,15 @@ from inquizitor.tests import factories
 
 def test_create_action(db: Session) -> None:
     focus = 1
+    quiz = factories.QuizFactory()
+    question = factories.QuestionFactory(quiz=quiz)
     student = crud.user.get_by_username(db, username="student")
-    action_in = models.QuizActionCreate(focus=focus, student_id=student.id)
+    attempt = factories.AttemptFactory(quiz=quiz, student=student)
+
+    action_in = models.QuizActionCreate(focus=focus, attempt_id=attempt.id, question_id=question.id)
     action = crud.quiz_action.create(db=db, obj_in=action_in)
-    assert action.student == student
+    assert action.attempt == attempt
+    assert action.question == question
     assert action.focus == focus
 
 def test_create_multiple_actions(db: Session) -> None:
@@ -23,19 +28,25 @@ def test_create_multiple_actions(db: Session) -> None:
 
 def test_get_action(db: Session) -> None:
     double_click = 1
+    quiz = factories.QuizFactory()
+    question = factories.QuestionFactory(quiz=quiz)
     student = crud.user.get_by_username(db, username="student")
-    action_in = models.QuizActionCreate(double_click=double_click, student_id=student.id)
+    attempt = factories.AttemptFactory(quiz=quiz, student=student)
+
+    action_in = models.QuizActionCreate(double_click=double_click, attempt_id=attempt.id, question_id=question.id)
     action = crud.quiz_action.create(db=db, obj_in=action_in)
     action_in_db = crud.quiz_action.get(db=db, id=action.id)
+    assert action_in_db.id == action.id
+    assert action_in_db.attempt == attempt
+    assert action_in_db.question == question
     assert action_in_db.double_click == double_click
-    assert action_in_db.student == student
 
 def test_get_multi_action_by_question_attempt(db: Session) -> None:
     actions = []
-    student = factories.UserFactory(is_student=True)
     quiz = factories.QuizFactory()
+    question = factories.QuestionFactory(quiz=quiz)
+    student = factories.UserFactory(is_student=True)
     attempt = factories.AttemptFactory(student=student, quiz=quiz)
-    question = factories.QuestionFactory(quiz=quiz, attempt=attempt)
     for i in range(3):
         action = factories.ActionFactory(question=question, attempt=attempt)
         actions.append(action)
@@ -47,11 +58,11 @@ def test_get_multi_action_by_question_attempt(db: Session) -> None:
 
 def test_get_multi_action_by_attempt(db: Session) -> None:
     actions = []
-    student = factories.UserFactory(is_student=True)
     quiz = factories.QuizFactory()
-    attempt = factories.AttemptFactory(student=student, quiz=quiz)
     for i in range(3):
         question = factories.QuestionFactory(quiz=quiz)
+    student = factories.UserFactory(is_student=True)
+    attempt = factories.AttemptFactory(student=student, quiz=quiz)
     quiz_in_db = crud.quiz.get(db, id=quiz.id)
     for question in quiz_in_db.questions:
         action = factories.ActionFactory(question=question, attempt=attempt)
@@ -97,24 +108,32 @@ def test_get_multi_by_quiz_order_by_student(db: Session) -> None:
     assert actions == actions_in_db
 
 def test_update_action(db: Session) -> None:
+    quiz = factories.QuizFactory()
+    question = factories.QuestionFactory(quiz=quiz)
     student = crud.user.get_by_username(db, username="student")
-    action_in = models.QuizActionCreate(blur=1, student_id=student.id)
-    action = crud.quiz_action.create(db=db, obj_in=action_in)
+    attempt = factories.AttemptFactory(quiz=quiz, student=student)
 
+    action_in = models.QuizActionCreate(blur=1, question_id=question.id, attempt_id=attempt.id)
+    action = crud.quiz_action.create(db=db, obj_in=action_in)
     action_update = models.QuizActionUpdate(left_click=1, blur=0, student_id=student.id)
     with pytest.raises(Exception) as e_info:
         crud.quiz_action.update(db=db, db_obj=item, obj_in=item_update)
 
 def test_remove_action(db: Session) -> None:
     focus = 1
+    quiz = factories.QuizFactory()
+    question = factories.QuestionFactory(quiz=quiz)
     student = crud.user.get_by_username(db, username="student")
-    action_in = models.QuizActionCreate(focus=focus, student_id=student.id)
+    attempt = factories.AttemptFactory(quiz=quiz, student=student)
+
+    action_in = models.QuizActionCreate(focus=focus, attempt_id=attempt.id, question_id=question.id)
     action = crud.quiz_action.create(db=db, obj_in=action_in)
     action2 = crud.quiz_action.remove(db=db, id=action.id)
     action3 = crud.quiz_action.get(db=db, id=action.id)
     assert action3 is None
     assert action2.id == action.id
-    assert action2.student == action.student
+    assert action2.attempt == action.attempt
+    assert action2.question == action.question
     assert action2.focus == action.focus
 
 def test_factory(db: Session) -> None:

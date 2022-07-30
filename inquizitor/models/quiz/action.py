@@ -7,9 +7,7 @@ from typing import Optional
 
 class QuizActionBase(SQLModel):
     # these fields are optional because they are set in the POST request 
-    student_id: Optional[int] = Field(foreign_key="user.id")
     attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
-    quiz_id: Optional[int] = Field(foreign_key="quiz.id")
     question_id: Optional[int] = Field(foreign_key="quizquestion.id")
     time: Optional[dt.datetime] = Field(default=dt.datetime.now())
 
@@ -56,9 +54,7 @@ class QuizActionInDBBase(QuizActionBase, PKModel):
     pass
 
 class QuizAction(QuizActionInDBBase, table=True):
-    student: Optional["User"] = Relationship(back_populates="actions")
     attempt: Optional["QuizAttempt"] = Relationship(back_populates="actions")
-    quiz: Optional["Quiz"] = Relationship(back_populates="actions")
     question: Optional["QuizQuestion"] = Relationship(back_populates="actions")
 
     def __repr__(self):

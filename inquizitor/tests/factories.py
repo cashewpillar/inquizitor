@@ -199,9 +199,7 @@ class ActionFactory(BaseFactory):
         model = models.QuizAction
 
     class Params:
-        student: models.User = factory.SubFactory(UserFactory)
         attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
-        quiz: models.Quiz = factory.SubFactory(QuizFactory)
         question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
 
         ACTIONS: List[int] = [0,0,0,0,1,0,0]
@@ -220,14 +218,8 @@ class ActionFactory(BaseFactory):
     right_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
     double_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
 
-    student_id: int = factory.LazyAttribute(
-        lambda a: a.attempt.student_id if a.attempt else None
-    )
     attempt_id: int = factory.LazyAttribute(
-        lambda a: a.attempt.id if a.attempt  else None
-    )
-    quiz_id: int = factory.LazyAttribute(
-        lambda a: a.question.quiz_id if a.question else None
+        lambda a: a.attempt.id if a.attempt is not None else None
     )
     question_id: int = factory.LazyAttribute(
         lambda a: a.question.id if a.question is not None else None
