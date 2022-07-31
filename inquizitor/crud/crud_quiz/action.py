@@ -46,16 +46,26 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             .all()
         )
 
-    # DOING: do the aggregate part
     def get_multi_by_quiz_order_by_student(
         self, db: Session, *, quiz_id: int
     ) -> List[QuizAction]:
-        """Get aggregated quiz actions per student"""
+        """Get quiz actions, order by student"""
         return (
             db.query(QuizAction)
             .join(QuizAttempt)
             .filter(QuizAttempt.quiz_id == quiz_id)
             .order_by(QuizAttempt.student_id)
+            .all()
+        )
+
+    def get_multi_by_attempt_order_by_question(
+        self, db: Session, *, attempt_id: int
+    ) -> List[QuizAction]:
+        """Get quiz actions for the given student attempt, order by question"""
+        return (
+            db.query(QuizAction)
+            .filter(QuizAction.attempt_id == attempt_id)
+            .order_by(QuizAction.question_id)
             .all()
         )
 
