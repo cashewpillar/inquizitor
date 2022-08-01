@@ -69,4 +69,38 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             .all()
         )
 
+    def get_per_student_summary_by_quiz(
+        self, db: Session, *, quiz_id: int
+    ) -> Any:
+        """Get per-student summary of actions for the given quiz"""
+        summary = dict()
+        actions = (
+            db.query(QuizAction)
+            .join(QuizAttempt)
+            .filter(QuizAttempt.quiz_id == quiz_id)
+            .order_by(QuizAttempt.student_id)
+            .all()
+        )
+        action_list = {
+            'blur': 0,
+            'focus': 0,
+            'copy_': 0,
+            'paste': 0,
+            'left_click': 0,
+            'right_click': 0,
+            'double_click': 0,
+        }
+        for action in actions:
+            student_name = action.attempt.student.username
+            summary.setdefault(student_name, dict(action_list))
+            summary[student_name]['blur'] += action.blur
+            summary[student_name]['focus'] += action.focus
+            summary[student_name]['copy_'] += action.copy_
+            summary[student_name]['paste'] += action.paste
+            summary[student_name]['left_click'] += action.left_click
+            summary[student_name]['right_click'] += action.right_click
+            summary[student_name]['double_click'] += action.double_click
+
+        return summary
+
 quiz_action = CRUDQuizAction(QuizAction)

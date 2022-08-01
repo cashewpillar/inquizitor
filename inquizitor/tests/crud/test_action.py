@@ -125,6 +125,25 @@ def test_get_multi_by_attempt_order_by_question(db: Session) -> None:
     )
     assert actions == actions_in_db
 
+# def test_get_per_student_summary_by_quiz(db: Session) -> None:
+#     actions = []
+#     quiz = factories.QuizFactory()
+#     for i in range(3):
+#         question = factories.QuestionFactory(quiz=quiz)
+#     quiz_in_db = crud.quiz.get(db, id=quiz.id)
+#     for i in range(5):
+#         student = factories.UserFactory(is_student=True)
+#         attempt = factories.AttemptFactory(student=student, quiz=quiz)
+#         for question in quiz_in_db.questions:
+#             for i in range(15):
+#                 action = factories.ActionFactory(question=question, attempt=attempt)
+#                 actions.append(action)
+
+#     summary = crud.quiz_action.get_per_student_summary_by_quiz(
+#         db, quiz_id=quiz.id
+#     )
+#     logging.info(f"{pformat(summary)}")
+
 def test_update_action(db: Session) -> None:
     quiz = factories.QuizFactory()
     question = factories.QuestionFactory(quiz=quiz)
