@@ -125,24 +125,47 @@ def test_get_multi_by_attempt_order_by_question(db: Session) -> None:
     )
     assert actions == actions_in_db
 
-# def test_get_per_student_summary_by_quiz(db: Session) -> None:
-#     actions = []
-#     quiz = factories.QuizFactory()
-#     for i in range(3):
-#         question = factories.QuestionFactory(quiz=quiz)
-#     quiz_in_db = crud.quiz.get(db, id=quiz.id)
-#     for i in range(5):
-#         student = factories.UserFactory(is_student=True)
-#         attempt = factories.AttemptFactory(student=student, quiz=quiz)
-#         for question in quiz_in_db.questions:
-#             for i in range(15):
-#                 action = factories.ActionFactory(question=question, attempt=attempt)
-#                 actions.append(action)
+def test_get_per_student_summary_by_quiz(db: Session) -> None:
+    quiz = factories.QuizFactory()
+    for i in range(3):
+        question = factories.QuestionFactory(quiz=quiz)
+    quiz_in_db = crud.quiz.get(db, id=quiz.id)
+    for i in range(5):
+        student = factories.UserFactory(is_student=True)
+        attempt = factories.AttemptFactory(student=student, quiz=quiz)
+        for question in quiz_in_db.questions:
+            for i in range(15):
+                action = factories.ActionFactory(question=question, attempt=attempt)
 
-#     summary = crud.quiz_action.get_per_student_summary_by_quiz(
-#         db, quiz_id=quiz.id
-#     )
-#     logging.info(f"{pformat(summary)}")
+    summary = crud.quiz_action.get_per_student_summary_by_quiz(
+        db, quiz_id=quiz.id
+    )
+    for student in summary:
+        action_count = 0
+        for action in summary[student].keys():
+            action_count += summary[student][action]
+        assert action_count == 45 # 3 questions, 15 actions each
+
+def test_get_per_question_summary_by_attempt(db: Session) -> None:
+    quiz = factories.QuizFactory()
+    for i in range(5):
+        question = factories.QuestionFactory(quiz=quiz)
+    student = factories.UserFactory(is_student=True)
+    attempt = factories.AttemptFactory(student=student, quiz=quiz)
+
+    quiz_in_db = crud.quiz.get(db, id=quiz.id)
+    for question in quiz_in_db.questions:
+        for i in range(20):
+            action = factories.ActionFactory(question=question, attempt=attempt)
+
+    summary = crud.quiz_action.get_per_question_summary_by_attempt(
+        db, attempt_id=attempt.id
+    )
+    for question in summary:
+        action_count = 0
+        for action in summary[question].keys():
+            action_count += summary[question][action]
+        assert action_count == 20 # 20 actions each
 
 def test_update_action(db: Session) -> None:
     quiz = factories.QuizFactory()

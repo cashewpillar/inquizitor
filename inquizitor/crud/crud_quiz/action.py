@@ -6,7 +6,7 @@ from inquizitor.models import QuizAttempt, QuizAction, QuizActionCreate, QuizAct
 class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
     """
     Reporting Scenarios:
-    - [ ] Reports > Quiz > Aggregate Latest Attempt Actions By Student
+    - [x] Reports > Quiz > Aggregate Latest Attempt Actions By Student == get_per_student_summary_by_quiz
     - [ ] Reports > Quiz > Aggregate Student's Latest Attempt Actions By Question
     Detection Scenarios:
     - [x] Attempt Log == get_multi_by_attempt
@@ -100,6 +100,39 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             summary[student_name]['left_click'] += action.left_click
             summary[student_name]['right_click'] += action.right_click
             summary[student_name]['double_click'] += action.double_click
+
+        return summary
+
+    def get_per_question_summary_by_attempt(
+        self, db: Session, *, attempt_id: int
+    ) -> Any:
+        """Get per-question summary of actions for the given attempt"""
+        summary = dict()
+        actions = (
+            db.query(QuizAction)
+            .filter(QuizAction.attempt_id == attempt_id)
+            .order_by(QuizAction.question_id)
+            .all()
+        )
+        action_list = {
+            'blur': 0,
+            'focus': 0,
+            'copy_': 0,
+            'paste': 0,
+            'left_click': 0,
+            'right_click': 0,
+            'double_click': 0,
+        }
+        for action in actions:
+            question_id = action.question_id
+            summary.setdefault(question_id, dict(action_list))
+            summary[question_id]['blur'] += action.blur
+            summary[question_id]['focus'] += action.focus
+            summary[question_id]['copy_'] += action.copy_
+            summary[question_id]['paste'] += action.paste
+            summary[question_id]['left_click'] += action.left_click
+            summary[question_id]['right_click'] += action.right_click
+            summary[question_id]['double_click'] += action.double_click
 
         return summary
 
