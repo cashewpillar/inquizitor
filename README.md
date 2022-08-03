@@ -31,9 +31,9 @@
 
 ## INTEGRATIONS
 
-| Usage               | App                                    | Creator                                               |
-| ------------------- | -------------------------------------- | ----------------------------------------------------- |
-| Realistic Quiz Data | [Open Trivia DB](https://opentdb.com/) | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
+| Usage                                                       | App                                    | Creator                                               |
+| ----------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
+| Realistic Quiz Data (`inquizitor\inquizitor\db\init_db.py`) | [Open Trivia DB](https://opentdb.com/) | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
 
 <br>
 
