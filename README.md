@@ -29,6 +29,14 @@
 
  <br>
 
+## INTEGRATIONS
+
+| Usage               | App                                    | Creator                                               |
+| ------------------- | -------------------------------------- | ----------------------------------------------------- |
+| Realistic Quiz Data | [Open Trivia DB](https://opentdb.com/) | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
+
+<br>
+
 ## DOCUMENTATION
 
 to access the interactive API documentation, go to http://127.0.0.1:8000/docs
