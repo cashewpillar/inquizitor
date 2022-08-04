@@ -27,7 +27,6 @@ async def create_quiz(
     Create a quiz.
     """
 
-    quiz_in.quiz_code = crud.quiz.generate_code(db)
     quiz = crud.quiz.create(db, obj_in=quiz_in)
     return quiz
 

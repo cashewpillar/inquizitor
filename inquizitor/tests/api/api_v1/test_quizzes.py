@@ -112,7 +112,7 @@ class TestReadQuiz:
         result = r.json()
         teacher = crud.user.get(db, id=result["id"])
         quiz = QuizFactory(teacher=teacher)
-        r = await client.get(f"/quizzes/{quiz.id}", cookies=teacher_cookies)
+        r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=teacher_cookies)
         result = r.json()
         assert r.status_code == 200
         assert result["name"] == quiz.name
@@ -122,7 +122,7 @@ class TestReadQuiz:
         # assert result["quiz_code"]
         assert result["teacher_id"] == quiz.teacher_id
 
-    async def test_read_quiz_student_code(
+    async def test_read_quiz_student_id(
         self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
     ) -> None:
         student_cookies = await student_cookies
@@ -144,6 +144,29 @@ class TestReadQuiz:
         # assert result["quiz_code"]
         assert result["teacher_id"] == quiz.teacher_id
 
+    async def test_read_quiz_student_code(
+        self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+    ) -> None:
+        student_cookies = await student_cookies
+        r = await client.get("/users/profile", cookies=student_cookies)
+        result = r.json()
+        student = crud.user.get(db, id=result["id"])
+        quiz = QuizFactory()
+        r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=student_cookies)
+        assert r.status_code == 200
+
+        attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+            db, quiz_id=quiz.id, student_id=student.id
+        )
+        assert attempt
+
+        result = r.json()
+        assert result["name"] == quiz.name
+        assert result["number_of_questions"] == quiz.number_of_questions
+        assert result["created_at"] == dt.datetime.strftime(quiz.created_at, DT_FORMAT)
+        assert result["due_date"] == dt.datetime.strftime(quiz.due_date, DT_FORMAT)
+        assert result["teacher_id"] == quiz.teacher_id
+
     async def test_read_quiz_student_quiz_already_closed(
         self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
     ) -> None:
@@ -152,7 +175,7 @@ class TestReadQuiz:
         result = r.json()
         student = crud.user.get(db, id=result["id"])
         quiz = QuizFactory(due_date=dt.datetime.now() - dt.timedelta(seconds=10))
-        r = await client.get(f"/quizzes/{quiz.id}", cookies=student_cookies)
+        r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=student_cookies)
         result = r.json()
         assert r.status_code == 400
 
