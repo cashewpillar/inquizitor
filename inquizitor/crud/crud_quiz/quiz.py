@@ -14,7 +14,7 @@ from inquizitor.models import Quiz, QuizCreate, QuizUpdate
 
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
     def create(self, db: Session, *, obj_in: QuizCreate) -> Quiz:
-        db_obj = Quiz(
+        db_obj = QuizCreate(
             name=obj_in.name,
             desc=obj_in.desc,
             number_of_questions=obj_in.number_of_questions,

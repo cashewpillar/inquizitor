@@ -1,6 +1,7 @@
 import datetime as dt
 import factory
 import random
+import secrets
 from factory.alchemy import SQLAlchemyModelFactory
 from typing import List, Optional, Union
 
@@ -86,7 +87,7 @@ class QuizFactory(BaseFactory):
     number_of_questions = factory.Faker("random_int", min=10, max=100, step=10)
     created_at = factory.LazyFunction(dt.datetime.now)
     due_date = factory.LazyAttribute(lambda a: a.created_at + dt.timedelta(hours=5))
-    quiz_code = None
+    quiz_code = factory.LazyAttribute(lambda a: secrets.token_hex(4)) # random quiz_code for testing
     # time_limit: int = factory.Faker("random_int", min=30*60, max=60*60, step=5*60)
     teacher_id: int = factory.LazyAttribute(
         lambda a: a.teacher.id if a.teacher is not None else None
