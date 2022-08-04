@@ -82,6 +82,101 @@ class TestReadQuizzes:
         # logging.info(f"{pformat(result)}")
         # assert answer_1 in result[0]
 
+@pytest.mark.anyio
+class TestReadQuizzesResults:
+    async def test_get_quizzes_results_teacher(
+        self, db: Session, client: AsyncClient
+    ) -> None:
+        teacher_in = UserFactory.stub(schema_type="create", is_teacher=True)
+        teacher = UserFactory(**teacher_in)
+        r = await client.post(
+            "/login/token",
+            data={
+                "username": teacher_in["username"],
+                "password": teacher_in["password"],
+            },
+        )
+        teacher_cookies = r.cookies
+
+        quizzes_results = []
+        for i in range(3): # 3 quizzes 
+            quiz = QuizFactory(teacher=teacher)
+            for j in range(5): # 5 questions each
+                question = QuestionFactory(quiz=quiz)
+                for k in range(4): # 4 choices each
+                    choice = ChoiceFactory(question=question)
+
+            quiz = crud.quiz.get(db, id=quiz.id)
+            unique_attempts = []
+            for i in range(3):  # 3 students take each quiz
+                student_in = UserFactory.stub(schema_type="create", is_student=True)
+                student = UserFactory(**student_in)
+                r = await client.post(
+                    "/login/token",
+                    data={
+                        "username": student_in["username"],
+                        "password": student_in["password"],
+                    },
+                )
+                student_cookies = r.cookies
+
+                for question in quiz.questions:
+                    choice = random.choices(question.choices)[0]
+                    answer_in = AnswerFactory.stub(
+                        schema_type="create",
+                        content=choice.content,
+                        student=student,
+                        choice=choice,
+                        question=question,
+                    )
+
+                    r = await client.put(
+                        f"/quizzes/{quiz.id}/questions/{question.id}/answer",
+                        cookies=student_cookies,
+                        json=answer_in,
+                    )
+                    assert r.status_code == 200
+
+                attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+                    db, quiz_id=quiz.id, student_id=student.id
+                )
+                unique_attempts.append(attempt)
+
+                r = await client.get(f"/quizzes/{quiz.id}/finish", cookies=student_cookies)
+                assert r.status_code == 200
+
+            quizzes_results.append(unique_attempts)
+
+        r = await client.get(f"/quizzes/results", cookies=teacher_cookies)
+        quizzes_results_in_db = r.json()
+
+        assert r.status_code == 200
+
+        quizzes_id_results = []
+        quizzes_id_results_in_db = []
+        for i, quiz_results in enumerate(quizzes_results_in_db):
+            assert quiz_results
+            for result in quiz_results:
+                assert result["answers"]
+                assert result["questions"]
+                assert type(result["score"]) == type(1)
+                assert result["participant_name"]
+
+            unique_attempt_ids = [result["answers"][0]["attempt_id"] for result in quiz_results]
+            unique_attempt_ids.sort()
+            quizzes_id_results_in_db.append(unique_attempt_ids)
+
+            unique_attempt_ids = [result.answers[0].attempt_id for result in quizzes_results[i]]
+            unique_attempt_ids.sort()
+            quizzes_id_results.append(unique_attempt_ids)
+
+        assert quizzes_id_results == quizzes_id_results_in_db
+
+        # # delete attempts made this session for the purposes of next tests
+        for unique_attempt_ids in quizzes_id_results:
+            for id in unique_attempt_ids:
+                attempt = crud.quiz_attempt.remove(db, id=id)
+
 
 @pytest.mark.anyio
 class TestReadQuiz:

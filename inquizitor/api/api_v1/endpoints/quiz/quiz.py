@@ -55,6 +55,27 @@ async def read_quizzes(
     return quizzes
 
 
+@router.get("/results", response_model=List[List[models.QuizReadWithQuestions]])
+async def read_quizzes_results(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_teacher: models.User = Depends(deps.get_current_teacher),
+) -> Any:
+    """
+    Retrieve results for all student attempt for each quiz authored by the current teacher.
+    """
+    quizzes = crud.quiz.get_multi_by_author(
+        db=db, teacher_id=current_teacher.id, skip=skip, limit=limit
+    )
+    quizzes_results = []
+    for quiz in quizzes:
+        results = crud.quiz.get_multi_results_by_quiz_id(db, id=quiz.id)
+        quizzes_results.append(results)
+
+    return quizzes_results
+
+
 @router.get("/{quiz_index}", response_model=models.QuizReadWithQuestions)
 async def read_quiz(
     *,
