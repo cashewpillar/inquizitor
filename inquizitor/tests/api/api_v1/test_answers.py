@@ -8,7 +8,7 @@ from pprint import pformat
 from sqlmodel import Session
 from typing import Dict
 
-from inquizitor import crud
+from inquizitor import crud, models
 from inquizitor.tests.factories import AnswerFactory, QuizFactory, UserFactory
 
 
@@ -100,7 +100,6 @@ class TestUpdateAnswer:
 
 @pytest.mark.anyio
 class TestGetScore:
-    # TODO what if a question is left unanswered?
     async def test_get_score_student(self, db: Session, client: AsyncClient) -> None:
         user_in = UserFactory.stub(schema_type="create", is_student=True)
         user = UserFactory(**user_in)
@@ -114,15 +113,34 @@ class TestGetScore:
         quiz = crud.quiz.get(db, id=1)
         for question in quiz.questions:
             choice = random.choices(question.choices)[0]
+            content = choice.content
+
+            is_fill_in_the_blank = question.question_type == models.QuestionType.blank
+            if is_fill_in_the_blank:
+                wrong_answer = list(content) # str to list
+                wrong_answer.sort()
+                wrong_answer = ''.join(wrong_answer)
+                content = random.choices([content, wrong_answer, None])[0]
+                choice = None
+
+            is_correct = False
+            if not is_fill_in_the_blank:
+                if choice.is_correct:
+                    score += question.points
+                    is_correct = True
+            else:
+                if content in [choice.content for choice in question.choices]:
+                    score += question.points
+                    is_correct = True
+                    
             answer_in = AnswerFactory.stub(
                 schema_type="create",
-                content=choice.content,
+                content=content,
                 student=user,
                 choice=choice,
                 question=question,
+                is_correct=is_correct,
             )
-            if choice.is_correct:
-                score += question.points
 
             r = await client.put(
                 f"/quizzes/{quiz.id}/questions/{question.id}/answer",
