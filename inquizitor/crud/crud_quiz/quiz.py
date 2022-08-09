@@ -67,7 +67,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
             quiz_in_db = crud.quiz.get(db, id=attempt.quiz_id)
 
             quiz = jsonable_encoder(quiz_in_db)
-            quiz["questions"] = quiz_in_db.questions
+            quiz["questions"] = jsonable_encoder(quiz_in_db.questions)
             quiz["answers"] = jsonable_encoder(
                 crud.quiz_answer.get_all_by_attempt(db, attempt_id=attempt.id)
             )

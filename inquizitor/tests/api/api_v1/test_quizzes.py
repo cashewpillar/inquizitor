@@ -79,7 +79,8 @@ class TestReadQuizzes:
         result = r.json()
         assert r.status_code == 200
         assert result == quizzes_in_db
-        # logging.info(f"{pformat(result)}")
+        logging.info(f"{pformat(quizzes_in_db)}\n\n")
+        logging.info(f"{pformat(result)}\n\n")
         # assert answer_1 in result[0]
 
 @pytest.mark.anyio

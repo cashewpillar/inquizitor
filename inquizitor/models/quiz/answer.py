@@ -6,12 +6,12 @@ from ..user import User
 
 
 class QuizAnswerBase(SQLModel):
-    content: str = Field(max_length=200)
-    is_correct: bool = False
+    content: Optional[str] = Field(max_length=200)
+    is_correct: Optional[bool] = None
     student_id: int = Field(foreign_key="user.id")
-    choice_id: int = Field(foreign_key="quizchoice.id")
+    choice_id: Optional[int] = Field(foreign_key="quizchoice.id")
     attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
-    question_id: Optional[int] = Field(foreign_key="quizquestion.id")
+    question_id: int = Field(foreign_key="quizquestion.id")
 
 
 class QuizAnswerCreate(QuizAnswerBase):

@@ -88,7 +88,9 @@ def dummy_quiz(db: Session) -> None:
             index_correct = random.randrange(0, 4)
             for i in range(4):
                 choice_in = ChoiceFactory.stub(schema_type="create", question=question)
-                if i == index_correct:
+                if question.question_type == models.QuestionType.blank:
+                    choice_in["is_correct"] = True
+                elif i == index_correct:
                     choice_in["is_correct"] = True
                 choice = crud.quiz_choice.create(db, obj_in=choice_in)
 

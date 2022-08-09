@@ -113,6 +113,9 @@ class QuestionFactory(BaseFactory):
     quiz_id: int = factory.LazyAttribute(
         lambda a: a.quiz.id if a.quiz is not None else None
     )
+    question_type: models.QuestionType = factory.Faker(
+        "random_element", elements=[x[1] for x in enumerate(models.QuestionType)]
+    )
 
     model: ModelType = models.QuizQuestion
     create_schema: CreateSchemaType = models.QuizQuestionCreate
@@ -175,13 +178,17 @@ class AnswerFactory(BaseFactory):
         model = models.QuizAnswer
 
     class Params:
-        choice: models.QuizChoice = factory.SubFactory(ChoiceFactory)
+        choice: Optional[models.QuizChoice] = factory.SubFactory(ChoiceFactory)
         student: models.User = factory.SubFactory(UserFactory)
         attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
         question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
 
-    content: str = factory.LazyAttribute(lambda a: a.choice.content)
-    is_correct: bool = factory.LazyAttribute(lambda a: a.choice.is_correct)
+    content: Optional[str] = factory.LazyAttribute(
+        lambda a: a.choice.content if a.choice is not None else None
+    )
+    is_correct: Optional[bool] = factory.LazyAttribute(
+        lambda a: a.choice.is_correct if a.choice is not None else None
+    )
     choice_id: int = factory.LazyAttribute(
         lambda a: a.choice.id if a.choice is not None else None
     )
