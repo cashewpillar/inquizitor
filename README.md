@@ -34,9 +34,11 @@
 If you want to use Docker, it is recommended to have a free diskspace of 2 GB. Running docker-compose will eventually download 1.2 GB at the minimum.  
 
 0. Install Docker: [Ubuntu Linux](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04) - [Windows](https://docs.docker.com/docker-for-windows/install/)
-1. Run the entire app (backend and db): `docker-compose up -d`
+1. Change directory to `inquizitor` 
+2. Make a copy of the file `.env.example`, rename it to `.env`, and set environment variables. Or don't change content of file to use default values for development. See `.env.example` file for reference
+3. Run the entire app (backend and db): `docker-compose up -d`
    - Remove `-d` to enable the logs
-2. Initialize/ reset the database: `docker exec inquizitor_backend_1 python main.py initial-data`
+4. Initialize/ reset the database: `docker exec inquizitor_backend_1 python main.py initial-data`
 
 <br>
 
