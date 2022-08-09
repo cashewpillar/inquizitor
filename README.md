@@ -44,7 +44,7 @@ If you want to use Docker, it is recommended to have a free diskspace of 2 GB. R
 
 ## Docker Commands
 
-1. If you made changes to the `Dockerfile`, rebuild the docker app: `docker-compose up --build`
+1. If you made changes to the `Dockerfile`, rebuild the image for the service backend: `docker-compose up --build`
 2. If you made changes to the `docker-compose.yml` file, re-run the app: `docker-compose up`
 3. If you made changes to the backend code, restart the backend container: `docker-compose restart backend`
 4. Run backend tests using: `docker exec inquizitor_backend_1 pytest`
