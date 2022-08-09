@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Pytest
 
 # Controls when the workflow will run
 on:
@@ -31,5 +31,3 @@ jobs:
           cp .env.example .env
           docker-compose up -d
           docker exec inquizitor_backend_1 pytest
-          
-          
