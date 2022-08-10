@@ -5,7 +5,7 @@ from inquizitor.db.base_class import PKModel
 
 
 class QuizChoiceBase(SQLModel):
-    content: str = Field(max_length=50)
+    content: str = Field(max_length=100)
     is_correct: bool
     question_id: Optional[int] = Field(default=None, foreign_key="quizquestion.id")
 

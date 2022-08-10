@@ -42,6 +42,14 @@ If you want to use Docker, it is recommended to have a free diskspace of 2 GB. R
 
 <br>
 
+## Integrations
+
+| Usage                                                       | App                                    | Creator                                               |
+| ----------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
+| Realistic Quiz Data (`inquizitor\inquizitor\db\init_db.py`) | [Open Trivia DB](https://opentdb.com/) | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
+
+<br>
+
 ## Docker Commands
 
 1. If you made changes to the `Dockerfile`, rebuild the image for the service backend: `docker-compose up --build`
