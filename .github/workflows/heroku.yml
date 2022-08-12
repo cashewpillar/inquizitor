@@ -13,8 +13,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  app1:
+  # This workflow contains a single job called "deploy"
+  deploy:
     name: Build and deploy Inquizitor API
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -42,5 +42,5 @@ jobs:
           docker-compose up -d --build \
             ${DOCKER_OPTIONS} \
             --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
-          heroku container:push backend --app ${HEROKU_APP_NAME}
-          heroku container:release backend --app ${HEROKU_APP_NAME}
+          heroku container:push web --app ${HEROKU_APP_NAME}
+          heroku container:release web --app ${HEROKU_APP_NAME}
