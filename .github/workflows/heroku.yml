@@ -44,4 +44,4 @@ jobs:
             --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
           heroku container:push web --app ${HEROKU_APP_NAME}
           heroku container:release web --app ${HEROKU_APP_NAME}
-          heroku ps:scale web=1
+          heroku ps:scale web=1 --app ${HEROKU_APP_NAME}
