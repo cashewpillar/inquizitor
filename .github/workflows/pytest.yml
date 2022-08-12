@@ -29,5 +29,5 @@ jobs:
       - name: Run a multi-line script
         run: |
           cp .env.example .env
-          docker-compose up -d
+          docker-compose up -d --build
           docker exec inquizitor_backend_1 pytest
