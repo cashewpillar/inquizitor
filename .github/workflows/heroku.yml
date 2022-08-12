@@ -46,7 +46,5 @@ jobs:
             ${DOCKER_OPTIONS} \
             --force-recreate \
             --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
-          docker exec inquizitor_backend_1 python main.py initial-data
-          heroku container:push web --app ${HEROKU_APP_NAME}
-          heroku container:release web --app ${HEROKU_APP_NAME}
-
+          heroku container:push backend --app ${HEROKU_APP_NAME}
+          heroku container:release backend --app ${HEROKU_APP_NAME}
