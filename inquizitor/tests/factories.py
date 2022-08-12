@@ -1,6 +1,7 @@
 import datetime as dt
 import factory
 import random
+import secrets
 from factory.alchemy import SQLAlchemyModelFactory
 from typing import List, Optional, Union
 
@@ -86,7 +87,7 @@ class QuizFactory(BaseFactory):
     number_of_questions = factory.Faker("random_int", min=10, max=100, step=10)
     created_at = factory.LazyFunction(dt.datetime.now)
     due_date = factory.LazyAttribute(lambda a: a.created_at + dt.timedelta(hours=5))
-    quiz_code = None
+    quiz_code = factory.LazyAttribute(lambda a: secrets.token_hex(4)) # random quiz_code for testing
     # time_limit: int = factory.Faker("random_int", min=30*60, max=60*60, step=5*60)
     teacher_id: int = factory.LazyAttribute(
         lambda a: a.teacher.id if a.teacher is not None else None
@@ -111,6 +112,9 @@ class QuestionFactory(BaseFactory):
     order: int = factory.Sequence(lambda n: n)
     quiz_id: int = factory.LazyAttribute(
         lambda a: a.quiz.id if a.quiz is not None else None
+    )
+    question_type: models.QuestionType = factory.Faker(
+        "random_element", elements=[x[1] for x in enumerate(models.QuestionType)]
     )
 
     model: ModelType = models.QuizQuestion
@@ -174,13 +178,17 @@ class AnswerFactory(BaseFactory):
         model = models.QuizAnswer
 
     class Params:
-        choice: models.QuizChoice = factory.SubFactory(ChoiceFactory)
+        choice: Optional[models.QuizChoice] = factory.SubFactory(ChoiceFactory)
         student: models.User = factory.SubFactory(UserFactory)
         attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
         question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
 
-    content: str = factory.LazyAttribute(lambda a: a.choice.content)
-    is_correct: bool = factory.LazyAttribute(lambda a: a.choice.is_correct)
+    content: Optional[str] = factory.LazyAttribute(
+        lambda a: a.choice.content if a.choice is not None else None
+    )
+    is_correct: Optional[bool] = factory.LazyAttribute(
+        lambda a: a.choice.is_correct if a.choice is not None else None
+    )
     choice_id: int = factory.LazyAttribute(
         lambda a: a.choice.id if a.choice is not None else None
     )
