@@ -19,9 +19,5 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    environment:
-      - SERVER_HOST=https://localhost
     env_file:
       - .env
-    ports:
-      - 8888:8888
