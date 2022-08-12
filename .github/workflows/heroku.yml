@@ -30,21 +30,17 @@ jobs:
       - name: Build and push Docker to Heroku
         env:
           HEROKU_APP_NAME: inquizitor-test
-          DOCKERFILE_DIRECTORY: "."
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          DOCKERFILE_NAME: "Dockerfile"
-          DOCKER_OPTIONS: "--no-cache"
+          DOCKER_OPTIONS: "--no-cache --force-recreate"
         run: |
-          cd ${DOCKERFILE_DIRECTORY}
           cp .env.example .env
           echo ${HEROKU_API_KEY} | docker login \
             --username=${HEROKU_EMAIL} \
             registry.heroku.com \
             --password-stdin
-          docker-compose up -d \
+          docker-compose up -d --build \
             ${DOCKER_OPTIONS} \
-            --force-recreate \
             --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
           heroku container:push backend --app ${HEROKU_APP_NAME}
           heroku container:release backend --app ${HEROKU_APP_NAME}
