@@ -17,10 +17,14 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 if settings.USE_SQLITE:
     engine = create_engine(
-        settings.SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False}
+        settings.SQLALCHEMY_DATABASE_URI, 
+        connect_args={"check_same_thread": False}
     )
 else:
-    engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
+    engine = create_engine(
+        settings.SQLALCHEMY_DATABASE_URI,
+        connect_args={"sslmode": "require"}
+    )
 
 test_engine = create_engine(
     "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
