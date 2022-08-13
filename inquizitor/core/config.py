@@ -10,10 +10,10 @@ load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Inquizitor"
-    PROJECT_DESC: str = """RESTful Quiz API for managing/ administering quizzes. 
-	With refresh tokens and basic permission control"""
+    PROJECT_DESC: str = """REST API for managing/ administering quizzes. 
+	With refresh tokens and basic permission control. Use teacher:superteacher or student:superstudent to log in."""
     PROJECT_VERSION: str = "1.0.0"
-    USE_SQLITE: bool = os.getenv("USE_SQLITE")
+    USE_SQLITE: bool = os.getenv("USE_SQLITE", 1)
 
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = os.getenv('SECRET_KEY', 'secret')
