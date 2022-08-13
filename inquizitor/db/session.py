@@ -23,7 +23,7 @@ if settings.USE_SQLITE:
 else:
     engine = create_engine(
         settings.SQLALCHEMY_DATABASE_URI,
-        connect_args={"sslmode": "require"}
+        # connect_args={"sslmode": "require"} # required in heroku postgres
     )
 
 test_engine = create_engine(
