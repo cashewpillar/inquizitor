@@ -32,9 +32,14 @@ jobs:
           HEROKU_APP_NAME: inquizitor-test
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_POSTGRES_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DOCKER_OPTIONS: "--no-cache --force-recreate"
         run: |
-          cp .env.example .env
+          # cp .env.example .env
+          export SQLALCHEMY_DATABASE_URI=${HEROKU_POSTGRES_URI}
+          export SECRET_KEY=${SECRET_KEY}
+          export USE_SQLITE=0
           echo ${HEROKU_API_KEY} | docker login \
             --username=${HEROKU_EMAIL} \
             registry.heroku.com \
@@ -45,3 +50,4 @@ jobs:
           heroku container:push web --app ${HEROKU_APP_NAME}
           heroku container:release web --app ${HEROKU_APP_NAME}
           heroku ps:scale web=1 --app ${HEROKU_APP_NAME}
+          heroku ps:exec 'docker exec inquizitor_backend_1 python main.py initial-data' --app ${HEROKU_APP_NAME}
