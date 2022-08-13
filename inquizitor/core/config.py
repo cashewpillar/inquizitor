@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # Disable CSRF Protection for this example. default is True
     AUTHJWT_COOKIE_CSRF_PROTECT: bool = False
 
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL") or os.getenv("SQLALCHEMY_DATABASE_URI", 'sqlite:///inquizitor/data.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", 'sqlite:///inquizitor/data.db')
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
     FIRST_SUPERUSER_USERNAME: str = "admin"
