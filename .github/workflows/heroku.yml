@@ -36,8 +36,8 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DOCKER_OPTIONS: "--no-cache --force-recreate"
         run: |
-          # cp .env.example .env
           export SQLALCHEMY_DATABASE_URI=${HEROKU_POSTGRES_URI}
+          printenv SQLALCHEMY_DATABASE_URI
           export SECRET_KEY=${SECRET_KEY}
           export USE_SQLITE=0
           echo ${HEROKU_API_KEY} | docker login \
