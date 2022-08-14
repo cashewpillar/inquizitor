@@ -314,7 +314,7 @@ class TestCreateQuiz:
         assert result["quiz_code"]
         assert result["teacher_id"] == quiz_in["teacher_id"]
 
-    async def test_create_quiz_teacher_is_author(
+    async def test_create_quiz_teacher(
         self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
     ) -> None:
         teacher_cookies = await teacher_cookies
