@@ -37,11 +37,6 @@ async def create_actions(
 
     return actions
 
-# - [x] READ ACTIONS OF ALL PARTICIPANTS AT GIVEN QUESTION
-# - [x] READ ACTIONS OF ALL PARTICIPANTS AT GIVEN QUIZ
-# - [ ] READ ACTIONS AT GIVEN ATTEMPT QUESTION
-# - [ ] READ ACTIONS AT GIVEN ATTEMPT QUIZ
-
 @router.get(
     "/{quiz_index}/questions/{question_id}/actions",
     response_model=Dict[Tuple[int, str], List[models.QuizAction]],
@@ -92,3 +87,50 @@ async def read_quiz_actions(
         quiz_actions[(student.id, student.full_name)] = actions
 
     return quiz_actions
+
+@router.get(
+    "/{quiz_index}/{student_id}/actions",
+    response_model=List[models.QuizAction],
+)
+async def read_attempt_actions(
+    *,
+    db: Session = Depends(deps.get_db),
+    quiz: models.Quiz = Depends(deps.get_quiz),
+    current_author: models.User = Depends(deps.get_current_author),
+) -> Any:
+    """
+    Retrieve student's actions for the given quiz.
+    """
+
+    attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+        db, quiz_id=quiz.id, student_id=student_id
+    )
+    actions = crud.quiz_action.get_multi_by_attempt_order_by_question(
+        db, attempt_id=attempt.id
+    )
+
+    return actions
+
+@router.get(
+    "/{quiz_index}/questions/{question_id}/{student_id}/actions",
+    response_model=List[models.QuizAction],
+)
+async def read_attempt_question_actions(
+    *,
+    db: Session = Depends(deps.get_db),
+    quiz: models.Quiz = Depends(deps.get_quiz),
+    question: models.QuizQuestion = Depends(deps.get_question),
+    current_author: models.User = Depends(deps.get_current_author),
+) -> Any:
+    """
+    Retrieve student's actions for the given quiz question.
+    """
+
+    attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+        db, quiz_id=quiz.id, student_id=student_id
+    )
+    actions = crud.quiz_action.get_multi_by_question_attempt(
+        db, question_id=question.id, attempt_id=attempt.id
+    )
+
+    return actions
