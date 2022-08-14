@@ -9,7 +9,8 @@ class QuizActionBase(SQLModel):
     # these fields are optional because they are set in the POST request 
     attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
     question_id: Optional[int] = Field(foreign_key="quizquestion.id")
-    time: Optional[dt.datetime] = Field(default=dt.datetime.now())
+
+    time: dt.datetime = Field(default=dt.datetime.now())
 
     blur: int = Field(default=0)
     focus: int = Field(default=0)

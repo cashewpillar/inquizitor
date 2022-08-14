@@ -50,8 +50,9 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
             .order_by(QuizAttempt.id.desc())
             .all()
         )
+        unique_quiz_ids = [attempt.quiz_id for attempt in unique_attempts]
         for attempt in attempts:
-            if attempt.quiz_id not in [attempt.quiz_id for attempt in unique_attempts]:
+            if attempt.quiz_id not in unique_quiz_ids:
                 unique_attempts.append(attempt)
 
         return unique_attempts
@@ -65,10 +66,9 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
             .order_by(QuizAttempt.id.desc())
             .all()
         )
+        unique_student_ids = [attempt.student_id for attempt in unique_attempts]
         for attempt in attempts:
-            if attempt.student_id not in [
-                attempt.student_id for attempt in unique_attempts
-            ]:
+            if attempt.student_id not in unique_student_ids:
                 unique_attempts.append(attempt)
 
         return unique_attempts

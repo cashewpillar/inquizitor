@@ -210,13 +210,15 @@ class ActionFactory(BaseFactory):
         # i.e. action = ActionFactory(custom=True, focus=1)
         custom: bool = False 
 
-    blur: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    focus: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    copy_: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    paste: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    left_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    right_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
-    double_click: int = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    time = factory.LazyFunction(dt.datetime.now)
+
+    blur = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    focus = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    copy_ = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    paste = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    left_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    right_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    double_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
 
     attempt_id: int = factory.LazyAttribute(
         lambda a: a.attempt.id if a.attempt is not None else None
