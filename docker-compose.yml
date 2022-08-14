@@ -1,0 +1,23 @@
+volumes:
+  data:
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=inquizitor
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql
+
+  backend:
+    image: backend
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    env_file:
+      - .env

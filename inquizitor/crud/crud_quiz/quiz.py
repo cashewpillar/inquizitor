@@ -14,7 +14,7 @@ from inquizitor.models import Quiz, QuizCreate, QuizUpdate
 
 class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
     def create(self, db: Session, *, obj_in: QuizCreate) -> Quiz:
-        db_obj = Quiz(
+        db_obj = QuizCreate(
             name=obj_in.name,
             desc=obj_in.desc,
             number_of_questions=obj_in.number_of_questions,
@@ -67,7 +67,7 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
             quiz_in_db = crud.quiz.get(db, id=attempt.quiz_id)
 
             quiz = jsonable_encoder(quiz_in_db)
-            quiz["questions"] = quiz_in_db.questions
+            quiz["questions"] = jsonable_encoder(quiz_in_db.questions)
             quiz["answers"] = jsonable_encoder(
                 crud.quiz_answer.get_all_by_attempt(db, attempt_id=attempt.id)
             )

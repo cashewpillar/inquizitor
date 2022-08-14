@@ -74,7 +74,7 @@ def get_quiz(
         ..., description="ID or Code of quiz to retrieve"
     ),
 ) -> models.Quiz:
-    quiz = crud.quiz.get(db, id=quiz_index)
+    quiz = crud.quiz.get_by_index(db, quiz_index=quiz_index)
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found")
 

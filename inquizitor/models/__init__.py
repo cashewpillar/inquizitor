@@ -1,5 +1,6 @@
 from .msg import Msg
 from .quiz import (
+    QuestionType,
     QuizAnswer,
     QuizAnswerCreate,
     QuizAnswerUpdate,

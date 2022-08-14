@@ -1,6 +1,12 @@
+from enum import Enum
 from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional, List
 from inquizitor.db.base_class import PKModel
+
+
+class QuestionType(str, Enum):
+    choice = "multiple-choice"
+    blank = "fill-in-the-blank"
 
 
 class QuizQuestionBase(SQLModel):
@@ -8,6 +14,7 @@ class QuizQuestionBase(SQLModel):
     points: int
     order: int
     quiz_id: Optional[int] = Field(default=None, foreign_key="quiz.id")
+    question_type: QuestionType
 
 
 class QuizQuestionCreate(QuizQuestionBase):

@@ -10,13 +10,13 @@ load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Inquizitor"
-    PROJECT_DESC: str = """RESTful Quiz API for managing/ administering quizzes. 
-	With refresh tokens and basic permission control"""
+    PROJECT_DESC: str = """REST API for managing/ administering quizzes. 
+	With refresh tokens and basic permission control. Use teacher:superteacher or student:superstudent to log in."""
     PROJECT_VERSION: str = "1.0.0"
-    USE_SQLITE: bool = os.getenv("USE_SQLITE")
+    USE_SQLITE: bool = os.getenv("USE_SQLITE", 1)
 
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str = os.getenv('SECRET_KEY', 'secret')
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60  # 1 minute
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 1 week
@@ -26,16 +26,7 @@ class Settings(BaseSettings):
     # Disable CSRF Protection for this example. default is True
     AUTHJWT_COOKIE_CSRF_PROTECT: bool = False
 
-    POSTGRES_USER: str = os.getenv("POSTGRES_USER")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
-    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
-    POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", 5432)
-    POSTGRES_DB: str = os.getenv("POSTGRES_db", "tdd")
-
-    if USE_SQLITE:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///inquizitor/data.db"
-    else:
-        SQLALCHEMY_DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", 'sqlite:///inquizitor/data.db')
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
     FIRST_SUPERUSER_USERNAME: str = "admin"
@@ -57,7 +48,7 @@ class Settings(BaseSettings):
     FIRST_TEACHER_FIRSTNAME: str = "Chair"
     FIRST_TEACHER_PASSWORD: str = "superteacher"
 
-    authjwt_secret_key: str = SECRET_KEY
+    authjwt_secret_key: str = os.getenv('SECRET_KEY', 'secret')
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access", "refresh"}
 
