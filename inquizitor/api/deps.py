@@ -27,7 +27,7 @@ def get_current_user(
     try:
         Authorize.jwt_required()
     except JWTDecodeError as err:
-        # NOTE https://github.com/IndominusByte/fastapi-jwt-auth/issues/20
+        # https://github.com/IndominusByte/fastapi-jwt-auth/issues/20
         status_code = err.status_code
         if err.message == "Signature verification failed":
             status_code = 401

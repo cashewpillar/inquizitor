@@ -13,29 +13,26 @@ router = APIRouter()
 
 @router.post(
     "/{quiz_index}/questions/{question_id}/actions", 
-    response_model=List[models.QuizAction]
+    response_model=models.QuizAction
 )
-async def create_actions(
+async def create_action(
     *,
-    action_ins: List[models.QuizActionCreate],
+    action_in: models.QuizActionCreate,
     db: Session = Depends(deps.get_db),
     attempt: models.QuizAttempt = Depends(deps.get_attempt),
     question: models.QuizQuestion = Depends(deps.get_question),
 ) -> Any:
     """
-    Store the current student's actions for the given attempt and quiz question.
-    User is validated through get_attempt
+    Store the current student's action for the given attempt and quiz question.
+    User is validated through get_attempt (see api/deps.py)
     """
 
-    actions = []
-    for action_in in action_ins:
-        action_in.attempt_id = attempt.id
-        action_in.question_id = question.id
+    action_in.attempt_id = attempt.id
+    action_in.question_id = question.id
 
-        action = crud.quiz_action.create(db, obj_in=action_in)
-        actions.append(action)
+    action = crud.quiz_action.create(db, obj_in=action_in)
 
-    return actions
+    return action
 
 @router.get(
     "/{quiz_index}/questions/{question_id}/actions",
