@@ -22,8 +22,8 @@ class TestReadQuizzes:
     async def test_read_quizzes_superuser(
         self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
     ) -> None:
-        quiz = QuizFactory(quiz_code=crud.quiz.generate_code(db))
-        r = await client.get("/quizzes/", cookies=await superuser_cookies)
+        quiz = QuizFactory()
+        r = await client.get("/quizzes/?limit=400", cookies=await superuser_cookies)
         result = r.json()
         assert r.status_code == 200
         # NOTE tests use asyncio and trio (each test function is called twice)
@@ -45,7 +45,6 @@ class TestReadQuizzes:
         result = r.json()
         teacher = crud.user.get(db, id=result["id"])
         quiz = QuizFactory(teacher=teacher)
-        question = QuestionFactory(quiz=quiz)
         r = await client.get("/quizzes/", cookies=teacher_cookies)
         result = r.json()
         assert r.status_code == 200

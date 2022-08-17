@@ -24,6 +24,7 @@ from .quiz import (
     QuizAction,
     QuizActionCreate,
     QuizActionUpdate,
+    QuizActions,
 )
 from .token import Token, TokenPayload, RevokedToken
 from .user import User, UserCreate, UserUpdate, ShowUser

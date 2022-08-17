@@ -36,7 +36,7 @@ async def create_action(
 
 @router.get(
     "/{quiz_index}/questions/{question_id}/actions",
-    response_model=Dict[Tuple[int, str], List[models.QuizAction]],
+    response_model=List[models.QuizActions],
 )
 async def read_question_actions(
     *,
@@ -49,20 +49,22 @@ async def read_question_actions(
     Retrieve actions for the given quiz question.
     """
 
-    question_actions = {}
-    attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(db, quiz.id)
+    question_actions = []
+    attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(db, id=quiz.id)
     for attempt in attempts:
         actions = crud.quiz_action.get_multi_by_question_attempt(
             db, question_id=question.id, attempt_id=attempt.id
         )
         student = crud.user.get(db, attempt.student_id)
-        question_actions[(student.id, student.full_name)] = actions
+        question_actions.append(models.QuizActions(
+            student_id=student.id, student_name=student.full_name, actions=actions
+        ))
 
     return question_actions
 
 @router.get(
     "/{quiz_index}/actions",
-    response_model=Dict[Tuple[int, str], List[models.QuizAction]],
+    response_model=List[models.QuizActions],
 )
 async def read_quiz_actions(
     *,
@@ -74,14 +76,16 @@ async def read_quiz_actions(
     Retrieve actions for the given quiz.
     """
 
-    quiz_actions = {}
-    attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(db, quiz.id)
+    quiz_actions = []
+    attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(db, id=quiz.id)
     for attempt in attempts:
         actions = crud.quiz_action.get_multi_by_attempt(
             db, attempt_id=attempt.id
         )
         student = crud.user.get(db, attempt.student_id)
-        quiz_actions[(student.id, student.full_name)] = actions
+        quiz_actions.append(models.QuizActions(
+            student_id=student.id, student_name=student.full_name, actions=actions
+        ))
 
     return quiz_actions
 

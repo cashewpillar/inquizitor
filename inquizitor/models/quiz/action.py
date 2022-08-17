@@ -3,7 +3,7 @@ import logging
 from inquizitor.db.base_class import PKModel
 from pydantic import root_validator, validator
 from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional
+from typing import List, Optional
 
 class QuizActionBase(SQLModel):
     # these fields are optional because they are set in the POST request 
@@ -60,4 +60,12 @@ class QuizAction(QuizActionInDBBase, table=True):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return f"<Action({self.student.username!r}-{self.time!r}) - blur={self.blur!r} focus={self.focus!r} copy={self.copy_!r} paste={self.paste!r} left_click={self.left_click!r} right_click={self.right_click!r} double_click={self.double_click!r}>"
+        return f"<Action({self.time!r}) - blur={self.blur!r} focus={self.focus!r} copy={self.copy_!r} paste={self.paste!r} left_click={self.left_click!r} right_click={self.right_click!r} double_click={self.double_click!r}>"
+
+class QuizActions(SQLModel):
+    student_id: int
+    student_name: str 
+    actions: List["QuizAction"]
+
+    def __repr__(self):
+        return f"<Action({self.student_id!r} - {self.student_name!r}) - {self.actions!r}>"
