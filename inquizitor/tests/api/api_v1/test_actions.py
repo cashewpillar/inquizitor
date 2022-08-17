@@ -183,7 +183,7 @@ class TestReadQuizActions:
 
         student_cookies = await student_cookies
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/actions",
+            f"/quizzes/{quiz.id}/actions",
             cookies=student_cookies,
         )
         result = r.json()
@@ -231,7 +231,7 @@ class TestReadQuizActions:
                 assert action_in_db in actions[student_in_db["student_id"]]
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/actions",
+            f"/quizzes/{quiz.id}/actions",
             cookies=superuser_cookies,
         )
         result = r.json()
@@ -262,7 +262,7 @@ class TestReadAttemptActions:
 
         student_cookies = await student_cookies
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/{student.id}/actions",
             cookies=student_cookies,
         )
         result = r.json()
@@ -290,7 +290,7 @@ class TestReadAttemptActions:
                 actions.append(action)
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/{student.id}/actions",
             cookies=teacher_cookies,
         )
         result = r.json()
@@ -299,7 +299,7 @@ class TestReadAttemptActions:
             assert action_in_db in actions
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/{student.id}/actions",
             cookies=superuser_cookies,
         )
         result = r.json()
@@ -326,7 +326,7 @@ class TestReadAttemptQuestionActions:
 
         student_cookies = await student_cookies
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/questions/{question.id}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/questions/{question.id}/{student.id}/actions",
             cookies=student_cookies,
         )
         result = r.json()
@@ -353,7 +353,7 @@ class TestReadAttemptQuestionActions:
             actions.append(action)
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/questions/{question.id}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/questions/{question.id}/{student.id}/actions",
             cookies=teacher_cookies,
         )
         result = r.json()
@@ -362,7 +362,7 @@ class TestReadAttemptQuestionActions:
             assert action_in_db in actions
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/questions/{question.id}/{student.id}/actions",
+            f"/quizzes/{quiz.id}/questions/{question.id}/{student.id}/actions",
             cookies=superuser_cookies,
         )
         result = r.json()
