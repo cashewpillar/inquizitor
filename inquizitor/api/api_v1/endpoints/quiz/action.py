@@ -97,6 +97,7 @@ async def read_attempt_actions(
     *,
     db: Session = Depends(deps.get_db),
     quiz: models.Quiz = Depends(deps.get_quiz),
+    student_id: int,
     current_author: models.User = Depends(deps.get_current_author),
 ) -> Any:
     """
@@ -120,6 +121,7 @@ async def read_attempt_question_actions(
     *,
     db: Session = Depends(deps.get_db),
     quiz: models.Quiz = Depends(deps.get_quiz),
+    student_id: int,
     question: models.QuizQuestion = Depends(deps.get_question),
     current_author: models.User = Depends(deps.get_current_author),
 ) -> Any:

@@ -23,6 +23,8 @@ class TestReadQuizzes:
         self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
     ) -> None:
         quiz = QuizFactory()
+        # override limit of 100, since quizzes are created in other tests
+        # and so far there is no mechanism implemented to refresh db
         r = await client.get("/quizzes/?limit=400", cookies=await superuser_cookies)
         result = r.json()
         assert r.status_code == 200
