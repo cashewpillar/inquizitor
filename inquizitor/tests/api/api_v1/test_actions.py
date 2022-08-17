@@ -216,7 +216,7 @@ class TestReadQuizActions:
                 )
 
         r = await client.get(
-            f"/quizzes/{quiz.quiz_code}/actions",
+            f"/quizzes/{quiz.id}/actions",
             cookies=teacher_cookies,
         )
         result = r.json()
