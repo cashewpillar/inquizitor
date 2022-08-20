@@ -53,4 +53,28 @@ class Settings(BaseSettings):
     authjwt_denylist_token_checks: set = {"access", "refresh"}
 
 
-settings = Settings()
+
+class DevelopmentSettings(Settings):
+    # can be sent through HTTP
+    authjwt_cookie_secure: bool = False
+
+
+
+class ProductionSettings(Settings):
+    # CORS
+    authjwt_cookie_samesite: str = 'none'
+    
+    # HTTPS ONLY   
+    authjwt_cookie_secure: bool = True
+
+
+
+def load_settings():
+    if os.environ.get('FASTAPI_ENV') == 'prod':
+        return ProductionSettings()
+    else:
+        return DevelopmentSettings()
+
+
+
+settings = load_settings()
