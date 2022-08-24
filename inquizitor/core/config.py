@@ -23,6 +23,8 @@ class Settings(BaseSettings):
 
     # Configure application to store and get JWT from cookies
     AUTHJWT_TOKEN_LOCATION: set = {"cookies"}
+    # Disable CSRF Protection for this example. default is True
+    authjwt_cookie_csrf_protect: bool = False
 
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", 'sqlite:///inquizitor/data.db')
 
