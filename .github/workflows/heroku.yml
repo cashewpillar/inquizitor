@@ -39,7 +39,7 @@ jobs:
           echo "SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
           SECRET_KEY=${SECRET_KEY}
           FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
-          FASTAPI_ENV=${FASTAPI_ENV}
+          FASTAPI_ENV=prod
           USE_SQLITE=0" >> .env
           echo ${HEROKU_API_KEY} | docker login \
             --username=${HEROKU_EMAIL} \

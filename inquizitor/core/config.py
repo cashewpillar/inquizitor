@@ -70,7 +70,7 @@ class ProductionSettings(Settings):
 
 
 def load_settings():
-    if os.environ.get('FASTAPI_ENV') == 'prod':
+    if os.getenv('FASTAPI_ENV') == 'prod':
         return ProductionSettings()
     else:
         return DevelopmentSettings()
