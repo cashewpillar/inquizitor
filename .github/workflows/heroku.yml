@@ -34,6 +34,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           SQLALCHEMY_DATABASE_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
           DOCKER_OPTIONS: "--no-cache --force-recreate"
         run: |
           echo "SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
