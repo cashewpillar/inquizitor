@@ -15,6 +15,59 @@ logging.basicConfig(level=logging.INFO)
 
 DT_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
+@pytest.mark.anyio
+class TestCreateQuestions:
+    async def test_create_question_superuser(
+        self, db: Session, client: AsyncClient, superuser_cookies: Dict[str, str]
+    ) -> None:
+        superuser_cookies = await superuser_cookies
+        r = await client.get("/users/profile", cookies=superuser_cookies)
+        result = r.json()
+        user = crud.user.get(db, id=result["id"])
+        quiz = QuizFactory(teacher=user, quiz_code=crud.quiz.generate_code(db))
+        question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
+        r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=superuser_cookies, json=question_in)
+        result = r.json()
+        logging.info(f"RES: {pformat(result)}")
+        assert r.status_code == 200
+        assert result["content"] == question_in["content"]
+        assert result["points"] == question_in["points"]
+        assert result["order"] == question_in["order"]
+        assert result["quiz_id"] == question_in["quiz_id"]
+        assert result["question_type"] == question_in["question_type"]
+
+    async def test_create_question_teacher(
+        self, db: Session, client: AsyncClient, teacher_cookies: Dict[str, str]
+    ) -> None:
+        teacher_cookies = await teacher_cookies
+        r = await client.get("/users/profile", cookies=teacher_cookies)
+        result = r.json()
+        user = crud.user.get(db, id=result["id"])
+        quiz = QuizFactory(teacher=user, quiz_code=crud.quiz.generate_code(db))
+        question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
+        r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=teacher_cookies, json=question_in)
+        result = r.json()
+        logging.info(f"RES: {pformat(result)}")
+        assert r.status_code == 200
+        assert result["content"] == question_in["content"]
+        assert result["points"] == question_in["points"]
+        assert result["order"] == question_in["order"]
+        assert result["quiz_id"] == question_in["quiz_id"]
+        assert result["question_type"] == question_in["question_type"]
+
+    async def test_create_question_student(
+        self, db: Session, client: AsyncClient, student_cookies: Dict[str, str]
+    ) -> None:
+        student_cookies = await student_cookies
+        r = await client.get("/users/profile", cookies=student_cookies)
+        result = r.json()
+        user = crud.user.get(db, id=result["id"])
+        quiz = QuizFactory(teacher=user, quiz_code=crud.quiz.generate_code(db))
+        question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
+        r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=student_cookies, json=question_in)
+        result = r.json()
+        logging.info(f"RES: {pformat(result)}")
+        assert r.status_code == 400
 
 @pytest.mark.anyio
 class TestReadQuestion:

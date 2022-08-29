@@ -1,11 +1,12 @@
 import datetime as dt
 import factory
 import random
+import string
 import secrets
 from factory.alchemy import SQLAlchemyModelFactory
-from typing import List, Optional, Union
-
 from fastapi.encoders import jsonable_encoder
+from pprint import pformat
+from typing import List, Optional, Union
 
 from inquizitor import models
 from inquizitor.crud.base import CreateSchemaType, ModelType, UpdateSchemaType
@@ -21,7 +22,6 @@ from inquizitor.tests import common
 
 #     class Meta:
 #         model = models.This
-
 
 class BaseFactory(SQLAlchemyModelFactory):
     """Base factory."""
@@ -46,7 +46,6 @@ class BaseFactory(SQLAlchemyModelFactory):
         cls._meta.model = cls.model
         return jsonable_encoder(x)
 
-
 # TODO for update: check new attributes
 class UserFactory(BaseFactory):
     """User factory."""
@@ -54,8 +53,8 @@ class UserFactory(BaseFactory):
     class Meta:
         model = models.User
 
-    username = factory.Faker("user_name")
-    email = factory.Faker("email")
+    username = factory.LazyAttribute(lambda a: f"{fake.user_name()}{random.randint(1,1000)}")
+    email = factory.LazyAttribute(lambda a: f"{fake.email()}{''.join(random.sample(string.ascii_lowercase, 2))}")
     full_name = factory.Faker("name")
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
@@ -67,7 +66,6 @@ class UserFactory(BaseFactory):
     model: ModelType = models.User
     create_schema: CreateSchemaType = models.UserCreate
     update_schema: UpdateSchemaType = models.UserUpdate
-
 
 class QuizFactory(BaseFactory):
     """Quiz factory."""
@@ -99,7 +97,6 @@ class QuizFactory(BaseFactory):
     create_schema: CreateSchemaType = models.QuizCreate
     update_schema: UpdateSchemaType = models.QuizUpdate
 
-
 class QuestionFactory(BaseFactory):
     """Question factory."""
 
@@ -123,7 +120,6 @@ class QuestionFactory(BaseFactory):
     create_schema: CreateSchemaType = models.QuizQuestionCreate
     update_schema: UpdateSchemaType = models.QuizQuestionUpdate
 
-
 class ChoiceFactory(BaseFactory):
     """Choice factory."""
 
@@ -142,7 +138,6 @@ class ChoiceFactory(BaseFactory):
     model: ModelType = models.QuizChoice
     create_schema: CreateSchemaType = models.QuizChoiceCreate
     update_schema: UpdateSchemaType = models.QuizChoiceUpdate
-
 
 class AttemptFactory(BaseFactory):
     """Attempt factory."""
@@ -171,7 +166,6 @@ class AttemptFactory(BaseFactory):
     model: ModelType = models.QuizAttempt
     create_schema: CreateSchemaType = models.QuizAttemptCreate
     update_schema: UpdateSchemaType = models.QuizAttemptUpdate
-
 
 class AnswerFactory(BaseFactory):
     """Answer factory."""
@@ -207,3 +201,42 @@ class AnswerFactory(BaseFactory):
     model: ModelType = models.QuizAnswer
     create_schema: CreateSchemaType = models.QuizAnswerCreate
     update_schema: UpdateSchemaType = models.QuizAnswerUpdate
+
+class ActionFactory(BaseFactory):
+    """Action factory."""
+
+    class Meta:
+        model = models.QuizAction
+
+    class Params:
+        attempt: models.QuizAttempt = factory.SubFactory(AttemptFactory)
+        question: models.QuizQuestion = factory.SubFactory(QuestionFactory)
+
+        ACTIONS: List[int] = [0,0,0,0,1,0,0]
+        random_action: list = factory.LazyAttribute(
+            lambda a: list(random.sample(a.ACTIONS, len(a.ACTIONS)))
+        )
+        # set to True when creating an object with a custom action 
+        # i.e. action = ActionFactory(custom=True, focus=1)
+        custom: bool = False 
+
+    time = factory.LazyFunction(dt.datetime.now)
+
+    blur = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    focus = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    copy_ = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    paste = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    left_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    right_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+    double_click = factory.LazyAttribute(lambda a: 0 if a.custom else a.random_action.pop())
+
+    attempt_id: int = factory.LazyAttribute(
+        lambda a: a.attempt.id if a.attempt is not None else None
+    )
+    question_id: int = factory.LazyAttribute(
+        lambda a: a.question.id if a.question is not None else None
+    )
+
+    model: ModelType = models.QuizAction
+    create_schema: CreateSchemaType = models.QuizActionCreate
+    update_schema: UpdateSchemaType = models.QuizActionUpdate

@@ -15,6 +15,7 @@ from inquizitor.db import base  # noqa: F401
 from inquizitor.models.user import UserCreate
 from inquizitor.utils import fake
 from inquizitor.tests.factories import (
+    ActionFactory,
     AnswerFactory,
     QuizFactory,
     QuestionFactory,
@@ -75,8 +76,8 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
     test_students = init_test_students(db)
     first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
 
-    for i in range(10):
-        realistic_data = list()
+    for i in range(10): # ten quizzes
+        realistic_data = []
         if use_realistic_data:
             category = random.randint(9, 32) # available range of categories, see https://opentdb.com/api_config.php
             while not realistic_data:
@@ -102,7 +103,7 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
         quiz_in = models.QuizCreate(**quiz_in)
         quiz = crud.quiz.create(db, obj_in=quiz_in)
 
-        for i in range(NUM_QUESTIONS):
+        for i in range(NUM_QUESTIONS): # use set amount of questions
             question_in = QuestionFactory.stub(
                 schema_type="create", 
                 quiz=quiz,
@@ -112,7 +113,7 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
 
             index_correct = random.randrange(0, 4)
             ALTER_FUNCTIONS = [str.upper, str.capitalize, str.lower, str.title]
-            for j in range(4):
+            for j in range(4): # four choices/ options OR accepted answers for fill-in-the-blanks
                 choice_in = ChoiceFactory.stub(
                     schema_type="create", 
                     question=question,
@@ -134,10 +135,9 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
                 choice_in['content'] = html.unescape(choice_in['content'])
                 choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
-        if quiz.id % 2 == 0:
+        if quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
             for student in test_students:
                 user = UserFactory
-                # First student accesses half the dummy quizzes
                 quiz_student_link_in = models.QuizStudentLinkCreate(
                     student_id=student.id,
                     quiz_id=quiz.id,
@@ -148,7 +148,6 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
                 link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
                 attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
 
-                # First student answers
                 for question in quiz.questions:
                     choice = random.choices(question.choices)[0]
                     answer_in = AnswerFactory.stub(
@@ -160,6 +159,13 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
                         question=question,
                     )
                     answer = crud.quiz_answer.create(db, obj_in=answer_in)
+
+                    # add a random number of input device actions
+                    for i in range(random.randint(3,15)): 
+                        action_in = ActionFactory.stub(
+                            schema_type="create", attempt=attempt, question=question
+                        )
+                        action = crud.quiz_action.create(db, obj_in=action_in)
 
 
 def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> None:

@@ -21,6 +21,10 @@ from .quiz import (
     Quiz,
     QuizCreate,
     QuizUpdate,
+    QuizAction,
+    QuizActionCreate,
+    QuizActionUpdate,
+    QuizActions,
 )
 from .token import Token, TokenPayload, RevokedToken
 from .user import User, UserCreate, UserUpdate, ShowUser

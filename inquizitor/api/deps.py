@@ -27,7 +27,7 @@ def get_current_user(
     try:
         Authorize.jwt_required()
     except JWTDecodeError as err:
-        # NOTE https://github.com/IndominusByte/fastapi-jwt-auth/issues/20
+        # https://github.com/IndominusByte/fastapi-jwt-auth/issues/20
         status_code = err.status_code
         if err.message == "Signature verification failed":
             status_code = 401
@@ -171,13 +171,13 @@ def get_current_author(
     *,
     db: Session = Depends(get_db),
     quiz: models.Quiz = Depends(get_quiz),
-    current_user: models.User = Depends(get_current_user),
+    current_teacher: models.User = Depends(get_current_teacher),
 ) -> models.User:
     if not (
-        crud.user.is_superuser(current_user)
-        or crud.quiz.is_author(db, user_id=current_user.id, quiz_index=quiz.id)
+        crud.user.is_superuser(current_teacher)
+        or crud.quiz.is_author(db, user_id=current_teacher.id, quiz_index=quiz.id)
     ):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
         )
-    return current_user
+    return current_teacher
