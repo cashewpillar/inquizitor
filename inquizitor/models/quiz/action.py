@@ -10,7 +10,9 @@ class QuizActionBase(SQLModel):
     attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
     question_id: Optional[int] = Field(foreign_key="quizquestion.id")
 
-    time: dt.datetime = Field(default=dt.datetime.now())
+    # https://stackoverflow.com/questions/70949248/sqlmodel-datetime-field-is-throwing-error-upon-execution
+    # use default_factory instead of default
+    time: dt.datetime = Field(default_factory=dt.datetime.now, nullable=False)
 
     blur: int = Field(default=0)
     focus: int = Field(default=0)
