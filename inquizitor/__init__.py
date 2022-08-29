@@ -48,8 +48,6 @@ def register_cors(app: FastAPI):
     if os.getenv('FASTAPI_ENV') == 'prod':
         origins = [
             os.getenv('FRONTEND_ORIGIN'),
-            "http://localhost:8080",
-            "http://localhost:8000",
         ]
     else:
         origins = [
