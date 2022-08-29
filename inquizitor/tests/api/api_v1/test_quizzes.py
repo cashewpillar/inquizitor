@@ -245,7 +245,7 @@ class TestReadQuiz:
         r = await client.get("/users/profile", cookies=student_cookies)
         result = r.json()
         student = crud.user.get(db, id=result["id"])
-        quiz = QuizFactory(quiz_code=crud.quiz.generate_code(db))
+        quiz = crud.quiz.get(db, id=QuizFactory().id)
         r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=student_cookies)
         assert r.status_code == 200
 

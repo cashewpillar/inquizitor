@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     # Configure application to store and get JWT from cookies
     AUTHJWT_TOKEN_LOCATION: set = {"cookies"}
     # Disable CSRF Protection for this example. default is True
-    AUTHJWT_COOKIE_CSRF_PROTECT: bool = False
+    authjwt_cookie_csrf_protect: bool = False
 
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", 'sqlite:///inquizitor/data.db')
 
@@ -53,4 +53,28 @@ class Settings(BaseSettings):
     authjwt_denylist_token_checks: set = {"access", "refresh"}
 
 
-settings = Settings()
+
+class DevelopmentSettings(Settings):
+    # can be sent through HTTP
+    authjwt_cookie_secure: bool = False
+
+
+
+class ProductionSettings(Settings):
+    # CORS
+    authjwt_cookie_samesite: str = 'none'
+    
+    # HTTPS ONLY   
+    authjwt_cookie_secure: bool = True
+
+
+
+def load_settings():
+    if os.getenv('FASTAPI_ENV') == 'prod':
+        return ProductionSettings()
+    else:
+        return DevelopmentSettings()
+
+
+
+settings = load_settings()

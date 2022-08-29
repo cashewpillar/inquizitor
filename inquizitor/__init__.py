@@ -11,6 +11,8 @@ from inquizitor.db.session import SessionLocal
 from inquizitor.core.config import settings
 from inquizitor.api.api_v1.api import api_router
 
+import os
+
 
 def register_commands():
     """Register Click commands."""
@@ -43,10 +45,18 @@ def register_fastapi_jwt_auth(app: FastAPI, db: Session):
 
 
 def register_cors(app: FastAPI):
-    origins = [
-        "http://localhost:8080",
-        "http://localhost:8000",
-    ]
+    if os.getenv('FASTAPI_ENV') == 'prod':
+        origins = [
+            os.getenv('FRONTEND_ORIGIN'),
+            "http://localhost:8080",
+            "http://localhost:8000",
+        ]
+    else:
+        origins = [
+            "http://localhost:8080",
+            "http://localhost:8000",
+        ]
+    
 
     app.add_middleware(
         CORSMiddleware,
