@@ -13,7 +13,7 @@ from fastapi_jwt_auth import AuthJWT
 from inquizitor import crud, models
 from inquizitor.api import deps
 
-router = deps.HandleTrailingSlashRouter()
+router = APIRouter()
 
 
 @router.post("/", response_model=models.QuizReadWithQuestions)

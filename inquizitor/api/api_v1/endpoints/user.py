@@ -9,7 +9,7 @@ from inquizitor import crud
 from inquizitor.api import deps
 from inquizitor.models import User, UserCreate, ShowUser, UserUpdate
 
-router = deps.HandleTrailingSlashRouter()
+router = APIRouter()
 
 
 @router.get("/", response_model=List[ShowUser])
