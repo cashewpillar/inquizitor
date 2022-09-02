@@ -31,6 +31,7 @@ async def create_quiz(
     return quiz
 
 
+@router.get("", response_model=List[models.QuizReadWithQuestions])
 @router.get("/", response_model=List[models.QuizReadWithQuestions])
 async def read_quizzes(
     db: Session = Depends(deps.get_db),
