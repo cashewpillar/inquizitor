@@ -1,10 +1,10 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from sqlmodel import Session
+# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from inquizitor import commands
 from inquizitor.models import RevokedToken
@@ -75,8 +75,9 @@ def create_app(db: Session = SessionLocal()):
     )
     # openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
-    if os.getenv('FASTAPI_ENV') == 'prod':
-        app.add_middleware(HTTPSRedirectMiddleware)
+    # ERROR too many redirects, no function to handle redirect yet
+    # if os.getenv('FASTAPI_ENV') == 'prod':
+    #     app.add_middleware(HTTPSRedirectMiddleware)
     app.include_router(api_router)
 
     register_commands()

@@ -21,7 +21,6 @@ class TestCreateAction:
     ) -> None:
         superuser_cookies = await superuser_cookies
         r = await client.get("/users/profile", cookies=superuser_cookies)
-        logging.info(f"{r}")
         result = r.json()
         user = crud.user.get(db, id=result["id"])
         attempt = AttemptFactory()
