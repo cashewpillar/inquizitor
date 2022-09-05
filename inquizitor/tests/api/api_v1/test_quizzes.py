@@ -246,7 +246,7 @@ class TestReadQuiz:
         result = r.json()
         student = crud.user.get(db, id=result["id"])
         quiz = crud.quiz.get(db, id=QuizFactory().id)
-        r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=student_cookies)
+        r = await client.get(f"/quizzes/{quiz.id}", cookies=student_cookies)
         assert r.status_code == 200
 
         attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(

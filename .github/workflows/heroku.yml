@@ -53,3 +53,4 @@ jobs:
           heroku container:release web --app ${HEROKU_APP_NAME}
           heroku ps:scale web=1 --app ${HEROKU_APP_NAME}
           heroku run python main.py initial-data --use-realistic-data=1 --app ${HEROKU_APP_NAME}
+          heroku run python main.py add-exam mock-exam.txt --app ${HEROKU_APP_NAME}
