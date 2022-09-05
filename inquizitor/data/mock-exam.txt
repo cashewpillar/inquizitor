@@ -1,3 +1,6 @@
+Name: Mock Examination
+Desc: Information Technology
+
 1. At which OSI layer does the router work?
 a. Transport b. Physical c. Data Link
 Correct Answer: Network
@@ -38,18 +41,18 @@ Correct Answer: Automated vehicles will be developed.
 a. transistors, vacuum tubes, integrated circuits, personal computers, microprocessors b. integrated circuits, microprocessors, vacuum tubes, transistors, personal computers d. microprocessors, vacuum tubes, transistors, personal computers, integrated circuits
 Correct Answer: vacuum tubes, transistors, integrated circuits, microprocessors, personal computers
 
-11. A smart refrigerator can use _ to detect when you are running low on milk, and then
+11. A smart refrigerator can use _____________ to detect when you are running low on milk, and then
 send a reminder to you on a wireless network
 Answer: Sensors 
 
-12. The _ layer encapsulates the segment into packets? 
+12. The _________ layer encapsulates the segment into packets? 
 Answer: Network 
 
-13. Octal 6774 is equivalent to the binary value _
+13. Octal 6774 is equivalent to the binary value ____________
 Answer: 110111111100 
 
-14.ARPANET stands for _ 
+14.ARPANET stands for _______________________
 Answer: Advanced Research Projects Agency Network 
 
-15. C, C++, and Java can be classified as _ languages. 
+15. C, C++, and Java can be classified as __________ languages. 
 Answer: High-level

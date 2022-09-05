@@ -28,7 +28,6 @@ class TestCreateQuestions:
         question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
         r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=superuser_cookies, json=question_in)
         result = r.json()
-        logging.info(f"RES: {pformat(result)}")
         assert r.status_code == 200
         assert result["content"] == question_in["content"]
         assert result["points"] == question_in["points"]
@@ -47,7 +46,6 @@ class TestCreateQuestions:
         question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
         r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=teacher_cookies, json=question_in)
         result = r.json()
-        logging.info(f"RES: {pformat(result)}")
         assert r.status_code == 200
         assert result["content"] == question_in["content"]
         assert result["points"] == question_in["points"]
@@ -66,7 +64,6 @@ class TestCreateQuestions:
         question_in = QuestionFactory.stub(schema_type="create", quiz=quiz)
         r = await client.post(f"/quizzes/{quiz.quiz_code}/questions", cookies=student_cookies, json=question_in)
         result = r.json()
-        logging.info(f"RES: {pformat(result)}")
         assert r.status_code == 400
 
 @pytest.mark.anyio
