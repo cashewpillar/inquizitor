@@ -34,8 +34,14 @@ def initial_data(use_realistic_data: bool) -> None:
     logger.info("Initial data created")
 
 @click.command()
+@click.option(
+    '--generate-attempts', 
+    prompt='Would you like your quiz to initially have randomly generated attempts?',
+    default=False,
+    type=bool
+)
 @click.argument('filename')
-def add_exam(filename):
+def add_exam(filename: str, generate_attempts: bool):
     """
         Reads the data folder for default exams and adds them to the database 
     """
