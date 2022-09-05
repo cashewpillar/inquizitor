@@ -41,8 +41,7 @@ Correct Answer: Automated vehicles will be developed.
 a. transistors, vacuum tubes, integrated circuits, personal computers, microprocessors b. integrated circuits, microprocessors, vacuum tubes, transistors, personal computers d. microprocessors, vacuum tubes, transistors, personal computers, integrated circuits
 Correct Answer: vacuum tubes, transistors, integrated circuits, microprocessors, personal computers
 
-11. A smart refrigerator can use _____________ to detect when you are running low on milk, and then
-send a reminder to you on a wireless network
+11. A smart refrigerator can use _____________ to detect when you are running low on milk, and then send a reminder to you on a wireless network
 Answer: Sensors 
 
 12. The _________ layer encapsulates the segment into packets? 
