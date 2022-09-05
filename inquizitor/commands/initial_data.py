@@ -1,5 +1,7 @@
 import click
 import logging
+import re
+from pprint import pprint
 
 from inquizitor.db.session import engine, SessionLocal
 from inquizitor.db.init_db import init_db, drop_db
@@ -19,6 +21,10 @@ def init(use_realistic_data: bool = False) -> None:
     type=bool
 )
 def initial_data(use_realistic_data: bool) -> None:
+    """
+        Create initial data for the Quiz API.
+        WARNING: This deletes existing data and should ideally be ran only once, during initial launch of the API.
+    """
     print()
     logger.info("Dropping tables")
     drop_db(engine)
@@ -28,5 +34,31 @@ def initial_data(use_realistic_data: bool) -> None:
     logger.info("Initial data created")
 
 @click.command()
-def test():
-    click.echo("hello world!")
+@click.argument('filename')
+def add_exam(filename):
+    """
+        Reads the data folder for default exams and adds them to the database 
+    """
+    QUESTION_REGEX = re.compile(r'(\d+\.) ?(.*)')
+    BLANKS_ANSWER_REGEX = re.compile(r'(Answer:) ?(.+)')
+    CHOICES_CORRECT_ANSWER_REGEX = re.compile(r'(Correct Answer:) ?(.+)')
+    json_data = {"items": []}
+    if filename.endswith('.txt'):
+        with open(f"inquizitor/data/{filename}", 'r') as f:
+            text_data = f.readlines()
+            for line in text_data:
+                question_match = QUESTION_REGEX.search(line)
+                blanks_answer_match = BLANKS_ANSWER_REGEX.search(line)
+                choices_answer_match = re.split(r'\b[a-dA-D]\. ', line)[1:]
+                choices_correct_answer_match = CHOICES_CORRECT_ANSWER_REGEX.search(line)
+                
+                if question_match:
+                    json_data['items'].append({"question": question_match.group(2).strip().capitalize()})
+                elif choices_answer_match:
+                    json_data['items'][-1]["incorrect_answers"] = [c.strip().capitalize() for c in choices_answer_match]
+                    json_data['items'][-1]["question_type"] = "choice"
+                elif choices_correct_answer_match:
+                    json_data['items'][-1]["correct_answer"] = choices_correct_answer_match.group(2).strip().capitalize()
+                elif blanks_answer_match:
+                    json_data['items'][-1]["correct_answer"] = blanks_answer_match.group(2).strip().capitalize()
+                    json_data['items'][-1]["question_type"] = "blank"

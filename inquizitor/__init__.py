@@ -18,7 +18,7 @@ import os
 def register_commands():
     """Register Click commands."""
     commands.cli.add_command(commands.initial_data)
-    commands.cli.add_command(commands.test)
+    commands.cli.add_command(commands.add_exam)
 
 
 def register_fastapi_jwt_auth(app: FastAPI, db: Session):

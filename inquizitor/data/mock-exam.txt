@@ -1,0 +1,55 @@
+1. At which OSI layer does the router work?
+a. Transport b. Physical c. Data Link
+Correct Answer: Network
+
+2. Graydon Hoare created a programming language that is syntactically similar to what programming language?
+b. Java c. Haskell d. Swift
+Correct Answer: C++ 
+
+3. What technology can collect information to make decisions, reach conclusions, and combine information in new ways?
+a. virtual reality (VR) b. embedded computers d. robotics
+Correct Answer: artificial intelligence (AI)
+
+4. On the following statements, which is one of the functions of encapsulation?
+b. tracks delay between end devices c. enables consistent network paths for communication d. allows modification of the original data before transmission
+Correct Answer: ensures that data pieces can be directed to the correct receiving end device
+
+5. The hexadecimal 5D6 is equal to which binary??
+a. 10011010110 b. 11101010110 d. 10110010110
+Correct Answer: 10111010110
+
+6. How do delivery companies track packages?
+b. They use GPS. C. They use a learning management system. d. They use robotic arms to load packages.
+Correct Answer: They use code-scanning technology.
+
+7. During the encapsulation process, what occurs at the data link layer?
+a. No address is added. b. The logical address is added. d. The process port number is added.
+Correct Answer: The physical address is added 
+
+8. What is the primary purpose of Layer 4 port assignment?
+a. to identify devices on the local media b. to identify the hops between source and destination c. to identify to the intermediary devices the best path through the network
+Correct Answer: to identify the processes or services that are communicating within the end devices
+
+9. How will technology help people with disabilities become more transportation independent?
+a. Drones will deliver their packages. b. Scan codes can be used to track where a person is. c. GPS can be used to navigate traffic patterns.
+Correct Answer: Automated vehicles will be developed.
+
+10. Which option lists the computer components in order from oldest to newest?
+a. transistors, vacuum tubes, integrated circuits, personal computers, microprocessors b. integrated circuits, microprocessors, vacuum tubes, transistors, personal computers d. microprocessors, vacuum tubes, transistors, personal computers, integrated circuits
+Correct Answer: vacuum tubes, transistors, integrated circuits, microprocessors, personal computers
+
+11. A smart refrigerator can use _ to detect when you are running low on milk, and then
+send a reminder to you on a wireless network
+Answer: Sensors 
+
+12. The _ layer encapsulates the segment into packets? 
+Answer: Network 
+
+13. Octal 6774 is equivalent to the binary value _
+Answer: 110111111100 
+
+14.ARPANET stands for _ 
+Answer: Advanced Research Projects Agency Network 
+
+15. C, C++, and Java can be classified as _ languages. 
+Answer: High-level

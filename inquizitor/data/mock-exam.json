@@ -1,0 +1,47 @@
+{
+    "items": [
+        {
+            "question": "At which OSI layer does the router work?",
+            "question_type": "choice",
+            "correct_answer": "Network",
+            "incorrect_answers": ["Transport", "Physical", "Data Link"]
+        },
+        {
+            "question": "Graydon Hoare created a programming language that is syntactically similar to what programming language?",
+            "question_type": "choice",
+            "correct_answer": "C++",
+            "incorrect_answers": ["Java", "Haskell", "Swift"]
+        },
+        {
+            "question": "What technology can collect information to make decisions, reach conclusions, and combine information in new ways?",
+            "question_type": "choice",
+            "correct_answer": "artificial intelligence (AI)",
+            "incorrect_answers": ["virtual reality (VR)", "embedded computers", "robotics"]
+        },
+        {
+            "question": "On the following statements, which is one of the functions of encapsulation?",
+            "question_type": "choice",
+            "correct_answer": "ensures that data pieces can be directed to the correct receiving end device",
+            "incorrect_answers": ["tracks delay between end devices", "enables consistent network paths for communication", "allows modification of the original data before transmission"]
+        },
+        {
+            "question": "The hexadecimal 5D6 is equal to which binary?",
+            "question_type": "choice",
+            "correct_answer": "10111010110",
+            "incorrect_answers": ["10011010110", "11101010110", "10110010110"]
+        },
+        {
+            "question": "",
+            "question_type": "choice",
+            "correct_answer": "",
+            "incorrect_answers": ["", "", ""]
+        },
+        {
+            "question": "",
+            "question_type": "choice",
+            "correct_answer": "",
+            "incorrect_answers": ["", "", ""]
+        },
+    ]
+}
+
