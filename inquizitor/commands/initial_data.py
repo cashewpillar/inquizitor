@@ -4,13 +4,13 @@ import re
 from pprint import pprint
 
 from inquizitor.db.session import engine, SessionLocal
-from inquizitor.db.init_db import init_db, drop_db
+from inquizitor.db.init_db import init_db, drop_db, add_quiz
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+db = SessionLocal()
 
 def init(use_realistic_data: bool = False) -> None:
-    db = SessionLocal()
     init_db(db, engine, use_realistic_data=use_realistic_data)
 
 @click.command()
@@ -39,6 +39,8 @@ def add_exam(filename):
     """
         Reads the data folder for default exams and adds them to the database 
     """
+    # NOTE: another regex can be built to validate input to follow the same structure as the sample mock exam txt
+    # NOTE: might best be placed on a utils module within project
     QUESTION_REGEX = re.compile(r'(\d+\.) ?(.*)')
     BLANKS_ANSWER_REGEX = re.compile(r'(Answer:) ?(.+)')
     CHOICES_CORRECT_ANSWER_REGEX = re.compile(r'(Correct Answer:) ?(.+)')
@@ -46,19 +48,23 @@ def add_exam(filename):
     if filename.endswith('.txt'):
         with open(f"inquizitor/data/{filename}", 'r') as f:
             text_data = f.readlines()
+            logger.info("Adding quiz items...")
             for line in text_data:
                 question_match = QUESTION_REGEX.search(line)
                 blanks_answer_match = BLANKS_ANSWER_REGEX.search(line)
                 choices_answer_match = re.split(r'\b[a-dA-D]\. ', line)[1:]
                 choices_correct_answer_match = CHOICES_CORRECT_ANSWER_REGEX.search(line)
-                
+
                 if question_match:
                     json_data['items'].append({"question": question_match.group(2).strip().capitalize()})
                 elif choices_answer_match:
                     json_data['items'][-1]["incorrect_answers"] = [c.strip().capitalize() for c in choices_answer_match]
-                    json_data['items'][-1]["question_type"] = "choice"
+                    json_data['items'][-1]["question_type"] = "multiple-choice"
                 elif choices_correct_answer_match:
                     json_data['items'][-1]["correct_answer"] = choices_correct_answer_match.group(2).strip().capitalize()
                 elif blanks_answer_match:
                     json_data['items'][-1]["correct_answer"] = blanks_answer_match.group(2).strip().capitalize()
-                    json_data['items'][-1]["question_type"] = "blank"
+                    json_data['items'][-1]["question_type"] = "fill-in-the-blank"
+    
+        add_quiz(db, json_data)
+        logger.info("Quiz added successfully!")

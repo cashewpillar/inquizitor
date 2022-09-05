@@ -1,4 +1,5 @@
 import html
+import json
 import logging
 import random
 import requests
@@ -166,6 +167,48 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
                             schema_type="create", attempt=attempt, question=question
                         )
                         action = crud.quiz_action.create(db, obj_in=action_in)
+
+def add_quiz(db: Session, dict_quiz: dict) -> None:
+    assert type(dict_quiz) == dict
+    first_superuser = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
+
+    quiz_in = QuizFactory.stub(
+        schema_type="create",
+        name=dict_quiz.setdefault('name', ''),
+        desc=dict_quiz.setdefault('desc', ''),
+        number_of_questions=len(dict_quiz['items']),
+        teacher_id=first_superuser.id,
+    )
+    quiz_in = models.QuizCreate(**quiz_in)
+    quiz = crud.quiz.create(db, obj_in=quiz_in)
+    for i, item in enumerate(dict_quiz['items']):
+        question_in = QuestionFactory.stub(
+            schema_type="create", 
+            content=item['question'],
+            points=1,
+            order=i,
+            quiz_id=quiz.id,
+            question_type=item['question_type']
+        )
+        question = crud.quiz_question.create(db, obj_in=question_in)
+
+        if question.question_type == models.QuestionType.blank:
+            choice_in = ChoiceFactory.stub(
+                schema_type="create", 
+                content=item['correct_answer'],
+                is_correct=True,
+                question_id=question.id,
+            )
+            crud.quiz_choice.create(db, obj_in=choice_in)
+        elif question.question_type == models.QuestionType.choice:
+            for j, choice in enumerate([item['correct_answer'],] + item['incorrect_answers']):
+                choice_in = ChoiceFactory.stub(
+                    schema_type="create", 
+                    content=choice,
+                    is_correct=True if j == 0 else False,
+                    question_id=question.id,
+                )
+                crud.quiz_choice.create(db, obj_in=choice_in)
 
 
 def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> None:
