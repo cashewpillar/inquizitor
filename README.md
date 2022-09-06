@@ -7,6 +7,7 @@
    - Make sure the virtual environment is activated before running the next commands within the project folder
 4. Install project dependencies: `poetry install`
 5. Initialize database: `python main.py initial-data`
+   - If there is an error when generating using realistic data, simply retry the command. Should the error persist, please open an issue. 
 6. Run the app: `uvicorn main:app --reload`
 
 <br>

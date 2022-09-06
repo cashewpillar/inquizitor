@@ -34,8 +34,14 @@ def initial_data(use_realistic_data: bool) -> None:
     logger.info("Initial data created")
 
 @click.command()
+@click.option(
+    '--has-attempts', 
+    prompt='Would you like your quiz to initially have randomly generated attempts?',
+    default=False,
+    type=bool
+)
 @click.argument('filename')
-def add_exam(filename):
+def add_exam(filename: str, has_attempts: bool):
     """
         Reads the data folder for default exams and adds them to the database 
     """
@@ -51,6 +57,7 @@ def add_exam(filename):
     if filename.endswith('.txt'):
         with open(f"inquizitor/data/{filename}", 'r') as f:
             text_data = f.readlines()
+            print()
             logger.info("Adding quiz items...")
             for line in text_data:
                 question_match = QUESTION_REGEX.search(line)
@@ -75,5 +82,8 @@ def add_exam(filename):
                     json_data['items'][-1]["correct_answer"] = blanks_answer_match.group(2).strip()
                     json_data['items'][-1]["question_type"] = "fill-in-the-blank"
     
-        add_quiz(db, json_data)
+        if has_attempts:
+            logger.info("Generating attempts...")
+
+        add_quiz(db, json_data, has_attempts)
         logger.info("Quiz added successfully!")

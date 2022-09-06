@@ -1,17 +1,12 @@
 import html
-import json
 import logging
 import random
 import requests
-from pprint import pformat
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 from sqlalchemy.engine import Engine
-from sqlmodel import SQLModel
-from fastapi.encoders import jsonable_encoder
 
 from inquizitor import crud, models
 from inquizitor.core.config import settings
-from inquizitor.core.security import get_password_hash
 from inquizitor.db import base  # noqa: F401
 from inquizitor.models.user import UserCreate
 from inquizitor.utils import fake
@@ -28,8 +23,23 @@ from inquizitor.tests.factories import (
 # otherwise, SQL Alchemy might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
-
 def init_users(db: Session) -> None:
+    superuser = crud.user.get_by_username(
+        db, username=settings.FIRST_SUPERUSER_USERNAME
+    )
+    if not superuser:
+        user_in = UserCreate(
+            username=settings.FIRST_SUPERUSER_USERNAME,
+            email=settings.FIRST_SUPERUSER_EMAIL,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            last_name=settings.FIRST_SUPERUSER_LASTNAME,
+            first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
+            is_superuser=True,
+            is_teacher=True,
+            is_student=False,
+        )
+        superuser = crud.user.create(db, obj_in=user_in)  # noqa: F841
+    
     first_student = crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL)
     if not first_student:
         user_in = UserCreate(
@@ -58,8 +68,8 @@ def init_users(db: Session) -> None:
         )
         first_teacher = crud.user.create(db, obj_in=user_in)  # noqa: F841
 
-
 def init_test_students(db: Session):
+    global test_students
     test_students = [
         crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL),
     ]
@@ -71,10 +81,55 @@ def init_test_students(db: Session):
 
     return test_students
 
+def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> None:
+    # Tables should be created with Alembic migrations
+    # But if you don't want to use migrations, create
+    # the tables un-commenting the next line
+    SQLModel.metadata.create_all(bind=engine)
 
-def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
+    # Example: init_db(db = SessionLocal(), engine)
+
+    init_users(db)
+    generate_quizzes(db, use_realistic_data=use_realistic_data)
+
+def drop_db(engine: Engine) -> None:
+    SQLModel.metadata.drop_all(bind=engine)
+
+def generate_attempts(db: Session, quiz: models.Quiz):
+    init_test_students(db)
+    for student in test_students:
+        quiz_student_link_in = models.QuizStudentLinkCreate(
+            student_id=student.id,
+            quiz_id=quiz.id,
+        )
+        quiz_attempt_in = models.QuizAttemptCreate(
+            student_id=student.id, quiz_id=quiz.id, is_done=True
+        )
+        link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
+        attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
+
+        for question in quiz.questions:
+            choice = random.choices(question.choices)[0]
+            answer_in = AnswerFactory.stub(
+                schema_type="create",
+                content=choice.content,
+                student=student,
+                choice=choice,
+                attempt=attempt,
+                question=question,
+            )
+            answer = crud.quiz_answer.create(db, obj_in=answer_in)
+
+            # add a random number of input device actions
+            for i in range(random.randint(3,15)): 
+                action_in = ActionFactory.stub(
+                    schema_type="create", attempt=attempt, question=question
+                )
+                action = crud.quiz_action.create(db, obj_in=action_in)
+
+def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
     NUM_QUESTIONS = 5
-    test_students = init_test_students(db)
+    # test_students = init_test_students(db)
     first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
 
     for i in range(10): # ten quizzes
@@ -137,38 +192,9 @@ def dummy_quiz(db: Session, use_realistic_data: bool = False) -> None:
                 choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
         if quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
-            for student in test_students:
-                user = UserFactory
-                quiz_student_link_in = models.QuizStudentLinkCreate(
-                    student_id=student.id,
-                    quiz_id=quiz.id,
-                )
-                quiz_attempt_in = models.QuizAttemptCreate(
-                    student_id=student.id, quiz_id=quiz.id, is_done=True
-                )
-                link = crud.quiz_student_link.create(db, obj_in=quiz_student_link_in)
-                attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
+            generate_attempts(db, quiz)
 
-                for question in quiz.questions:
-                    choice = random.choices(question.choices)[0]
-                    answer_in = AnswerFactory.stub(
-                        schema_type="create",
-                        content=choice.content,
-                        student=student,
-                        choice=choice,
-                        attempt=attempt,
-                        question=question,
-                    )
-                    answer = crud.quiz_answer.create(db, obj_in=answer_in)
-
-                    # add a random number of input device actions
-                    for i in range(random.randint(3,15)): 
-                        action_in = ActionFactory.stub(
-                            schema_type="create", attempt=attempt, question=question
-                        )
-                        action = crud.quiz_action.create(db, obj_in=action_in)
-
-def add_quiz(db: Session, dict_quiz: dict) -> None:
+def add_quiz(db: Session, dict_quiz: dict, has_attempts: bool = False) -> None:
     assert type(dict_quiz) == dict
     first_superuser = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
 
@@ -210,34 +236,5 @@ def add_quiz(db: Session, dict_quiz: dict) -> None:
                 )
                 crud.quiz_choice.create(db, obj_in=choice_in)
 
-
-def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> None:
-    # Tables should be created with Alembic migrations
-    # But if you don't want to use migrations, create
-    # the tables un-commenting the next line
-    SQLModel.metadata.create_all(bind=engine)
-
-    # Example: init_db(db = SessionLocal(), engine)
-
-    superuser = crud.user.get_by_username(
-        db, username=settings.FIRST_SUPERUSER_USERNAME
-    )
-    if not superuser:
-        user_in = UserCreate(
-            username=settings.FIRST_SUPERUSER_USERNAME,
-            email=settings.FIRST_SUPERUSER_EMAIL,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
-            last_name=settings.FIRST_SUPERUSER_LASTNAME,
-            first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
-            is_superuser=True,
-            is_teacher=True,
-            is_student=False,
-        )
-        superuser = crud.user.create(db, obj_in=user_in)  # noqa: F841
-
-    init_users(db)
-    dummy_quiz(db, use_realistic_data=use_realistic_data)
-
-
-def drop_db(engine: Engine) -> None:
-    SQLModel.metadata.drop_all(bind=engine)
+    if has_attempts:
+        generate_attempts(db, quiz)
