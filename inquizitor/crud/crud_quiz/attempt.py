@@ -59,6 +59,7 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
 
     def get_multi_latest_by_quiz_id(self, db: Session, *, id: int) -> List[QuizAttempt]:
         """Read all latest student attempts on a given quiz"""
+        unique_student_ids = []
         unique_attempts = []
         attempts = (
             db.query(QuizAttempt)
@@ -66,9 +67,9 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
             .order_by(QuizAttempt.id.desc())
             .all()
         )
-        unique_student_ids = [attempt.student_id for attempt in unique_attempts]
         for attempt in attempts:
             if attempt.student_id not in unique_student_ids:
+                unique_student_ids.append(attempt.student_id)
                 unique_attempts.append(attempt)
 
         return unique_attempts

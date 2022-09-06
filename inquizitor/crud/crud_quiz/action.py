@@ -4,15 +4,6 @@ from inquizitor.crud.base import CRUDBase
 from inquizitor.models import QuizAttempt, QuizAction, QuizActionCreate, QuizActionUpdate
 
 class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
-    """
-    Reporting Scenarios:
-    - [x] Reports > Quiz > Aggregate Latest Attempt Actions By Student == get_per_student_summary_by_quiz
-    - [ ] Reports > Quiz > Aggregate Student's Latest Attempt Actions By Question
-    Detection Scenarios:
-    - [x] Attempt Log == get_multi_by_attempt
-    - [x] Attempt's Question Log == get_multi_by_question_attempt
-    """
-
     def update(self, db: Session, *, db_obj: QuizAction, obj_in: Union[QuizActionUpdate, Dict[str, Any]]) -> None:
         raise Exception('QuizAction does not allow updating of records')
 

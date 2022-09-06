@@ -162,6 +162,7 @@ def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
         for i in range(NUM_QUESTIONS): # use set amount of questions
             question_in = QuestionFactory.stub(
                 schema_type="create", 
+                points=1,
                 quiz=quiz,
             )
             question_in['content'] = html.unescape(realistic_data[i]['question']) if use_realistic_data else question_in['content']
