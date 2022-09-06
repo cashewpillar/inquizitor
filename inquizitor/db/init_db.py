@@ -2,9 +2,8 @@ import html
 import logging
 import random
 import requests
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 from sqlalchemy.engine import Engine
-from sqlmodel import SQLModel
 
 from inquizitor import crud, models
 from inquizitor.core.config import settings
@@ -25,6 +24,22 @@ from inquizitor.tests.factories import (
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
 def init_users(db: Session) -> None:
+    superuser = crud.user.get_by_username(
+        db, username=settings.FIRST_SUPERUSER_USERNAME
+    )
+    if not superuser:
+        user_in = UserCreate(
+            username=settings.FIRST_SUPERUSER_USERNAME,
+            email=settings.FIRST_SUPERUSER_EMAIL,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            last_name=settings.FIRST_SUPERUSER_LASTNAME,
+            first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
+            is_superuser=True,
+            is_teacher=True,
+            is_student=False,
+        )
+        superuser = crud.user.create(db, obj_in=user_in)  # noqa: F841
+    
     first_student = crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL)
     if not first_student:
         user_in = UserCreate(
@@ -73,22 +88,6 @@ def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> No
     SQLModel.metadata.create_all(bind=engine)
 
     # Example: init_db(db = SessionLocal(), engine)
-
-    superuser = crud.user.get_by_username(
-        db, username=settings.FIRST_SUPERUSER_USERNAME
-    )
-    if not superuser:
-        user_in = UserCreate(
-            username=settings.FIRST_SUPERUSER_USERNAME,
-            email=settings.FIRST_SUPERUSER_EMAIL,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
-            last_name=settings.FIRST_SUPERUSER_LASTNAME,
-            first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
-            is_superuser=True,
-            is_teacher=True,
-            is_student=False,
-        )
-        superuser = crud.user.create(db, obj_in=user_in)  # noqa: F841
 
     init_users(db)
     generate_quizzes(db, use_realistic_data=use_realistic_data)
@@ -195,7 +194,7 @@ def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
         if quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
             generate_attempts(db, quiz)
 
-def add_quiz(db: Session, dict_quiz: dict) -> None:
+def add_quiz(db: Session, dict_quiz: dict, has_attempts: bool = False) -> None:
     assert type(dict_quiz) == dict
     first_superuser = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
 
@@ -236,3 +235,6 @@ def add_quiz(db: Session, dict_quiz: dict) -> None:
                     question_id=question.id,
                 )
                 crud.quiz_choice.create(db, obj_in=choice_in)
+
+    if has_attempts:
+        generate_attempts(db, quiz)
