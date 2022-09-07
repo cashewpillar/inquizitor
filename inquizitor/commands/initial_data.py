@@ -1,7 +1,6 @@
 import click
 import logging
 import re
-import pprint
 
 from inquizitor.db.session import engine, SessionLocal
 from inquizitor.db.init_db import init_db, drop_db, add_quiz
