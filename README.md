@@ -22,6 +22,11 @@
 
 - Reset database: `python main.py initial-data`
 - Run tests: `pytest`
+- Create an account: `python main.py create-account [OPTIONS] EMAIL LAST_NAME FIRST_NAME`
+    - where `[OPTIONS]` include username, password, is-student, is-teacher, is-admin
+    - example: `python main.py create-account --is-teacher=True test@tests.com jose rizal` 
+- Create accounts from CSV file: `python main.py create-accounts FILEPATH`
+   - example: `python main.py create-accounts inquizitor\data\accounts.csv`
 - Use [Black Playground](https://black.vercel.app/) to check if code snippet conforms to PEP8
 - View SQLite database using [sqlitebrowser](https://sqlitebrowser.org/dl/) , otherwise use pgadmin
   - if using SQLite, run the installed sqlitebrowser

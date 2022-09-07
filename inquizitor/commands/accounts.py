@@ -1,4 +1,5 @@
 import email
+from importlib.metadata import requires
 import click
 import csv
 import logging
@@ -16,10 +17,15 @@ logger = logging.getLogger(__name__)
 @click.argument('email')
 @click.argument('last_name')
 @click.argument('first_name')
+@click.option('--username', default=None, type=str)
+@click.option('--password', default=None, type=str)
+@click.option('--is-student', default=False, type=bool)
+@click.option('--is-teacher', default=False, type=bool)
+@click.option('--is-admin', default=False, type=bool)
 def create_account(
-    email: str, last_name: str, first_name: str, 
-    is_student: bool = True, is_teacher: bool = False, is_admin: bool = False,
-    password: str = None
+    email: str, last_name: str, first_name: str,
+    username: str, password: str,
+    is_student: bool, is_teacher: bool, is_admin: bool,
 ) -> None:
     """
         Create a student account with the provided details, 
@@ -28,7 +34,7 @@ def create_account(
     """
     last_name = last_name.capitalize()
     first_name = first_name.capitalize()
-    username = f'{last_name}{"".join([w[0] for w in first_name])}'.lower()
+    username = username or f'{last_name}{"".join([w[0] for w in first_name])}'.lower()
     user_in = models.UserCreate(
         username=username,
         email=email,
@@ -42,6 +48,7 @@ def create_account(
     )
     try:
         user = crud.user.create(db, obj_in=user_in)
+        logger.info(f"Account {username} successfully created!")
         return 1
     except:
         logger.info(f"Account with email {email} or username {username} already exists!")
@@ -54,12 +61,7 @@ def create_account(
 @click.argument('heroku_app', required=False)
 def create_accounts(filepath: str, heroku_app: Optional[str] = None):
     """
-        This creates accounts by reading from a csv file.
-    
-        # TESTING AN OPTION
-        # This command should only be called from local. 
-        # And only for the purposes of generating accounts in a 
-        # production setting.
+        Create accounts from a csv file.
     """
     if not filepath.endswith('.csv'):
         logger.info('File should be in CSV')
@@ -89,3 +91,29 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
 
     logger.info(f'Successfully created {total_accounts} accounts!')
                 
+@click.command()
+@click.argument('email')
+@click.argument('password', required=False)
+def reset_password(email: str, password: str = None) -> None:
+    """
+        Reset password to a randomly generated code if password is not supplied.
+    """
+    pass
+    # username = f'{last_name}{"".join([w[0] for w in first_name])}'.lower()
+    # user_in = models.UserCreate(
+    #     username=username,
+    #     email=email,
+    #     full_name=f'{last_name}, {first_name}',
+    #     last_name=last_name,
+    #     first_name=first_name,
+    #     is_student=is_student,
+    #     is_teacher=is_teacher,
+    #     is_admin=is_admin,
+    #     password=password or secrets.token_hex(4),
+    # )
+    # try:
+    #     user = crud.user.create(db, obj_in=user_in)
+    #     return 1
+    # except:
+    #     logger.info(f"Account with email {email} or username {username} already exists!")
+    #     return 0
