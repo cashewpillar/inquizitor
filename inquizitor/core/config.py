@@ -51,14 +51,12 @@ class Settings(BaseSettings):
     authjwt_secret_key: str = os.getenv('SECRET_KEY', 'secret')
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access", "refresh"}
-
-
+    
+    disable_signup: bool = False
 
 class DevelopmentSettings(Settings):
     # can be sent through HTTP
     authjwt_cookie_secure: bool = False
-
-
 
 class ProductionSettings(Settings):
     # CORS
@@ -67,11 +65,19 @@ class ProductionSettings(Settings):
     # HTTPS ONLY   
     authjwt_cookie_secure: bool = True
 
+class StagingSettings(ProductionSettings):
+    pass
 
+class DataCollectionSettings(ProductionSettings):
+    disable_signup: bool = True
 
 def load_settings():
     if os.getenv('FASTAPI_ENV') == 'prod':
         return ProductionSettings()
+    elif os.getenv('FASTAPI_ENV') == 'stage':
+        return StagingSettings()
+    elif os.getenv('FASTAPI_ENV') == 'data':
+        return DataCollectionSettings()
     else:
         return DevelopmentSettings()
 

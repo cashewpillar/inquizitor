@@ -7,6 +7,7 @@ from typing import Any, List
 
 from inquizitor import crud
 from inquizitor.api import deps
+from inquizitor.core.config import settings
 from inquizitor.models import User, UserCreate, ShowUser, UserUpdate
 
 router = APIRouter()
@@ -28,29 +29,30 @@ async def read_users(
     return users
 
 
-@router.post("/", response_model=ShowUser)
-async def create_user(
-    *,
-    db: Session = Depends(deps.get_db),
-    user_in: UserCreate,
-):
-    """
-    Create new user.
-    """
-    user = crud.user.get_by_username(db, username=user_in.username)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system.",
-        )
-    user = crud.user.get_by_email(db, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system.",
-        )
-    user = crud.user.create(db, obj_in=user_in)
-    return user
+if not settings.disable_signup:
+    @router.post("/", response_model=ShowUser)
+    async def create_user(
+        *,
+        db: Session = Depends(deps.get_db),
+        user_in: UserCreate,
+    ):
+        """
+        Create new user.
+        """
+        user = crud.user.get_by_username(db, username=user_in.username)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this username already exists in the system.",
+            )
+        user = crud.user.get_by_email(db, email=user_in.email)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system.",
+            )
+        user = crud.user.create(db, obj_in=user_in)
+        return user
 
 
 @router.get("/profile", response_model=ShowUser)
