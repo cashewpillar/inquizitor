@@ -98,22 +98,11 @@ def reset_password(email: str, password: str = None) -> None:
     """
         Reset password to a randomly generated code if password is not supplied.
     """
-    pass
-    # username = f'{last_name}{"".join([w[0] for w in first_name])}'.lower()
-    # user_in = models.UserCreate(
-    #     username=username,
-    #     email=email,
-    #     full_name=f'{last_name}, {first_name}',
-    #     last_name=last_name,
-    #     first_name=first_name,
-    #     is_student=is_student,
-    #     is_teacher=is_teacher,
-    #     is_admin=is_admin,
-    #     password=password or secrets.token_hex(4),
-    # )
-    # try:
-    #     user = crud.user.create(db, obj_in=user_in)
-    #     return 1
-    # except:
-    #     logger.info(f"Account with email {email} or username {username} already exists!")
-    #     return 0
+    user = crud.user.get_by_email(db, email=email)
+    user_in = models.UserUpdate(password=password or secrets.token_hex(4))
+
+    user = crud.user.update(db, db_obj=user, obj_in=user_in)
+    if user:
+        logger.info(f"Password of account {email} has been updated!")
+    else:
+        logger.info(f"Password reset failed.")

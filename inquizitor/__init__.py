@@ -21,6 +21,7 @@ def register_commands():
     commands.cli.add_command(commands.add_exam)
     commands.cli.add_command(commands.create_account)
     commands.cli.add_command(commands.create_accounts)
+    commands.cli.add_command(commands.reset_password)
 
 
 def register_fastapi_jwt_auth(app: FastAPI, db: Session):
