@@ -39,8 +39,13 @@ def initial_data(use_realistic_data: bool) -> None:
     default=False,
     type=bool
 )
+@click.option(
+    '--blanks-case-sensitive', 
+    default=True,
+    type=bool
+)
 @click.argument('filename')
-def add_exam(filename: str, has_attempts: bool):
+def add_exam(filename: str, has_attempts: bool, blanks_case_sensitive: bool):
     """
         Reads the data folder for default exams and adds them to the database 
     """
@@ -84,5 +89,5 @@ def add_exam(filename: str, has_attempts: bool):
         if has_attempts:
             logger.info("Generating attempts...")
 
-        add_quiz(db, json_data, has_attempts)
+        add_quiz(db, json_data, has_attempts, blanks_case_sensitive)
         logger.info("Quiz added successfully!")

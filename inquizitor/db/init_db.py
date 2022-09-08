@@ -23,6 +23,8 @@ from inquizitor.tests.factories import (
 # otherwise, SQL Alchemy might fail to initialize relationships properly
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
+ALTER_FUNCTIONS = [str.upper, str.capitalize, str.lower, str.title]
+
 def init_users(db: Session) -> None:
     superuser = crud.user.get_by_username(
         db, username=settings.FIRST_SUPERUSER_USERNAME
@@ -169,7 +171,6 @@ def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
             question = crud.quiz_question.create(db, obj_in=question_in)
 
             index_correct = random.randrange(0, 4)
-            ALTER_FUNCTIONS = [str.upper, str.capitalize, str.lower, str.title]
             for j in range(4): # four choices/ options OR accepted answers for fill-in-the-blanks
                 choice_in = ChoiceFactory.stub(
                     schema_type="create", 
@@ -195,7 +196,9 @@ def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
         if quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
             generate_attempts(db, quiz)
 
-def add_quiz(db: Session, dict_quiz: dict, has_attempts: bool = False) -> None:
+def add_quiz(
+    db: Session, dict_quiz: dict, has_attempts: bool = False, blanks_case_sensitive: bool = True
+) -> None:
     assert type(dict_quiz) == dict
     first_superuser = crud.user.get_by_email(db, email=settings.FIRST_SUPERUSER_EMAIL)
 
@@ -220,13 +223,15 @@ def add_quiz(db: Session, dict_quiz: dict, has_attempts: bool = False) -> None:
         question = crud.quiz_question.create(db, obj_in=question_in)
 
         if question.question_type == models.QuestionType.blank:
-            choice_in = ChoiceFactory.stub(
-                schema_type="create", 
-                content=item['correct_answer'],
-                is_correct=True,
-                question_id=question.id,
-            )
-            crud.quiz_choice.create(db, obj_in=choice_in)
+            answers = [item['correct_answer']] if blanks_case_sensitive else [ALTER_FUNCTIONS[i](item['correct_answer']) for i in range(len(ALTER_FUNCTIONS))]
+            for answer in answers:
+                choice_in = ChoiceFactory.stub(
+                    schema_type="create", 
+                    content=answer,
+                    is_correct=True,
+                    question_id=question.id,
+                )
+                crud.quiz_choice.create(db, obj_in=choice_in)
         elif question.question_type == models.QuestionType.choice:
             for j, choice in enumerate([item['correct_answer'],] + item['incorrect_answers']):
                 choice_in = ChoiceFactory.stub(

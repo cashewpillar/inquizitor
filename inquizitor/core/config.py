@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 	With refresh tokens and basic permission control. Use teacher:superteacher or student:superstudent to log in."""
     PROJECT_VERSION: str = "1.0.0"
     USE_SQLITE: bool = os.getenv("USE_SQLITE", 1)
+    FASTAPI_ENV: str = os.getenv("FASTAPI_ENV", 'dev')
 
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = os.getenv('SECRET_KEY', 'secret')
@@ -51,7 +52,7 @@ class Settings(BaseSettings):
     authjwt_secret_key: str = os.getenv('SECRET_KEY', 'secret')
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access", "refresh"}
-    
+
     disable_signup: bool = False
 
 class DevelopmentSettings(Settings):
