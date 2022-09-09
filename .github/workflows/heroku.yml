@@ -29,7 +29,7 @@ jobs:
       # https://dev.to/analythium/deploying-shiny-apps-to-heroku-with-docker-and-github-actions-2687
       - name: Build and push Docker to Heroku
         env:
-          HEROKU_APP_NAME: inquizitor-test
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           SQLALCHEMY_DATABASE_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
@@ -74,7 +74,7 @@ jobs:
       # https://dev.to/analythium/deploying-shiny-apps-to-heroku-with-docker-and-github-actions-2687
       - name: Build and push Docker to Heroku
         env:
-          HEROKU_APP_NAME: inquizitor-prod
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           SQLALCHEMY_DATABASE_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
