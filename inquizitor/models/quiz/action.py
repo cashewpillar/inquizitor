@@ -7,8 +7,8 @@ from typing import List, Optional
 
 class QuizActionBase(SQLModel):
     # these fields are optional because they are set in the POST request 
-    attempt_id: Optional[int] = Field(foreign_key="quizattempt.id")
-    question_id: Optional[int] = Field(foreign_key="quizquestion.id")
+    attempt_id: Optional[int] = Field(foreign_key="quizattempt.id", index=True)
+    question_id: Optional[int] = Field(foreign_key="quizquestion.id", index=True)
 
     # https://stackoverflow.com/questions/70949248/sqlmodel-datetime-field-is-throwing-error-upon-execution
     # use default_factory instead of default

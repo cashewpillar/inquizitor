@@ -12,8 +12,8 @@ from inquizitor.models.quiz.link import QuizStudentLink
 # Shared Properties
 class UserBase(SQLModel):
     username: str
-    email: Optional[EmailStr]
-    full_name: Optional[str] = Field(index=True)
+    email: Optional[EmailStr] = Field(index=True)
+    full_name: Optional[str]
     is_superuser: bool = False
     last_name: str
     first_name: str

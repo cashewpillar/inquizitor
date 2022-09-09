@@ -1,5 +1,3 @@
-import email
-from importlib.metadata import requires
 import click
 import csv
 import logging

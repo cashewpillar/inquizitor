@@ -42,10 +42,10 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
 
     def get_by_index(self, db: Session, quiz_index: Union[int, str]) -> Quiz:
         """Read quiz by quiz_code or int"""
-        if isinstance(quiz_index, str):
-            quiz = self.get_by_code(db, code=quiz_index)
-        else:
+        if isinstance(quiz_index, int) or quiz_index.isdigit():
             quiz = self.get(db, id=quiz_index)
+        else:
+            quiz = self.get_by_code(db, code=quiz_index)
         return quiz
 
     def get_multi_by_name(

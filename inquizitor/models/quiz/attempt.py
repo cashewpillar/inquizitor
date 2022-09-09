@@ -14,8 +14,8 @@ class QuizAttemptBase(SQLModel):
     recent_question_id: Optional[int] = Field(
         default=None, foreign_key="quizquestion.id"
     )
-    student_id: int = Field(foreign_key="user.id")
-    quiz_id: int = Field(foreign_key="quiz.id")
+    student_id: int = Field(foreign_key="user.id", index=True)
+    quiz_id: int = Field(foreign_key="quiz.id", index=True)
     started_at: datetime = Field(default=datetime.now())
 
 
