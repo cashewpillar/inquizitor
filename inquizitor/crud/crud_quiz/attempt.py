@@ -63,7 +63,10 @@ class CRUDQuizAttempt(CRUDBase[QuizAttempt, QuizAttemptCreate, QuizAttemptUpdate
         unique_attempts = []
         attempts = (
             db.query(QuizAttempt)
-            .filter(QuizAttempt.quiz_id == id)
+            .filter(
+                QuizAttempt.quiz_id == id,
+                QuizAttempt.is_done == True
+            )
             .order_by(QuizAttempt.id.desc())
             .all()
         )
