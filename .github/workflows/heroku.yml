@@ -13,9 +13,9 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "deploy"
-  deploy:
-    name: Build and deploy Inquizitor API
+  # This workflow contains a job called "deploy_staging"
+  deploy_staging:
+    name: [Staging] Build and deploy Inquizitor API
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -40,7 +40,7 @@ jobs:
           echo "SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
           SECRET_KEY=${SECRET_KEY}
           FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
-          FASTAPI_ENV=prod
+          FASTAPI_ENV=staging
           USE_SQLITE=0" >> .env
           echo ${HEROKU_API_KEY} | docker login \
             --username=${HEROKU_EMAIL} \
@@ -54,3 +54,46 @@ jobs:
           heroku ps:scale web=1 --app ${HEROKU_APP_NAME}
           heroku run python main.py initial-data --use-realistic-data=1 --app ${HEROKU_APP_NAME}
           heroku run python main.py add-exam mock-exam.txt --has-attempts=1 --app ${HEROKU_APP_NAME}
+
+  # This workflow contains a job called "deploy_production"
+  deploy_production:
+    name: [Production] Build and deploy Inquizitor API
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Configure job to run on the "Production" environment
+    environment: Production
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        uses: actions/checkout@v3
+
+      # Runs a set of commands using the runners shell
+      # https://dev.to/analythium/deploying-shiny-apps-to-heroku-with-docker-and-github-actions-2687
+      - name: Build and push Docker to Heroku
+        env:
+          HEROKU_APP_NAME: inquizitor-prod
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          SQLALCHEMY_DATABASE_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
+          DOCKER_OPTIONS: "--no-cache --force-recreate"
+        run: |
+          echo "SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI}
+          SECRET_KEY=${SECRET_KEY}
+          FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
+          FASTAPI_ENV=data
+          USE_SQLITE=0" >> .env
+          echo ${HEROKU_API_KEY} | docker login \
+            --username=${HEROKU_EMAIL} \
+            registry.heroku.com \
+            --password-stdin
+          docker-compose up -d --build \
+            ${DOCKER_OPTIONS} \
+            --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
+          heroku container:push web --app ${HEROKU_APP_NAME}
+          heroku container:release web --app ${HEROKU_APP_NAME}
+          heroku ps:scale web=1 --app ${HEROKU_APP_NAME}

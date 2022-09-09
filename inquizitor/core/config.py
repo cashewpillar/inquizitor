@@ -75,7 +75,7 @@ class DataCollectionSettings(ProductionSettings):
 def load_settings():
     if os.getenv('FASTAPI_ENV') == 'prod':
         return ProductionSettings()
-    elif os.getenv('FASTAPI_ENV') == 'stage':
+    elif os.getenv('FASTAPI_ENV') == 'staging':
         return StagingSettings()
     elif os.getenv('FASTAPI_ENV') == 'data':
         return DataCollectionSettings()
