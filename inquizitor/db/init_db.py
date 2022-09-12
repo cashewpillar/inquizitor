@@ -98,7 +98,6 @@ def drop_db(engine: Engine) -> None:
     SQLModel.metadata.drop_all(bind=engine)
 
 def generate_attempts(db: Session, quiz: models.Quiz):
-    init_test_students(db)
     for student in test_students:
         quiz_student_link_in = models.QuizStudentLinkCreate(
             student_id=student.id,
@@ -131,7 +130,7 @@ def generate_attempts(db: Session, quiz: models.Quiz):
 
 def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
     NUM_QUESTIONS = 5
-    # test_students = init_test_students(db)
+    init_test_students(db)
     first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
 
     for i in range(10): # ten quizzes

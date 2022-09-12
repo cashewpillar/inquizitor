@@ -32,7 +32,7 @@ def create_account(
     """
     last_name = last_name.capitalize()
     first_name = first_name.capitalize()
-    username = username or f'{last_name}{"".join([w[0] for w in first_name])}'.lower()
+    username = username or f'{last_name}{"".join(first_name.split(" "))}'.lower()
     user_in = models.UserCreate(
         username=username,
         email=email,
@@ -47,10 +47,8 @@ def create_account(
     try:
         user = crud.user.create(db, obj_in=user_in)
         logger.info(f"Account {username} successfully created!")
-        return 1
     except:
         logger.info(f"Account with email {email} or username {username} already exists!")
-        return 0
 
     # send email
 
@@ -72,6 +70,8 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
     total_accounts = 0
     with open(filepath, newline='') as csvf:
         account_reader = csv.reader(csvf)
+        output_file = open(f'{filepath.split(os.sep)[-1].split(".")[0]}-password.csv', 'w', newline='')
+        output_writer = csv.writer(output_file)
         email_index, fullname_index = None, None
         logger.info('Creating accounts...')
         for i, row in enumerate(account_reader):
@@ -83,9 +83,15 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
                     logger.info('File does not contain required headers: "Email Address" and "Full Name"')
                     return
             else:
+                password = secrets.token_hex(4)
                 last_name, first_name = row[fullname_index].split(',')
-                res = os.system(base_command % f'{row[email_index]} "{last_name}" "{first_name.strip()}"')
-                total_accounts += 0 if res == 2 else res
+                res = os.system(
+                    base_command % f'{row[email_index]} "{last_name}" "{first_name.strip()}" --password={password} --is-student=True'
+                )
+                if res == 0:
+                    output_writer.writerow([row[email_index], password])
+                total_accounts += 1 if res == 0 else 0 # 0 = success; 1 or 2 = failure
+        output_file.close()
 
     logger.info(f'Successfully created {total_accounts} accounts!')
                 
