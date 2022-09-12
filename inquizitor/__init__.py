@@ -50,7 +50,7 @@ def register_fastapi_jwt_auth(app: FastAPI, db: Session):
 
 
 def register_cors(app: FastAPI):
-    if settings.FASTAPI_ENV in ['prod', 'data']:
+    if settings.FASTAPI_ENV in ['prod', 'staging', 'data']:
         origins = [
             os.getenv('FRONTEND_ORIGIN'),
         ]
