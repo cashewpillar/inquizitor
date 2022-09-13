@@ -83,7 +83,9 @@ def init_test_students(db: Session):
 
     return test_students
 
-def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> None:
+def init_db(
+    db: Session, engine: Engine, use_realistic_data: bool = False, has_attempts: bool = True
+) -> None:
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
     # the tables un-commenting the next line
@@ -92,7 +94,7 @@ def init_db(db: Session, engine: Engine, use_realistic_data: bool = False) -> No
     # Example: init_db(db = SessionLocal(), engine)
 
     init_users(db)
-    generate_quizzes(db, use_realistic_data=use_realistic_data)
+    generate_quizzes(db, use_realistic_data=use_realistic_data, has_attempts=has_attempts)
 
 def drop_db(engine: Engine) -> None:
     SQLModel.metadata.drop_all(bind=engine)
@@ -128,7 +130,9 @@ def generate_attempts(db: Session, quiz: models.Quiz):
                 )
                 action = crud.quiz_action.create(db, obj_in=action_in)
 
-def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
+def generate_quizzes(
+    db: Session, use_realistic_data: bool = False, has_attempts: bool = True
+) -> None:
     NUM_QUESTIONS = 5
     init_test_students(db)
     first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
@@ -192,7 +196,7 @@ def generate_quizzes(db: Session, use_realistic_data: bool = False) -> None:
                 choice_in['content'] = html.unescape(choice_in['content'])
                 choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
-        if quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
+        if has_attempts and quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
             generate_attempts(db, quiz)
 
 def add_quiz(

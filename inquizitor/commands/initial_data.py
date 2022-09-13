@@ -9,9 +9,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 db = SessionLocal()
 
-def init(use_realistic_data: bool = False) -> None:
-    init_db(db, engine, use_realistic_data=use_realistic_data)
-
 @click.command()
 @click.option(
     '--use-realistic-data', 
@@ -19,7 +16,12 @@ def init(use_realistic_data: bool = False) -> None:
     default=True,
     type=bool
 )
-def initial_data(use_realistic_data: bool) -> None:
+@click.option(
+    '--has-attempts', 
+    default=True,
+    type=bool
+)
+def initial_data(use_realistic_data: bool, has_attempts: bool) -> None:
     """
         Create initial data for the Quiz API.
         WARNING: This deletes existing data and should ideally be ran only once, during initial launch of the API.
@@ -29,7 +31,7 @@ def initial_data(use_realistic_data: bool) -> None:
     drop_db(engine)
 
     logger.info("Creating initial data")
-    init(use_realistic_data=use_realistic_data)
+    init_db(db, engine, use_realistic_data=use_realistic_data, has_attempts=has_attempts)
     logger.info("Initial data created")
 
 @click.command()
