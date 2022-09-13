@@ -63,7 +63,7 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
         logger.info('File should be in CSV')
         return
 
-    base_command = f'heroku run python main.py create-student %s --app {heroku_app}'
+    base_command = f'heroku run python main.py create-account %s --app {heroku_app}'
     if not heroku_app:
         base_command = 'python main.py create-account %s'
         
@@ -89,7 +89,8 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
                     base_command % f'{row[email_index]} "{last_name}" "{first_name.strip()}" --password={password} --is-student=True'
                 )
                 if res == 0:
-                    output_writer.writerow([row[email_index], password])
+                    username = f'{last_name}{"".join(first_name.split(" "))}'.lower()
+                    output_writer.writerow([username, password])
                 total_accounts += 1 if res == 0 else 0 # 0 = success; 1 or 2 = failure
         output_file.close()
 
