@@ -72,6 +72,7 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
         account_reader = csv.reader(csvf)
         output_file = open(f'{filepath.split(os.sep)[-1].split(".")[0]}-password.csv', 'w', newline='')
         output_writer = csv.writer(output_file)
+        output_writer.writerow('USERNAME', 'PASSWORD')
         email_index, fullname_index = None, None
         logger.info('Creating accounts...')
         for i, row in enumerate(account_reader):

@@ -137,3 +137,27 @@ async def read_attempt_question_actions(
     )
 
     return actions
+
+@router.get(
+    "/{quiz_index}/{student_id}/actions-per-question",
+    response_model=Dict[int, Dict],
+)
+async def read_per_question_attempt_actions(
+    *,
+    db: Session = Depends(deps.get_db),
+    quiz: models.Quiz = Depends(deps.get_quiz),
+    student_id: int,
+    current_author: models.User = Depends(deps.get_current_author),
+) -> Any:
+    """
+    Retrieve student's actions for the given quiz, aggregated per attempt
+    """
+
+    attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
+        db, quiz_id=quiz.id, student_id=student_id
+    )
+    actions = crud.quiz_action.get_per_question_summary_by_attempt(
+        db, attempt_id=attempt.id
+    )
+
+    return actions

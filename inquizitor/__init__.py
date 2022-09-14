@@ -24,7 +24,6 @@ def register_commands():
     commands.cli.add_command(commands.reset_password)
     commands.cli.add_command(commands.invalidate_attempt)
 
-
 def register_fastapi_jwt_auth(app: FastAPI, db: Session):
     # TODO: do we test exception handlers?
     @AuthJWT.load_config
@@ -48,7 +47,6 @@ def register_fastapi_jwt_auth(app: FastAPI, db: Session):
         entry = db.query(RevokedToken).filter(RevokedToken.jti == jti).first()
         return entry
 
-
 def register_cors(app: FastAPI):
     if settings.FASTAPI_ENV in ['prod', 'staging', 'data']:
         origins = [
@@ -68,7 +66,6 @@ def register_cors(app: FastAPI):
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
 
 def create_app(db: Session = SessionLocal()):
     """App for getting training data from exams"""

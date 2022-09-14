@@ -52,8 +52,6 @@ jobs:
           heroku container:push web --app ${HEROKU_APP_NAME}
           heroku container:release web --app ${HEROKU_APP_NAME}
           heroku ps:scale web=1 --app ${HEROKU_APP_NAME}
-          heroku run python main.py initial-data --use-realistic-data=1 --app ${HEROKU_APP_NAME}
-          heroku run python main.py add-exam mock-exam.txt --has-attempts=0 --app ${HEROKU_APP_NAME}
 
   # This workflow contains a job called "deploy_production"
   deploy_production:
