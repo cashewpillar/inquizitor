@@ -94,7 +94,12 @@ class TestUpdateAnswer:
         link = crud.quiz_student_link.get_by_quiz_and_student_ids(
             db, quiz_id=quiz.id, student_id=user.id
         )
-        assert attempt.recent_question_id == question.id
+
+        question_ids = [q.id for q in quiz.questions]
+        next_question_index = question_ids.index(question.id) + 1
+        next_question_id = question_ids[next_question_index] if next_question_index < len(question_ids) else None
+
+        assert attempt.recent_question_id == next_question_id
         assert link
 
 

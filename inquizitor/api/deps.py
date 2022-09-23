@@ -175,6 +175,11 @@ def get_attempt_and_link(
     question: models.QuizQuestion = Depends(get_question),
     current_student: models.User = Depends(get_current_student),
 ) -> Tuple[models.QuizAttempt, models.QuizStudentLink]:
+
+    question_ids = [q.id for q in quiz.questions]
+    next_question_index = question_ids.index(question.id) + 1
+    next_question_id = question_ids[next_question_index] if next_question_index < len(question_ids) else None
+
     attempt = crud.quiz_attempt.get_latest_by_quiz_and_student_ids(
         db, quiz_id=quiz.id, student_id=current_student.id
     )
@@ -182,12 +187,12 @@ def get_attempt_and_link(
         quiz_attempt_in = models.QuizAttemptCreate(
             student_id=current_student.id,
             quiz_id=quiz.id,
-            recent_question_id=question.id,
+            recent_question_id=next_question_id,
         )
         attempt = crud.quiz_attempt.create(db, obj_in=quiz_attempt_in)
     else:
         attempt = crud.quiz_attempt.update(
-            db, db_obj=attempt, obj_in={"recent_question_id": question.id}
+            db, db_obj=attempt, obj_in={"recent_question_id": next_question_id}
         )
 
     link = crud.quiz_student_link.get_by_quiz_and_student_ids(
