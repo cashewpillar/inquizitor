@@ -25,15 +25,16 @@ from inquizitor.tests.factories import (
 
 ALTER_FUNCTIONS = [str.upper, str.capitalize, str.lower, str.title]
 
-def init_users(db: Session) -> None:
+def init_users(db: Session, secure_first_users: bool = False) -> None:
     superuser = crud.user.get_by_username(
         db, username=settings.FIRST_SUPERUSER_USERNAME
     )
+    SUPERPASS = settings.SUPERUSER_PASSWORD if secure_first_users else 'secret'
     if not superuser:
         user_in = UserCreate(
             username=settings.FIRST_SUPERUSER_USERNAME,
             email=settings.FIRST_SUPERUSER_EMAIL,
-            password=settings.FIRST_SUPERUSER_PASSWORD,
+            password=SUPERPASS if secure_first_users else settings.FIRST_SUPERUSER_PASSWORD,
             last_name=settings.FIRST_SUPERUSER_LASTNAME,
             first_name=settings.FIRST_SUPERUSER_FIRSTNAME,
             is_superuser=True,
@@ -47,7 +48,7 @@ def init_users(db: Session) -> None:
         user_in = UserCreate(
             username="student",
             email=settings.FIRST_STUDENT_EMAIL,
-            password=settings.FIRST_STUDENT_PASSWORD,
+            password=SUPERPASS if secure_first_users else settings.FIRST_STUDENT_PASSWORD,
             last_name=settings.FIRST_STUDENT_LASTNAME,
             first_name=settings.FIRST_STUDENT_FIRSTNAME,
             is_superuser=False,
@@ -61,7 +62,7 @@ def init_users(db: Session) -> None:
         user_in = UserCreate(
             username="teacher",
             email=settings.FIRST_TEACHER_EMAIL,
-            password=settings.FIRST_TEACHER_PASSWORD,
+            password=SUPERPASS if secure_first_users else settings.FIRST_TEACHER_PASSWORD,
             last_name=settings.FIRST_TEACHER_LASTNAME,
             first_name=settings.FIRST_TEACHER_FIRSTNAME,
             is_superuser=False,
@@ -84,7 +85,12 @@ def init_test_students(db: Session):
     return test_students
 
 def init_db(
-    db: Session, engine: Engine, use_realistic_data: bool = False, has_attempts: bool = True
+    db: Session, 
+    engine: Engine, 
+    use_realistic_data: bool = False, 
+    no_quizzes: bool = False, 
+    has_attempts: bool = True,
+    secure_first_users: bool = False
 ) -> None:
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
@@ -93,8 +99,9 @@ def init_db(
 
     # Example: init_db(db = SessionLocal(), engine)
 
-    init_users(db)
-    generate_quizzes(db, use_realistic_data=use_realistic_data, has_attempts=has_attempts)
+    init_users(db, secure_first_users=secure_first_users)
+    if not no_quizzes:
+        generate_quizzes(db, use_realistic_data=use_realistic_data, has_attempts=has_attempts)
 
 def drop_db(engine: Engine) -> None:
     SQLModel.metadata.drop_all(bind=engine)

@@ -75,6 +75,7 @@ jobs:
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
           SQLALCHEMY_DATABASE_URI: ${{ secrets.HEROKU_POSTGRES_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
@@ -84,6 +85,7 @@ jobs:
           SECRET_KEY=${SECRET_KEY}
           FRONTEND_ORIGIN=${FRONTEND_ORIGIN}
           FASTAPI_ENV=data
+          SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
           USE_SQLITE=0" >> .env
           echo ${HEROKU_API_KEY} | docker login \
             --username=${HEROKU_EMAIL} \

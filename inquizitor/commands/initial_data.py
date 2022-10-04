@@ -17,11 +17,26 @@ db = SessionLocal()
     type=bool
 )
 @click.option(
+    '--no-quizzes', 
+    default=False,
+    type=bool
+)
+@click.option(
     '--has-attempts', 
     default=True,
     type=bool
 )
-def initial_data(use_realistic_data: bool, has_attempts: bool) -> None:
+@click.option(
+    '--secure-first-users', 
+    default=False,
+    type=bool
+)
+def initial_data(
+    use_realistic_data: bool, 
+    no_quizzes: bool, 
+    has_attempts: bool,
+    secure_first_users: bool
+) -> None:
     """
         Create initial data for the Quiz API.
         WARNING: This deletes existing data and should ideally be ran only once, during initial launch of the API.
@@ -31,7 +46,14 @@ def initial_data(use_realistic_data: bool, has_attempts: bool) -> None:
     drop_db(engine)
 
     logger.info("Creating initial data")
-    init_db(db, engine, use_realistic_data=use_realistic_data, has_attempts=has_attempts)
+    init_db(
+        db, 
+        engine, 
+        use_realistic_data=use_realistic_data, 
+        no_quizzes=no_quizzes, 
+        has_attempts=has_attempts,
+        secure_first_users=secure_first_users
+    )
     logger.info("Initial data created")
 
 @click.command()

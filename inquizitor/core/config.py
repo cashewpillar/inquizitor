@@ -54,6 +54,7 @@ class Settings(BaseSettings):
     authjwt_denylist_token_checks: set = {"access", "refresh"}
 
     disable_signup: bool = False
+    SUPERUSER_PASSWORD: str = os.getenv('SUPERUSER_PASSWORD', 'secret')
 
 class DevelopmentSettings(Settings):
     # can be sent through HTTP
