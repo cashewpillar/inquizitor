@@ -437,11 +437,6 @@ class TestReadPerQuestionAttemptActionsFilterByCheating:
         )
         result = r.json()
         assert r.status_code == 200
-        # logging.info(f"""
-        # {pformat(result)}
-        # =================================
-        # {pformat(attempts_with_actions)}\n\n
-        # """)
         assert result == attempts_with_actions
         
         r = await client.get(
