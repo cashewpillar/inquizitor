@@ -1,7 +1,6 @@
 import datetime as dt
 import logging
 import random
-from unicodedata import is_normalized
 from inquizitor.crud.crud_quiz import question
 import pytest
 from httpx import AsyncClient
