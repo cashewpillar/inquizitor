@@ -5,7 +5,6 @@ from unicodedata import is_normalized
 from inquizitor.crud.crud_quiz import question
 import pytest
 from httpx import AsyncClient
-from pprint import pformat
 from sqlmodel import Session
 from typing import Dict
 from fastapi.encoders import jsonable_encoder
