@@ -1,5 +1,8 @@
 import datetime as dt
 import logging
+import random
+from unicodedata import is_normalized
+from inquizitor.crud.crud_quiz import question
 import pytest
 from httpx import AsyncClient
 from pprint import pformat
@@ -89,7 +92,7 @@ class TestReadQuestionActions:
         for i in range(3): # three students
             student = UserFactory(student=True)
             user = crud.user.get(db, id=student.id)
-            attempt = AttemptFactory(quiz=quiz, student=user)
+            attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
             actions = []
             for j in range(5): # five question actions each
                 action = ActionFactory(attempt=attempt, question=question)
@@ -122,7 +125,7 @@ class TestReadQuestionActions:
         for i in range(3): # three students
             student = UserFactory(student=True)
             user = crud.user.get(db, id=student.id)
-            attempt = AttemptFactory(quiz=quiz, student=user)
+            attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
             actions = []
             for j in range(5): # five question actions each
                 action = ActionFactory(attempt=attempt, question=question)
@@ -170,7 +173,7 @@ class TestReadQuizActions:
         for i in range(3): # three students
             student = UserFactory(student=True)
             user = crud.user.get(db, id=student.id)
-            attempt = AttemptFactory(quiz=quiz, student=user)
+            attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
             actions = []
             for q in questions:
                 for j in range(3): # three actions each
@@ -204,7 +207,7 @@ class TestReadQuizActions:
         for i in range(3): # three students
             student = UserFactory(student=True)
             user = crud.user.get(db, id=student.id)
-            attempt = AttemptFactory(quiz=quiz, student=user)
+            attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
             actions = []
             for q in questions:
                 for j in range(3): # three actions each
@@ -251,7 +254,7 @@ class TestReadAttemptActions:
         questions = [QuestionFactory(quiz=quiz) for i in range(3)]
         student = UserFactory(student=True)
         user = crud.user.get(db, id=student.id)
-        attempt = AttemptFactory(quiz=quiz, student=user)
+        attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
 
         actions = []
         for q in questions:
@@ -316,7 +319,7 @@ class TestReadAttemptQuestionActions:
         question = QuestionFactory(quiz=quiz)
         student = UserFactory(student=True)
         user = crud.user.get(db, id=student.id)
-        attempt = AttemptFactory(quiz=quiz, student=user)
+        attempt = AttemptFactory(quiz=quiz, student=user, is_done=True)
 
         actions = []
         for j in range(3):
@@ -369,3 +372,82 @@ class TestReadAttemptQuestionActions:
         assert r.status_code == 200
         for action_in_db in result:
             assert action_in_db in actions
+
+@pytest.mark.anyio
+class TestReadPerQuestionAttemptActionsFilterByCheating:
+    async def test_read_attempt_actions_teacher_superuser(
+        self, db:Session, client: AsyncClient, teacher_cookies: Dict[str, str], superuser_cookies: Dict[str, str] 
+    ) -> None:
+        teacher_cookies = await teacher_cookies
+        superuser_cookies = await superuser_cookies
+        r = await client.get("/users/profile", cookies=teacher_cookies)
+        result = r.json()
+        teacher = crud.user.get(db, id=result["id"])
+
+        quiz = QuizFactory(teacher=teacher)
+        questions = [QuestionFactory(quiz=quiz) for i in range(3)]
+        attempts_with_actions = {
+            'is_cheater_dataset': dict(),
+            'is_not_cheater_dataset': dict(),
+        }
+        action_list = {
+            'blur': 0,
+            'focus': 0,
+            'copy_': 0,
+            'paste': 0,
+            'left_click': 0,
+            'right_click': 0,
+            'double_click': 0,
+        }
+
+        for s in range(3): # three students
+            is_cheater_dataset = bool(random.randint(0,1))
+            student = UserFactory(student=True, is_cheater_dataset=is_cheater_dataset)
+            attempt = AttemptFactory(quiz=quiz, student=student, is_done=True)
+            attempt_actions = dict()
+            
+            for q in questions:
+                question_actions = dict(action_list)
+                for j in range(3): # three actions each
+                    action = ActionFactory(attempt=attempt, question=q)
+                    if action.blur:
+                        question_actions['blur'] += 1
+                    elif action.focus:
+                        question_actions['focus'] += 1
+                    elif action.copy_:
+                        question_actions['copy_'] += 1
+                    elif action.paste:
+                        question_actions['paste'] += 1
+                    elif action.left_click:
+                        question_actions['left_click'] += 1
+                    elif action.right_click:
+                        question_actions['right_click'] += 1
+                    elif action.double_click:
+                        question_actions['double_click'] += 1
+                attempt_actions.setdefault(str(q.id), question_actions)
+            
+            if is_cheater_dataset:
+                attempts_with_actions['is_cheater_dataset'].setdefault(str(student.id), attempt_actions)
+            else:
+                attempts_with_actions['is_not_cheater_dataset'].setdefault(str(student.id), attempt_actions)
+        
+        r = await client.get(
+            f"/quizzes/{quiz.id}/actions-per-question/filter-by-cheating",
+            cookies=teacher_cookies,
+        )
+        result = r.json()
+        assert r.status_code == 200
+        # logging.info(f"""
+        # {pformat(result)}
+        # =================================
+        # {pformat(attempts_with_actions)}\n\n
+        # """)
+        assert result == attempts_with_actions
+        
+        r = await client.get(
+            f"/quizzes/{quiz.id}/actions-per-question/filter-by-cheating",
+            cookies=superuser_cookies,
+        )
+        result = r.json()
+        assert r.status_code == 200
+        assert result == attempts_with_actions

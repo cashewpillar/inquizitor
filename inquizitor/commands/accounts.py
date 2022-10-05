@@ -20,10 +20,12 @@ logger = logging.getLogger(__name__)
 @click.option('--is-student', default=False, type=bool)
 @click.option('--is-teacher', default=False, type=bool)
 @click.option('--is-admin', default=False, type=bool)
+@click.option('--is-cheater-dataset', default=False, type=bool)
 def create_account(
     email: str, last_name: str, first_name: str,
     username: str, password: str,
     is_student: bool, is_teacher: bool, is_admin: bool,
+    is_cheater_dataset: bool
 ) -> None:
     """
         Create a student account with the provided details, 
@@ -43,6 +45,7 @@ def create_account(
         is_teacher=is_teacher,
         is_admin=is_admin,
         password=password or secrets.token_hex(4),
+        is_cheater_dataset=is_cheater_dataset
     )
     try:
         user = crud.user.create(db, obj_in=user_in)
@@ -55,7 +58,17 @@ def create_account(
 @click.command()
 @click.argument('filepath')
 @click.argument('heroku_app', required=False)
-def create_accounts(filepath: str, heroku_app: Optional[str] = None):
+@click.option(
+    '--is-cheater-dataset', 
+    prompt='Is this group to be included in the cheaters dataset?',
+    default=False,
+    type=bool
+)
+def create_accounts(
+    filepath: str, 
+    is_cheater_dataset: bool,
+    heroku_app: Optional[str] = None,
+):
     """
         Create accounts from a csv file.
     """
@@ -72,7 +85,6 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
         account_reader = csv.reader(csvf)
         output_file = open(f'{filepath.split(os.sep)[-1].split(".")[0]}-password.csv', 'w', newline='')
         output_writer = csv.writer(output_file)
-        output_writer.writerow('USERNAME', 'PASSWORD')
         email_index, fullname_index = None, None
         logger.info('Creating accounts...')
         for i, row in enumerate(account_reader):
@@ -87,7 +99,7 @@ def create_accounts(filepath: str, heroku_app: Optional[str] = None):
                 password = secrets.token_hex(4)
                 last_name, first_name = row[fullname_index].split(',')
                 res = os.system(
-                    base_command % f'{row[email_index]} "{last_name}" "{first_name.strip()}" --password={password} --is-student=True'
+                    base_command % f'{row[email_index]} "{last_name}" "{first_name.strip()}" --password={password} --is-student=True --is-cheater-dataset={is_cheater_dataset}'
                 )
                 if res == 0:
                     username = f'{last_name}{"".join(first_name.split(" "))}'.lower()

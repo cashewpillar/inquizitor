@@ -189,3 +189,42 @@ async def read_per_question_attempts_actions(
         attempts_with_actions.setdefault(attempt.student_id, student_actions)
 
     return attempts_with_actions
+
+@router.get(
+    "/{quiz_index}/actions-per-question/filter-by-cheating",
+    response_model=Dict[str, Dict[int, Dict[int, Dict]]],
+)
+async def read_per_question_attempts_actions_filter_by_cheating(
+    *,
+    db: Session = Depends(deps.get_db),
+    quiz: models.Quiz = Depends(deps.get_quiz),
+    current_author: models.User = Depends(deps.get_current_author),
+) -> Any:
+    """
+    Retrieve all the students' aggregated actions (per question) for the given quiz,
+    filtered by cheating status, for dataset creation purposes
+
+    {
+        'is_cheater_dataset': {student_id: dict_student_action_aggregate_per_question},
+        'is_not_cheater_dataset': {student_id: dict_student_action_aggregate_per_question}
+    }
+    """
+
+    attempts_with_actions = {
+        'is_cheater_dataset': dict(),
+        'is_not_cheater_dataset': dict(),
+    }
+    attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(
+        db, id=quiz.id
+    )
+    for attempt in attempts:
+        student_actions = crud.quiz_action.get_per_question_summary_by_attempt(
+            db, attempt_id=attempt.id
+        )
+        student = crud.user.get(db, id=attempt.student_id)
+        if student.is_cheater_dataset:
+            attempts_with_actions['is_cheater_dataset'].setdefault(student.id, student_actions)
+        else:
+            attempts_with_actions['is_not_cheater_dataset'].setdefault(student.id, student_actions)
+
+    return attempts_with_actions

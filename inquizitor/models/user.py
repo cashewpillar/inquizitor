@@ -19,6 +19,7 @@ class UserBase(SQLModel):
     first_name: str
     is_teacher: bool
     is_student: bool
+    is_cheater_dataset: Optional[bool] = None
 
 
 # Properties to receive via API on creation

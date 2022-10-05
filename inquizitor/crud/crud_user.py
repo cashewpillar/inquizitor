@@ -25,6 +25,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             is_superuser=obj_in.is_superuser,
             is_teacher=obj_in.is_teacher,
             is_student=obj_in.is_student,
+            is_cheater_dataset=obj_in.is_cheater_dataset,
         )
         return super().create(db, obj_in=db_obj)
 

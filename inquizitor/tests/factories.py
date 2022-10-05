@@ -62,6 +62,7 @@ class UserFactory(BaseFactory):
     hashed_password = factory.LazyAttribute(lambda a: get_password_hash(a.password))
     is_student = False
     is_teacher = False
+    is_cheater_dataset = False
 
     model: ModelType = models.User
     create_schema: CreateSchemaType = models.UserCreate
