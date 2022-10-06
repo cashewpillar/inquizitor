@@ -85,6 +85,7 @@ def create_accounts(
         account_reader = csv.reader(csvf)
         output_file = open(f'{filepath.split(os.sep)[-1].split(".")[0]}-password.csv', 'w', newline='')
         output_writer = csv.writer(output_file)
+        output_writer.writerow(['email', 'username', 'password'])
         email_index, fullname_index = None, None
         logger.info('Creating accounts...')
         for i, row in enumerate(account_reader):
@@ -103,7 +104,7 @@ def create_accounts(
                 )
                 if res == 0:
                     username = f'{last_name}{"".join(first_name.split(" "))}'.lower()
-                    output_writer.writerow([username, password])
+                    output_writer.writerow([row[email_index], username, password])
                 total_accounts += 1 if res == 0 else 0 # 0 = success; 1 or 2 = failure
         output_file.close()
 
@@ -115,6 +116,7 @@ def create_accounts(
 def reset_password(email: str, password: str = None) -> None:
     """
         Reset password to a randomly generated code if password is not supplied.
+        
     """
     user = crud.user.get_by_email(db, email=email)
     user_in = models.UserUpdate(password=password or secrets.token_hex(4))
