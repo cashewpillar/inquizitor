@@ -116,7 +116,6 @@ def create_accounts(
 def reset_password(email: str, password: str = None) -> None:
     """
         Reset password to a randomly generated code if password is not supplied.
-        
     """
     user = crud.user.get_by_email(db, email=email)
     user_in = models.UserUpdate(password=password or secrets.token_hex(4))
