@@ -21,6 +21,7 @@ def register_commands():
     commands.cli.add_command(commands.add_exam)
     commands.cli.add_command(commands.create_account)
     commands.cli.add_command(commands.create_accounts)
+    commands.cli.add_command(commands.create_students_on_db)
     commands.cli.add_command(commands.reset_password)
     commands.cli.add_command(commands.invalidate_attempt)
 

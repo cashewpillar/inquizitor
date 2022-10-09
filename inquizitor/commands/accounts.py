@@ -3,7 +3,9 @@ import csv
 import logging
 import secrets
 import os
+from sqlmodel import Session, create_engine
 from typing import Optional
+import unidecode
 
 from inquizitor import crud, models
 from inquizitor.commands.initial_data import db
@@ -53,8 +55,6 @@ def create_account(
     except Exception as e:
         logger.info(f"Error: {e.value}")
         logger.info(f"Account with email {email} or username {username} already exists!")
-
-    # send email
 
 @click.command()
 @click.argument('filepath')
@@ -107,6 +107,76 @@ def create_accounts(
                     username = f'{last_name}{"".join(first_name.split(" "))}'.lower()
                     output_writer.writerow([row[email_index], username, password])
                 total_accounts += 1 if res == 0 else 0 # 0 = success; 1 or 2 = failure
+        output_file.close()
+
+    logger.info(f'Successfully created {total_accounts} accounts!')
+
+@click.command()
+@click.argument('filepath')
+@click.argument('database_url')
+@click.option(
+    '--is-cheater-dataset', 
+    prompt='Is this group to be included in the cheaters dataset?',
+    default=False,
+    type=bool
+)
+def create_students_on_db(
+    filepath: str, 
+    is_cheater_dataset: bool,
+    database_url: str,
+):
+    """
+        Create accounts from a csv file on target deployed database.
+    """
+    if not filepath.endswith('.csv'):
+        logger.info('File should be in CSV')
+        return
+
+    engine = create_engine(database_url)
+    total_accounts = 0
+    with open(filepath, newline='') as csvf:
+        account_reader = csv.reader(csvf)
+        output_file = open(f'{filepath.split(os.sep)[-1].split(".")[0]}-password.csv', 'w', newline='')
+        output_writer = csv.writer(output_file)
+        output_writer.writerow(['email', 'username', 'password'])
+        email_index, fullname_index = None, None
+        logger.info('Creating accounts...')
+        for i, row in enumerate(account_reader):
+            if i == 0:
+                try:
+                    email_index = row.index('Email Address')
+                    fullname_index = row.index('Full Name')
+                except:
+                    logger.info('File does not contain required headers: "Email Address" and "Full Name"')
+                    return
+            else:
+                email=row[email_index]
+                password=secrets.token_hex(4)
+                last_name, first_name = row[fullname_index].split(',')
+                last_name = unidecode.unidecode(last_name).capitalize().strip().replace("a+-", "n") # replace enye
+                first_name = unidecode.unidecode(first_name).capitalize().strip().replace("a+-", "n")
+                username = f'{"".join(last_name.split(" "))}{"".join(first_name.split(" "))}'.lower().replace(".", "") # remove middle initial dot
+                user_in = models.UserCreate(
+                    username=username,
+                    email=email,
+                    full_name=f'{last_name}, {first_name}',
+                    last_name=last_name,
+                    first_name=first_name,
+                    is_student=True,
+                    is_teacher=False,
+                    is_admin=False,
+                    password=password,
+                    is_cheater_dataset=is_cheater_dataset
+                )
+                with Session(engine) as session:
+                    try:
+                        crud.user.create(session, obj_in=user_in)
+                        output_writer.writerow([email, username, password])
+                        logger.info(f"Account {username} successfully created!")
+                        total_accounts += 1
+                    except Exception as e:
+                        # logger.info(f"Error: {e}")
+                        logger.info(f"Account with email {email} or username {username} already exists!")
         output_file.close()
 
     logger.info(f'Successfully created {total_accounts} accounts!')
