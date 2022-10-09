@@ -50,7 +50,8 @@ def create_account(
     try:
         user = crud.user.create(db, obj_in=user_in)
         logger.info(f"Account {username} successfully created!")
-    except:
+    except Exception as e:
+        logger.info(f"Error: {e.value}")
         logger.info(f"Account with email {email} or username {username} already exists!")
 
     # send email
