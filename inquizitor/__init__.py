@@ -24,6 +24,7 @@ def register_commands():
     commands.cli.add_command(commands.create_students_on_db)
     commands.cli.add_command(commands.reset_password)
     commands.cli.add_command(commands.invalidate_attempt)
+    commands.cli.add_command(commands.toggle_cheater_dataset)
 
 def register_fastapi_jwt_auth(app: FastAPI, db: Session):
     # TODO: do we test exception handlers?

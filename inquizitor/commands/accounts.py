@@ -151,7 +151,7 @@ def create_students_on_db(
                     return
             else:
                 email=row[email_index]
-                password=secrets.token_hex(4)
+                password="m0ck3x4m"
                 last_name, first_name = row[fullname_index].split(',')
                 last_name = unidecode.unidecode(last_name).capitalize().strip().replace("a+-", "n") # replace enye
                 first_name = unidecode.unidecode(first_name).capitalize().strip().replace("a+-", "n")
@@ -196,3 +196,39 @@ def reset_password(email: str, password: str = None) -> None:
         logger.info(f"Password of account {email} has been updated!")
     else:
         logger.info(f"Password reset failed.")
+
+@click.command()
+@click.argument('filepath')
+@click.argument('is_cheater_dataset')
+@click.argument('database_url')
+def toggle_cheater_dataset(
+    filepath: str, 
+    is_cheater_dataset: bool,
+    database_url: str
+):
+    """
+        Update accounts (txt file containing list of usernames) to belong to a cheating or non-cheating group
+    """
+    if not filepath.endswith('.txt'):
+        logger.info('File should be in TXT')
+        return
+
+    engine = create_engine(database_url)
+    total_accounts = 0
+    with Session(engine) as db:
+        with open(filepath) as txtf:
+            logger.info('Updating accounts...')
+            for l in txtf.readlines():
+                username = l.strip()
+                try:
+                    user = crud.user.get_by_username(db, username=username)
+                    user_in = models.UserUpdate(
+                        is_cheater_dataset=is_cheater_dataset
+                    )
+                    user = crud.user.update(db, db_obj=user, obj_in=user_in)
+                    logger.info(f"Account {username} successfully updated!")
+                    total_accounts += 1
+                except Exception as e:
+                    logger.info(f"Account with email {email} or username {username} failed to update!")
+
+    logger.info(f'Successfully updated {total_accounts} accounts!')

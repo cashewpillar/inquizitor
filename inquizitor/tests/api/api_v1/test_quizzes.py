@@ -270,7 +270,7 @@ class TestReadQuiz:
         result = r.json()
         student = crud.user.get(db, id=result["id"])
         quiz = QuizFactory(due_date=dt.datetime.now() - dt.timedelta(seconds=10))
-        r = await client.get(f"/quizzes/{quiz.quiz_code}", cookies=student_cookies)
+        r = await client.get(f"/quizzes/{quiz.id}", cookies=student_cookies)
         result = r.json()
         assert r.status_code == 400
 
