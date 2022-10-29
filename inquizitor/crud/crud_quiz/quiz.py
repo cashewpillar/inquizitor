@@ -114,6 +114,18 @@ class CRUDQuiz(CRUDBase[Quiz, QuizCreate, QuizUpdate]):
             .all()
         )
 
+    def get_total_points(
+        self, db: Session, id: int
+    ) -> int:
+        """Get maximum points achievable for the given quiz"""
+        quiz = self.get(db, id=id)
+        total_points = 0
+        for question in quiz.questions:
+            total_points += question.points
+
+        return total_points
+
+
     def has_question(self, db: Session, quiz_index: Union[int, str], question_id: int):
         """Verify if question belongs to the quiz"""
         quiz = self.get_by_index(db, quiz_index)

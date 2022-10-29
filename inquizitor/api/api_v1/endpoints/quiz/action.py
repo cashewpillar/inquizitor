@@ -164,7 +164,7 @@ async def read_per_question_attempt_actions(
 
 @router.get(
     "/{quiz_index}/actions-per-question",
-    response_model=Dict[int, Dict[int, Dict]],
+    response_model=Dict[int, Dict],
 )
 async def read_per_question_attempts_actions(
     *,
@@ -182,11 +182,19 @@ async def read_per_question_attempts_actions(
     attempts = crud.quiz_attempt.get_multi_latest_by_quiz_id(
         db, id=quiz.id
     )
+    total_points = crud.quiz.get_total_points(db, id=quiz.id)
     for attempt in attempts:
         student_actions = crud.quiz_action.get_per_question_summary_by_attempt(
             db, attempt_id=attempt.id
         )
-        attempts_with_actions.setdefault(attempt.student_id, student_actions)
+        score = crud.quiz_attempt.get_score(db, id=attempt.id)
+        student = crud.user.get(db, attempt.student_id)
+        record = {
+            'student_name': student.full_name,
+            'score': f"{score}/{total_points}",
+            'actions': student_actions
+        }
+        attempts_with_actions.setdefault(student.id, record)
 
     return attempts_with_actions
 
