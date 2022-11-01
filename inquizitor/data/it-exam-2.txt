@@ -1,0 +1,21 @@
+Name: IT Exam 2
+Desc: Information Technology
+
+1. The hexadecimal 5D6 is equal to which binary??
+a. 10011010110 b. 11101010110 d. 10110010110
+Correct Answer: 10111010110
+
+2. How do delivery companies track packages?
+b. They use GPS. C. They use a learning management system. d. They use robotic arms to load packages.
+Correct Answer: They use code-scanning technology.
+
+3. During the encapsulation process, what occurs at the data link layer?
+a. No address is added. b. The logical address is added. d. The process port number is added.
+Correct Answer: The physical address is added 
+
+4. Which option lists the computer components in order from oldest to newest?
+a. transistors, vacuum tubes, integrated circuits, personal computers, microprocessors b. integrated circuits, microprocessors, vacuum tubes, transistors, personal computers d. microprocessors, vacuum tubes, transistors, personal computers, integrated circuits
+Correct Answer: vacuum tubes, transistors, integrated circuits, microprocessors, personal computers
+
+5. C, C++, and Java can be classified as __________ languages. 
+Answer: High-level
