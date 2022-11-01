@@ -1,0 +1,21 @@
+Name: IT Exam
+Desc: Information Technology
+
+1. At which OSI layer does the router work?
+a. Transport b. Physical c. Data Link
+Correct Answer: Network
+
+2. Graydon Hoare created a programming language that is syntactically similar to what programming language?
+b. Java c. Haskell d. Swift
+Correct Answer: C++ 
+
+3. What technology can collect information to make decisions, reach conclusions, and combine information in new ways?
+a. virtual reality (VR) b. embedded computers d. robotics
+Correct Answer: artificial intelligence (AI)
+
+4. A smart refrigerator can use _____________ to detect when you are running low on milk, and then send a reminder to you on a wireless network
+Answer: Sensors 
+
+5. The _________ layer encapsulates the segment into packets? 
+Answer: Network 
+
