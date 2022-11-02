@@ -40,6 +40,9 @@ class QuizQuestion(QuizQuestionInDBBase, table=True):
     actions: Optional["QuizAction"] = Relationship(
         back_populates="question", sa_relationship_kwargs={"cascade": "delete"}
     )
+    answers: Optional["QuizAnswer"] = Relationship(
+        back_populates="question", sa_relationship_kwargs={"cascade": "delete"}
+    )
 
     def __repr__(self):
         return f"<Question({self.content!r})>"

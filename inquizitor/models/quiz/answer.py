@@ -35,6 +35,7 @@ class QuizAnswer(QuizAnswerInDBBase, table=True):
     student: Optional[User] = Relationship(back_populates="answers")
     choice: Optional[QuizChoice] = Relationship(back_populates="answers")
     attempt: Optional["QuizAttempt"] = Relationship(back_populates="answers")
+    question: Optional["QuizQuestion"] = Relationship(back_populates="answers")
 
     def __repr__(self):
         return f"<Answer({self.content!r})>"
