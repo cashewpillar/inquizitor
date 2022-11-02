@@ -38,7 +38,9 @@ class QuizAttempt(QuizAttemptInDBBase, table=True):
     recent_question: Optional[QuizQuestion] = Relationship(back_populates="attempts")
     student: Optional[User] = Relationship(back_populates="attempts")
     quiz: Optional[Quiz] = Relationship(back_populates="attempts")
-    answers: Optional["QuizAnswer"] = Relationship(back_populates="attempt")
+    answers: Optional["QuizAnswer"] = Relationship(
+        back_populates="attempt", sa_relationship_kwargs={"cascade": "delete"}
+    )
     actions: Optional["QuizAction"] = Relationship(
         back_populates="attempt", sa_relationship_kwargs={"cascade": "delete"}
     )
