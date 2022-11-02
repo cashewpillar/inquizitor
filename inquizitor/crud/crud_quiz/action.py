@@ -1,5 +1,7 @@
 from sqlmodel import Session
 from typing import Any, Dict, List, Union
+import logging
+import pprint
 import random
 
 from inquizitor.crud.base import CRUDBase
@@ -107,6 +109,7 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             .order_by(QuizAction.question_id)
             .all()
         )
+        logging.info(f"{pprint.pformat(actions)}")
         # TODO <run inactive duration computation method here>
         # TODO <run ml function here>
 
@@ -131,8 +134,8 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             summary[question_id]['double_click'] += action.double_click
         
         for question_id in summary.keys():
-            summary[question_id]['label'] = random.choice([True, False])
             summary[question_id]['inactive_duration'] = max(0, round((random.random() + random.randint(-20,10)), 6))
+            summary[question_id]['label'] = random.choice([True, False])
 
         return summary
 
