@@ -435,6 +435,12 @@ class TestReadPerQuestionAttemptActionsFilterByCheating:
         )
         result = r.json()
         assert r.status_code == 200
+        # exclude the items "label" and "inactive_duration" from checks
+        for set in result.keys():
+            for stud_id in result[set].keys():
+                for action_id in result[set][stud_id].keys():
+                    result[set][stud_id][action_id].pop("label")
+                    result[set][stud_id][action_id].pop("inactive_duration")
         assert result == attempts_with_actions
         
         r = await client.get(
@@ -443,4 +449,10 @@ class TestReadPerQuestionAttemptActionsFilterByCheating:
         )
         result = r.json()
         assert r.status_code == 200
+        # exclude the items "label" and "inactive_duration" from checks
+        for set in result.keys():
+            for stud_id in result[set].keys():
+                for action_id in result[set][stud_id].keys():
+                    result[set][stud_id][action_id].pop("label")
+                    result[set][stud_id][action_id].pop("inactive_duration")
         assert result == attempts_with_actions

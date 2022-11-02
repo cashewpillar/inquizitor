@@ -164,7 +164,9 @@ def test_get_per_question_summary_by_attempt(db: Session) -> None:
     for question in summary:
         action_count = 0
         for action in summary[question].keys():
-            action_count += summary[question][action]
+             # exclude the items "label" and "inactive_duration" from checks
+            if not action in ("label", "inactive_duration"):
+                action_count += summary[question][action]
         assert action_count == 20 # 20 actions each
 
 def test_update_action(db: Session) -> None:
