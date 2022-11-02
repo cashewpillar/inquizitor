@@ -105,6 +105,9 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             .order_by(QuizAction.question_id)
             .all()
         )
+        # TODO <run inactive duration computation method here>
+        # TODO <run ml function here>
+
         action_list = {
             'blur': 0,
             'focus': 0,
@@ -113,6 +116,7 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             'left_click': 0,
             'right_click': 0,
             'double_click': 0,
+            # TODO <set cheating classification here>
         }
         for action in actions:
             question_id = action.question_id

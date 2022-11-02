@@ -50,9 +50,11 @@ If you want to use Docker, it is recommended to have a free diskspace of 2 GB. R
 
 ## Integrations
 
-| Usage                                                       | App                                    | Creator                                               |
-| ----------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------- |
-| Realistic Quiz Data (`inquizitor\inquizitor\db\init_db.py`) | [Open Trivia DB](https://opentdb.com/) | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
+| Usage                                                       | App                                                          | Creator                                               |
+| ----------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
+| Realistic Quiz Data (`inquizitor\inquizitor\db\init_db.py`) | [Open Trivia DB](https://opentdb.com/)                       | [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) |
+| Frontend                                                    | [Inquizitor Frontend](https://github.com/xtian18/inquizitor-front-end) | [xtian18](https://github.com/xtian18)                 |
+| Cheating Detection                                          |                                                              |                                                       |
 
 <br>
 
