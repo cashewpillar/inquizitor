@@ -1,5 +1,7 @@
-from typing import Any, Dict, List, Union
 from sqlmodel import Session
+from typing import Any, Dict, List, Union
+import random
+
 from inquizitor.crud.base import CRUDBase
 from inquizitor.models import QuizAttempt, QuizAction, QuizActionCreate, QuizActionUpdate
 
@@ -116,7 +118,6 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             'left_click': 0,
             'right_click': 0,
             'double_click': 0,
-            # TODO <set cheating classification here>
         }
         for action in actions:
             question_id = action.question_id
@@ -128,6 +129,10 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             summary[question_id]['left_click'] += action.left_click
             summary[question_id]['right_click'] += action.right_click
             summary[question_id]['double_click'] += action.double_click
+        
+        for question_id in summary.keys():
+            summary[question_id]['label'] = random.choice([True, False])
+            summary[question_id]['inactive_duration'] = max(0, round((random.random() + random.randint(-20,10)), 6))
 
         return summary
 

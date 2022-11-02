@@ -193,7 +193,7 @@ async def read_per_question_attempts_actions(
             'student_name': student.full_name,
             'username': student.username,
             'score': f"{score}/{total_points}",
-            'label': student.is_cheater_dataset,
+            'training_label': student.is_cheater_dataset,
             'actions': student_actions
         }
         attempts_with_actions.setdefault(student.id, record)
