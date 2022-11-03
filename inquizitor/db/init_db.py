@@ -4,6 +4,7 @@ import random
 import requests
 from sqlmodel import Session, SQLModel
 from sqlalchemy.engine import Engine
+from typing import Optional
 
 from inquizitor import crud, models
 from inquizitor.core.config import settings
@@ -77,7 +78,7 @@ def init_test_students(db: Session):
         crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL),
     ]
     for i in range(3):
-        user_in = UserFactory.stub(schema_type="create", is_student=True)
+        user_in = UserFactory.stub(schema_type="create", is_student=True, password="test")
         user_in = models.UserCreate(**user_in)
         user = crud.user.create(db, obj_in=user_in)
         test_students.append(user)
@@ -107,6 +108,7 @@ def drop_db(engine: Engine) -> None:
     SQLModel.metadata.drop_all(bind=engine)
 
 def generate_attempts(db: Session, quiz: models.Quiz):
+    init_test_students(db)
     for student in test_students:
         quiz_student_link_in = models.QuizStudentLinkCreate(
             student_id=student.id,
@@ -138,19 +140,27 @@ def generate_attempts(db: Session, quiz: models.Quiz):
                 action = crud.quiz_action.create(db, obj_in=action_in)
 
 def generate_quizzes(
-    db: Session, use_realistic_data: bool = False, has_attempts: bool = True
+    db: Session, 
+    use_realistic_data: bool = False, 
+    has_attempts: bool = True, 
+    teacher_id: Optional[int] = None,
+    num_quizzes: int = 30,
+    num_questions: int = 5
 ) -> None:
-    NUM_QUESTIONS = 5
-    init_test_students(db)
-    first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
+    teacher = None
+    if teacher_id:
+        teacher = crud.user.get(db, id=teacher_id)
+    if not teacher:
+        teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
 
-    for i in range(10): # ten quizzes
+    logging.info("Generating quizzes...")
+    for i in range(num_quizzes): # ten quizzes
         realistic_data = []
         if use_realistic_data:
             category = random.randint(9, 32) # available range of categories, see https://opentdb.com/api_config.php
             while not realistic_data:
                 realistic_data = requests.get(
-                    f'https://opentdb.com/api.php?amount={NUM_QUESTIONS}&type=multiple&category={category}'
+                    f'https://opentdb.com/api.php?amount={num_questions}&type=multiple&category={category}'
                 ).json()['results']
 
                 for q in realistic_data: # fill in incomplete values for standard initial data structure
@@ -164,14 +174,14 @@ def generate_quizzes(
 
         quiz_in = QuizFactory.stub(
             schema_type="create",
-            teacher=first_teacher,
-            number_of_questions=NUM_QUESTIONS,
+            teacher=teacher,
+            number_of_questions=num_questions,
         )
         quiz_in['name'] = html.unescape(realistic_data[0]['category']) if use_realistic_data else quiz_in['name']
         quiz_in = models.QuizCreate(**quiz_in)
         quiz = crud.quiz.create(db, obj_in=quiz_in)
 
-        for i in range(NUM_QUESTIONS): # use set amount of questions
+        for i in range(num_questions): # use set amount of questions
             question_in = QuestionFactory.stub(
                 schema_type="create", 
                 points=1,
@@ -203,8 +213,9 @@ def generate_quizzes(
                 choice_in['content'] = html.unescape(choice_in['content'])
                 choice = crud.quiz_choice.create(db, obj_in=choice_in)
 
-        if has_attempts and quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
-            generate_attempts(db, quiz)
+        generate_attempts(db, quiz)
+        # if has_attempts and quiz.id % 2 == 0: # even numbered quiz ids are answered by test students as initialized above
+        #     generate_attempts(db, quiz)
 
 def add_quiz(
     db: Session, dict_quiz: dict, has_attempts: bool = False, blanks_case_sensitive: bool = True
@@ -253,4 +264,5 @@ def add_quiz(
                 crud.quiz_choice.create(db, obj_in=choice_in)
 
     if has_attempts:
+        logging.info("Generating attempts...")
         generate_attempts(db, quiz)

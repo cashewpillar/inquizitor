@@ -120,10 +120,31 @@ def create_accounts(
     default=False,
     type=bool
 )
-def create_students_on_db(
+@click.option(
+    '--is-teacher', 
+    prompt='Is this group for teachers?',
+    default=False,
+    type=bool
+)
+@click.option(
+    '--teachers-have-dummy-quizzes', 
+    prompt='Add dummy quizzes? (This option is strictly for testing only)',
+    default=False,
+    type=bool
+)
+@click.option(
+    '--password', 
+    prompt='Password [Leave blank to randomize]',
+    default=secrets.token_hex(4),
+    type=str
+)
+def create_accounts_on_db(
     filepath: str, 
     is_cheater_dataset: bool,
+    is_teacher: bool,
     database_url: str,
+    teachers_have_dummy_quizzes: bool,
+    password: str
 ):
     """
         Create accounts from a csv file on target deployed database.
@@ -151,7 +172,7 @@ def create_students_on_db(
                     return
             else:
                 email=row[email_index]
-                password=secrets.token_hex(4)
+                password=password
                 last_name, first_name = row[fullname_index].split(',')
                 last_name = unidecode.unidecode(last_name).capitalize().strip().replace("a+-", "n") # replace enye
                 first_name = unidecode.unidecode(first_name).capitalize().strip().replace("a+-", "n")
@@ -162,18 +183,24 @@ def create_students_on_db(
                     full_name=f'{last_name}, {first_name}',
                     last_name=last_name,
                     first_name=first_name,
-                    is_student=True,
-                    is_teacher=False,
+                    is_student=not is_teacher,
+                    is_teacher=is_teacher,
                     is_admin=False,
                     password=password,
                     is_cheater_dataset=is_cheater_dataset
                 )
                 with Session(engine) as session:
                     try:
-                        crud.user.create(session, obj_in=user_in)
+                        user = crud.user.create(session, obj_in=user_in)
                         output_writer.writerow([email, username, password])
                         logger.info(f"Account {username} successfully created!")
                         total_accounts += 1
+
+                        if is_teacher and teachers_have_dummy_quizzes:
+                            quizzes = crud.quiz.get_multi(session)
+                            quiz = crud.quiz.get(session, id=user.id)
+                            quiz_in = models.QuizUpdate(teacher_id=user.id)
+                            quiz = crud.quiz.update(session, db_obj=quiz, obj_in=quiz_in)
                     except Exception as e:
                         # logger.info(f"Error: {e}")
                         logger.info(f"Account with email {email} or username {username} already exists!")

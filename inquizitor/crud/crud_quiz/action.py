@@ -113,6 +113,8 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
         # get the (not aggregated) events of the user (so we can take a look at each event)
         user_events = df.sort_values(by=['time'])
         
+        # logging.info(f"{df['question_id']}")
+        
         # get the questions ids that the user answered
         question_ids = user_events['question_id'].unique()
 
@@ -176,6 +178,7 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
                 lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
                 axis=1
             )
+            logging.info(f"{actions_df.head()}")
             actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
             
             # TO VERIFY <run inactive duration computation method here>
