@@ -1,5 +1,6 @@
 from sqlmodel import Session
 from typing import Any, Dict, List, Union
+import pandas as pd
 import logging
 import pprint
 import random
@@ -98,6 +99,16 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
 
         return summary
 
+    # ============================================================================
+    #                       MACHINE LEARNING METHODS
+    # ============================================================================
+
+    def aggregate_actions(self):
+        pass
+
+    def compute_inactive_duration(self):
+        pass
+
     def get_per_question_summary_by_attempt(
         self, db: Session, *, attempt_id: int
     ) -> Any:
@@ -109,7 +120,17 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             .order_by(QuizAction.question_id)
             .all()
         )
-        logging.info(f"{pprint.pformat(actions)}")
+
+        actions_df = pd.DataFrame(actions)
+        actions_df.columns = ['type', 'question_id', 'attempt_id', 'blur', 'copy', 'left_click', 'double_click', 'event_id', 'time', 'focus', 'paste', 'right_click']
+        actions_df = actions_df.loc[:, ~actions_df.columns.isin(['type', 'event_id'])]
+        actions_df = actions_df.apply(
+            lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
+            axis=1
+        )
+        actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
+        # logging.info(f"\n{actions_df}")
+
         # TODO <run inactive duration computation method here>
         # TODO <run ml function here>
 
@@ -134,6 +155,7 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             summary[question_id]['double_click'] += action.double_click
         
         for question_id in summary.keys():
+            # TODO <return ml processing results>
             summary[question_id]['inactive_duration'] = max(0, round((random.random() + random.randint(-20,10)), 6))
             summary[question_id]['label'] = random.choice([True, False])
 
