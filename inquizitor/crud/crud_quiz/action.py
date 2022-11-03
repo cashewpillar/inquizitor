@@ -170,21 +170,25 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             actions_df = pd.DataFrame(actions)
             actions_df.columns = ['type', 'question_id', 'attempt_id', 'blur', 'copy', 'left_click', 'double_click', 'event_id', 'time', 'focus', 'paste', 'right_click']
             actions_df = actions_df.loc[:, ~actions_df.columns.isin(['type', 'event_id'])]
+
+            # columns = actions_df.columns.tolist()
+            # for _, i in actions_df.iterrows():
+            #     for c in columns:
+            #         i[c] = i[c][1]
+                    
             actions_df = actions_df.apply(
                 lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
                 axis=1
             )
+
             actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
+            logging.info(f"{actions_df}")
             
             # TO VERIFY <run inactive duration computation method here>
             sample = self.with_inactive_duration(actions_df)
-            # logging.info(f"\n{sample}")
             inactive_durations = sample['inactive_duration']
-            # logging.info(f"\n{inactive_durations}")
 
-            # TO VERIFY <run ml function here>
             predictions = list(self.predict(sample))
-            # logging.info(f"{type(predictions)}")
 
         action_list = {
             'blur': 0,
@@ -208,7 +212,6 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
         
         if get_predictions:
             for i, question_id in enumerate(summary.keys()):
-                # TO VERIFY <return ml processing results>
                 summary[question_id]['inactive_duration'] = inactive_durations[i]
                 summary[question_id]['label'] = bool(predictions[i])
 
