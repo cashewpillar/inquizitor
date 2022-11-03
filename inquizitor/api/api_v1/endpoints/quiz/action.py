@@ -185,7 +185,7 @@ async def read_per_question_attempts_actions(
     total_points = crud.quiz.get_total_points(db, id=quiz.id)
     for attempt in attempts:
         student_actions = crud.quiz_action.get_per_question_summary_by_attempt(
-            db, attempt_id=attempt.id
+            db, attempt_id=attempt.id, get_predictions=True
         )
         score = crud.quiz_attempt.get_score(db, id=attempt.id)
         student = crud.user.get(db, attempt.student_id)
@@ -193,7 +193,6 @@ async def read_per_question_attempts_actions(
             'student_name': student.full_name,
             'username': student.username,
             'score': f"{score}/{total_points}",
-            'training_label': student.is_cheater_dataset,
             'actions': student_actions
         }
         attempts_with_actions.setdefault(student.id, record)
