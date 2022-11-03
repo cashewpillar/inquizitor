@@ -167,27 +167,32 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
         )
 
         if get_predictions:
-            actions_df = pd.DataFrame(actions)
-            actions_df.columns = ['type', 'question_id', 'attempt_id', 'blur', 'copy', 'left_click', 'double_click', 'event_id', 'time', 'focus', 'paste', 'right_click']
-            actions_df = actions_df.loc[:, ~actions_df.columns.isin(['type', 'event_id'])]
-
-            # columns = actions_df.columns.tolist()
-            # for _, i in actions_df.iterrows():
-            #     for c in columns:
-            #         i[c] = i[c][1]
-                    
-            actions_df = actions_df.apply(
-                lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
-                axis=1
-            )
-
-            actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
-            logging.info(f"{actions_df}")
+            # NOT ELEGANT BUT FLAWLESS
+            attempt_id = [action.attempt_id for action in actions]
+            question_id = [action.question_id for action in actions]
+            blur = [action.blur for action in actions]
+            focus = [action.focus for action in actions]
+            copy = [action.copy_ for action in actions]
+            paste = [action.paste for action in actions]
+            left_click = [action.left_click for action in actions]
+            right_click = [action.right_click for action in actions]
+            double_click = [action.double_click for action in actions]
+            time = [action.time for action in actions]
+            zipped = list(zip(attempt_id, question_id, blur, focus, copy, paste, left_click, right_click, double_click, time))
+            actions_df = pd.DataFrame(zipped, columns=['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time'])
             
-            # TO VERIFY <run inactive duration computation method here>
+            # ELEGANT BUT ERRONEOUS
+            # actions_df = pd.DataFrame(actions)
+            # actions_df.columns = ['type', 'question_id', 'attempt_id', 'blur', 'copy', 'left_click', 'double_click', 'event_id', 'time', 'focus', 'paste', 'right_click']
+            # actions_df = actions_df.loc[:, ~actions_df.columns.isin(['type', 'event_id'])]
+            # actions_df = actions_df.apply(
+            #     lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
+            #     axis=1
+            # )
+            # actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
+            
             sample = self.with_inactive_duration(actions_df)
             inactive_durations = sample['inactive_duration']
-
             predictions = list(self.predict(sample))
 
         action_list = {
