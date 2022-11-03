@@ -110,6 +110,9 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
     def with_inactive_duration(self, df):
         df_aggregated = self.aggregate_actions(df)
         
+        # declare duration
+        duration = 0
+        
         # get the (not aggregated) events of the user (so we can take a look at each event)
         user_events = df.sort_values(by=['time'])
         
@@ -127,7 +130,6 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             
                 # skip first action
                 if i == 0:
-                    duration = 0
                     continue  
 
                 # if PREVIOUS action is blur,
@@ -137,22 +139,18 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
                     time_difference = pd.to_datetime(user_events_by_question.iloc[i]['time']) - pd.to_datetime(user_events_by_question.iloc[i - 1]['time'])
                     duration = duration + time_difference.total_seconds()
                 
-                # after all events have been iterated,
-                # add column of inactive duration with the value of total inactive duration in seconds
-                df_aggregated.loc[(df_aggregated.question_id == question_id), 'inactive_duration'] = duration
+            # after all events have been iterated,
+            # add column of inactive duration with the value of total inactive duration in seconds
+            df_aggregated.loc[(df_aggregated.question_id == question_id), 'inactive_duration'] = duration
                 
-                # reset duration to 0 
-                duration = 0
+            # reset duration to 0 
+            duration = 0
         
         return df_aggregated.drop(columns=['attempt_id', 'question_id'])
 
     def predict(self, sample):
         # load model
-        try:
-            s = joblib.load('thesis_model.pkl') # is it ideal to load every time?
-        except:
-            # TODO placeholder values if pkl cannot be loaded
-            return [random.choice([True, False]) for i in range(30)]
+        s = joblib.load('thesis_model.pkl') # is it ideal to load every time?
 
         return s.predict(sample) #output /-> array([False, False])
 
