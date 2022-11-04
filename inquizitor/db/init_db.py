@@ -144,7 +144,7 @@ def generate_quizzes(
     init_test_students(db)
     first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
 
-    for i in range(10): # ten quizzes
+    for i in range(15): # ten quizzes
         realistic_data = []
         if use_realistic_data:
             category = random.randint(9, 32) # available range of categories, see https://opentdb.com/api_config.php
