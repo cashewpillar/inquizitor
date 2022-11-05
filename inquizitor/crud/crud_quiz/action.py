@@ -167,7 +167,6 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
         )
 
         if get_predictions:
-            # NOT ELEGANT BUT FLAWLESS
             attempt_id = [action.attempt_id for action in actions]
             question_id = [action.question_id for action in actions]
             blur = [action.blur for action in actions]
@@ -181,18 +180,8 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
             zipped = list(zip(attempt_id, question_id, blur, focus, copy, paste, left_click, right_click, double_click, time))
             actions_df = pd.DataFrame(zipped, columns=['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time'])
             
-            # ELEGANT BUT ERRONEOUS
-            # actions_df = pd.DataFrame(actions)
-            # actions_df.columns = ['type', 'question_id', 'attempt_id', 'blur', 'copy', 'left_click', 'double_click', 'event_id', 'time', 'focus', 'paste', 'right_click']
-            # actions_df = actions_df.loc[:, ~actions_df.columns.isin(['type', 'event_id'])]
-            # actions_df = actions_df.apply(
-            #     lambda row: row.apply(lambda cell: cell[1]), # extract y value from the tuple (x, y)
-            #     axis=1
-            # )
-            # actions_df = actions_df[['attempt_id', 'question_id', 'blur', 'focus', 'copy', 'paste', 'left_click', 'right_click', 'double_click', 'time']]
-            
-            sample = self.with_inactive_duration(actions_df)
-            inactive_durations = sample['inactive_duration']
+            sample = self.aggregate_actions(actions_df)
+            sample = sample.drop(columns=['attempt_id', 'question_id'])
             predictions = list(self.predict(sample))
 
         action_list = {
@@ -217,7 +206,6 @@ class CRUDQuizAction(CRUDBase[QuizAction, QuizActionCreate, QuizActionUpdate]):
         
         if get_predictions:
             for i, question_id in enumerate(summary.keys()):
-                summary[question_id]['inactive_duration'] = inactive_durations[i]
                 summary[question_id]['label'] = bool(predictions[i])
 
         return summary
