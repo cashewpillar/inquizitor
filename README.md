@@ -14,11 +14,12 @@
 
 ## Dev
 
-| Username | Password     |
-| -------- | ------------ |
-| admin    | superadmin   |
-| teacher  | superteacher |
-| student  | superstudent |
+| Username         | Password     |
+| ---------------- | ------------ |
+| admin            | superadmin   |
+| teacher          | superteacher |
+| student          | superstudent |
+| \<dummy-student> | teststudent  |
 
 - Reset database: `python main.py initial-data`
 - Run tests: `pytest`

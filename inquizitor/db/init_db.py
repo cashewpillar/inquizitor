@@ -71,13 +71,26 @@ def init_users(db: Session, secure_first_users: bool = False) -> None:
         )
         first_teacher = crud.user.create(db, obj_in=user_in)  # noqa: F841
 
+def init_test_teachers(db: Session):
+    global test_teachers
+    test_teachers = [
+        crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL),
+    ]
+    for i in range(5):
+        user_in = UserFactory.stub(schema_type="create", is_teacher=True, password="testteacher")
+        user_in = models.UserCreate(**user_in)
+        user = crud.user.create(db, obj_in=user_in)
+        test_teachers.append(user)
+
+    return test_teachers
+
 def init_test_students(db: Session):
     global test_students
     test_students = [
         crud.user.get_by_email(db, email=settings.FIRST_STUDENT_EMAIL),
     ]
-    for i in range(3):
-        user_in = UserFactory.stub(schema_type="create", is_student=True)
+    for i in range(10):
+        user_in = UserFactory.stub(schema_type="create", is_student=True, password="teststudent")
         user_in = models.UserCreate(**user_in)
         user = crud.user.create(db, obj_in=user_in)
         test_students.append(user)
@@ -141,10 +154,12 @@ def generate_quizzes(
     db: Session, use_realistic_data: bool = False, has_attempts: bool = True
 ) -> None:
     NUM_QUESTIONS = 5
+    init_test_teachers(db)
     init_test_students(db)
-    first_teacher = crud.user.get_by_email(db, email=settings.FIRST_TEACHER_EMAIL)
+    teacher_set = list(test_teachers)
 
-    for i in range(15): # ten quizzes
+    for i in range(50): # fifty quizzes
+        logging.info(f"Generating quiz #{i+1}")
         realistic_data = []
         if use_realistic_data:
             category = random.randint(9, 32) # available range of categories, see https://opentdb.com/api_config.php
@@ -162,9 +177,12 @@ def generate_quizzes(
                         for i in range(4 - len(q['incorrect_answers'])):
                             q['incorrect_answers'].append(fake.word())
 
+        if not len(teacher_set):
+            teacher_set = list(test_teachers)
+        
         quiz_in = QuizFactory.stub(
             schema_type="create",
-            teacher=first_teacher,
+            teacher=teacher_set.pop(),
             number_of_questions=NUM_QUESTIONS,
         )
         quiz_in['name'] = html.unescape(realistic_data[0]['category']) if use_realistic_data else quiz_in['name']

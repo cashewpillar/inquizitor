@@ -23,7 +23,7 @@ db = SessionLocal()
 )
 @click.option(
     '--has-attempts', 
-    default=True,
+    default=False,
     type=bool
 )
 @click.option(
