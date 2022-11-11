@@ -71,6 +71,7 @@ async def read_quizzes_results(
     quizzes_results = []
     for quiz in quizzes:
         results = crud.quiz.get_multi_results_by_quiz_id(db, id=quiz.id)
+        results.append(quiz)
         quizzes_results.append(results)
 
     return quizzes_results

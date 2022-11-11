@@ -158,7 +158,7 @@ def generate_quizzes(
     init_test_students(db)
     teacher_set = list(test_teachers)
 
-    for i in range(50): # fifty quizzes
+    for i in range(25): # fifty quizzes
         logging.info(f"Generating quiz #{i+1}")
         realistic_data = []
         if use_realistic_data:
