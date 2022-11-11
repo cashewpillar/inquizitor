@@ -18,6 +18,7 @@
 | ---------------- | ------------ |
 | admin            | superadmin   |
 | teacher          | superteacher |
+| \<dummy-teacher> | testteacher  |
 | student          | superstudent |
 | \<dummy-student> | teststudent  |
 
