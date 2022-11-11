@@ -153,7 +153,7 @@ def generate_attempts(db: Session, quiz: models.Quiz):
 def generate_quizzes(
     db: Session, use_realistic_data: bool = False, has_attempts: bool = True
 ) -> None:
-    NUM_QUESTIONS = 5
+    NUM_QUESTIONS = 10
     init_test_teachers(db)
     init_test_students(db)
     teacher_set = list(test_teachers)
