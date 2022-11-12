@@ -155,6 +155,7 @@ class TestReadQuizzesResults:
         quizzes_id_results = []
         quizzes_id_results_in_db = []
         for i, quiz_results in enumerate(quizzes_results_in_db):
+            quiz_results = quiz_results[:-1]
             assert quiz_results
             for result in quiz_results:
                 assert result["answers"]
